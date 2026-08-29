@@ -1,0 +1,32 @@
+schema_version: "1.0"
+project:
+  neutral_name: manuscript-lab
+  default_seed: 20260829
+  timezone_for_display: Asia/Singapore
+
+compute:
+  device: auto
+  cpu_thread_ceiling: 12
+  gpu_memory_fraction: 0.90
+  inference_dtype:
+    cpu: float32
+    cuda: bfloat16
+  deterministic_algorithms: true
+
+data:
+  raw_immutable: true
+  hash_algorithm: sha256
+  parsed_record_format: jsonl
+  analysis_table_format: parquet
+  default_split_group: page_id
+
+security:
+  trust_remote_code: false
+  prefer_safetensors: true
+  treat_corpus_as_untrusted: true
+
+experiments:
+  require_hypothesis_id: true
+  require_null_baseline: true
+  require_environment_snapshot: true
+  runs_root: artifacts/runs

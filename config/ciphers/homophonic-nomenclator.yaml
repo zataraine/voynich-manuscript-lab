@@ -1,0 +1,22 @@
+schema_version: "1.0"
+hypothesis_id: homophonic-nomenclator-template
+status: proposed
+unitization: token
+stages:
+  - family: nomenclator
+    direction: decode
+    parameters:
+      code_group_definition: null
+      codebook_path: null
+      null_code_policy: unknown
+  - family: homophonic
+    direction: decode
+    parameters:
+      mapping_path: null
+      unmapped_policy: preserve
+evaluation:
+  held_out_unit: page
+  baselines: [frequency-preserving-shuffle, monoalphabetic-substitution]
+  metrics: [coverage, mapping-stability, held-out-score, null-percentile]
+  multiple_testing_correction: define-before-running
+notes: Template only; fill all null fields before activating.

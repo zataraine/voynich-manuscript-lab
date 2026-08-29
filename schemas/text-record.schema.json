@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/manuscript-lab/text-record.schema.json",
+  "title": "Parsed text observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "page_id",
+    "raw_surface",
+    "parsed_units",
+    "uncertainty",
+    "source_manifest",
+    "parser_version"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "record_id": { "type": "string", "minLength": 1 },
+    "page_id": { "type": "string", "minLength": 1 },
+    "raw_surface": { "type": "string" },
+    "parsed_units": { "type": "array", "items": { "type": "object" } },
+    "uncertainty": { "type": "array", "items": { "type": "object" } },
+    "source_manifest": { "type": "string", "pattern": "^data/manifests/" },
+    "parser_version": { "type": "string", "minLength": 1 }
+  }
+}

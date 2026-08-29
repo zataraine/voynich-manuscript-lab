@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/manuscript-lab/source-manifest.schema.json",
+  "title": "Manuscript Lab source manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_id",
+    "manifest_created_at",
+    "acquisition",
+    "rights",
+    "transcription",
+    "files"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "source_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "manifest_created_at": { "type": "string", "format": "date-time" },
+    "acquisition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obtained_at", "obtained_from", "custodian"],
+      "properties": {
+        "obtained_at": { "type": ["string", "null"], "format": "date-time" },
+        "obtained_from": { "type": ["string", "null"] },
+        "custodian": { "type": ["string", "null"] }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "license", "restrictions"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["unknown", "private", "licensed", "public-domain"]
+        },
+        "license": { "type": ["string", "null"] },
+        "restrictions": { "type": ["string", "null"] }
+      }
+    },
+    "transcription": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scheme_name",
+        "scheme_version",
+        "character_encoding",
+        "unit_definition",
+        "uncertainty_notation"
+      ],
+      "properties": {
+        "scheme_name": { "type": ["string", "null"] },
+        "scheme_version": { "type": ["string", "null"] },
+        "character_encoding": { "type": ["string", "null"] },
+        "unit_definition": { "type": ["string", "null"] },
+        "uncertainty_notation": { "type": ["string", "null"] }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role", "media_type", "bytes", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^data/raw/",
+            "not": { "pattern": "(^|/)\\.\\.(/|$)" }
+          },
+          "role": {
+            "type": "string",
+            "enum": ["book", "page-image", "transcription", "metadata", "other"]
+          },
+          "media_type": { "type": "string", "minLength": 1 },
+          "bytes": { "type": "integer", "minimum": 0 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "notes": { "type": ["string", "null"] }
+  }
+}

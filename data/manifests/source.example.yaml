@@ -1,0 +1,24 @@
+schema_version: "1.0"
+source_id: source-a
+manifest_created_at: "2026-08-29T00:00:00Z"
+acquisition:
+  obtained_at: null
+  obtained_from: null
+  custodian: null
+rights:
+  status: unknown
+  license: null
+  restrictions: null
+transcription:
+  scheme_name: null
+  scheme_version: null
+  character_encoding: null
+  unit_definition: null
+  uncertainty_notation: null
+files:
+  - path: data/raw/books/example.pdf
+    role: book
+    media_type: application/pdf
+    bytes: 0
+    sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+notes: This is a shape example only; generate real hashes with the CLI.

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/experiment-record.schema.json",
+  "title": "Reproducible experiment registration",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "hypothesis_id",
+    "source_manifest",
+    "transcription",
+    "scope",
+    "normalization",
+    "hypothesis_family",
+    "parameters",
+    "seed",
+    "splits",
+    "null_model",
+    "metrics",
+    "effects",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$"
+    },
+    "hypothesis_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "source_manifest": {"type": "string", "minLength": 1},
+    "transcription": {"type": "string", "minLength": 1},
+    "scope": {
+      "type": "object",
+      "required": ["folio_section", "currier"],
+      "properties": {
+        "folio_section": {"type": ["string", "null"]},
+        "currier": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "normalization": {"type": "object"},
+    "hypothesis_family": {"type": "string", "minLength": 1},
+    "parameters": {"type": "object"},
+    "seed": {"type": "integer", "minimum": 0},
+    "splits": {
+      "type": "object",
+      "required": ["train", "heldout"],
+      "properties": {
+        "train": {"type": "object"},
+        "heldout": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "null_model": {"type": "object"},
+    "metrics": {"type": "object"},
+    "effects": {"type": "object"},
+    "artifacts": {"type": "object"},
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": false
+}

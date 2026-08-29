@@ -1,0 +1,54 @@
+schema_version: '1.0'
+source_id: voynich-eva-currier-reference
+manifest_created_at: '2026-08-29T17:39:54.110650Z'
+acquisition:
+  obtained_at: '2026-08-29T17:35:00Z'
+  obtained_from: voynich.nu, CEUR Workshop Proceedings volume 3313, and arXiv 2604.25979
+  custodian: Rene Zandbergen, Lisa Fagin Davis, Prescott Currier source editors, and cited authors
+rights:
+  status: unknown
+  license: Mixed source-specific terms; no blanket license asserted
+  restrictions: Private scholarly use with attribution; verify item-level terms before redistribution.
+transcription:
+  scheme_name: EVA/extended EVA and Currier A/B classification reference material
+  scheme_version: Current archived pages plus 2022 and 2026 scholarly snapshots
+  character_encoding: EVA is an ASCII-compatible analytical transliteration; source PDFs/HTML retained byte-for-byte
+  unit_definition: EVA transliteration glyph units and page-level statistical strata A/B; neither implies phonetic values
+  uncertainty_notation: Transcription uncertainty and word-space uncertainty follow IVTFF; A/B assignments may be absent or intermediate
+files:
+- path: data/raw/books/formats/zandbergen-transliteration-state-2022.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 2649659
+  sha256: 3e0d323808be37c9ec3c8b64fb55209841648da7a8b821a2f9739b9671e79b7c
+- path: data/raw/books/primary-reports/davis-voynich-paleography-2022.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 14072730
+  sha256: cd56145b65b802b2503151957cd9e1ecf0846e992212b6ce6210e0a84f6bc14a
+- path: data/raw/books/scholarly-baselines/currier-ab-quantitative-2026.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 644706
+  sha256: 85f2969432e30daff0aafbb7657a3d69c9b57fa477fd564cd09aa49bcd07d1ff
+- path: data/raw/metadata/source-pages/voynichnu-currier-ab-summary.html
+  role: metadata
+  media_type: text/html
+  bytes: 21942
+  sha256: fc000a0785d8d3dd4888c2749da7a1847c7027e1347fc7a269e2ab2ae3c6400d
+- path: data/raw/metadata/source-pages/voynichnu-currier-language-extension.html
+  role: metadata
+  media_type: text/html
+  bytes: 34373
+  sha256: dec365df319143b68689dfce0a752454dd9e5123be48a3daa1ac2802077be13e
+- path: data/raw/metadata/source-pages/voynichnu-currier-languages-revisited.html
+  role: metadata
+  media_type: text/html
+  bytes: 17441
+  sha256: b197ca1400334603bacccccca6377b24cd26baf6d434ebca5a2c199bdc9aff06
+- path: data/raw/metadata/source-pages/voynichnu-currier-original.html
+  role: metadata
+  media_type: text/html
+  bytes: 54237
+  sha256: d97d8956f2f365975fc86505f1a87dd263e33e7d39fc5a23ddf4efdce658df1b
+notes: Currier A/B are robust statistical text strata conventionally called languages, not evidence of two identified natural languages. Scribal hand and Currier stratum are separate variables.

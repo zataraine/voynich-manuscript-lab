@@ -1,0 +1,9 @@
+cores: 12
+keep-going: true
+rerun-incomplete: true
+printshellcmds: true
+latency-wait: 60
+restart-times: 1
+resources:
+  - gpu=1
+  - local_ai=1

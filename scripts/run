@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+runtime_root="${MANUSCRIPT_LAB_RUNTIME_ROOT:-${HOME}/.local/share/manuscript-lab}"
+uv_bin="$(command -v uv || true)"
+
+if [[ -z "${uv_bin}" && -x "${HOME}/.local/bin/uv" ]]; then
+  uv_bin="${HOME}/.local/bin/uv"
+fi
+
+if [[ -z "${uv_bin}" ]]; then
+  echo "uv is not installed. Run ./scripts/bootstrap_wsl.sh first." >&2
+  exit 1
+fi
+
+export MANUSCRIPT_LAB_ROOT="${project_root}"
+export MANUSCRIPT_LAB_RUNTIME_ROOT="${runtime_root}"
+export UV_PROJECT_ENVIRONMENT="${runtime_root}/venv"
+export UV_CACHE_DIR="${runtime_root}/cache/uv"
+export HF_HOME="${runtime_root}/cache/huggingface"
+export TORCH_HOME="${runtime_root}/cache/torch"
+export MPLCONFIGDIR="${runtime_root}/cache/matplotlib"
+export NUMBA_CACHE_DIR="${runtime_root}/cache/numba"
+export PYTHONHASHSEED="${PYTHONHASHSEED:-20260829}"
+export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
+
+mkdir -p \
+  "${UV_CACHE_DIR}" \
+  "${HF_HOME}" \
+  "${TORCH_HOME}" \
+  "${MPLCONFIGDIR}" \
+  "${NUMBA_CACHE_DIR}"
+
+cd "${project_root}"
+exec "${uv_bin}" run --locked --all-groups "$@"

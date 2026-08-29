@@ -1,0 +1,28 @@
+schema_version: "1.0"
+experiment_id: replace-me
+hypothesis_id: H-000
+source_manifest: data/manifests/replace-me.yaml
+transcription: replace-me
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: reversible-unassigned
+hypothesis_family: replace-me
+parameters: {}
+seed: 20260829
+splits:
+  train:
+    grouping_key: page_id
+    assignment_path: data/processed/splits/replace-me.parquet
+  heldout:
+    grouping_key: page_id
+    assignment_path: data/processed/splits/replace-me.parquet
+null_model:
+  family: replace-me
+  parameters: {}
+metrics: {}
+effects: {}
+artifacts:
+  root: artifacts/runs/replace-me
+notes: preregister success, failure, and ambiguity thresholds here

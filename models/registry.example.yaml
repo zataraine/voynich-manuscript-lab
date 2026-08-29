@@ -1,0 +1,13 @@
+schema_version: "1.0"
+models:
+  - id: example-model
+    provider: replace-me
+    repository: replace-me
+    revision: exact-commit-or-tag
+    license: verify-before-use
+    purpose: probe-only
+    expected_size_bytes: null
+    sha256: null
+    trust_remote_code: false
+    approved: false
+    notes: Pretrained similarity is not semantic ground truth.

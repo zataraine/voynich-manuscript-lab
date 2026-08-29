@@ -1,0 +1,22 @@
+"""Top-level reproducible workflow for source intake and later experiments."""
+
+
+rule all:
+    input:
+        "artifacts/workflow/voynich-intake.validated"
+
+
+rule validate_voynich_intake:
+    input:
+        manifests=[
+            "data/manifests/yale-ms408.yaml",
+            "data/manifests/voynich-nu-reference.yaml",
+            "data/manifests/voynich-scholarly-reference.yaml",
+            "data/manifests/naibbe-reference.yaml",
+            "data/manifests/voynich-eva-currier-reference.yaml",
+        ],
+        validator="scripts/validate-voynich-intake",
+    output:
+        touch("artifacts/workflow/voynich-intake.validated"),
+    shell:
+        "./scripts/validate-voynich-intake"

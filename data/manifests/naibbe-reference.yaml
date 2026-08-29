@@ -1,0 +1,74 @@
+schema_version: '1.0'
+source_id: naibbe-reference
+manifest_created_at: '2026-08-29T17:39:52.621366Z'
+acquisition:
+  obtained_at: '2026-08-29T17:30:00Z'
+  obtained_from: GitHub commit f2675ec5dd275268bc64dd48ea64fc0e0e9827a2 and Zenodo record 17219445 version 2.1
+  custodian: Michael A. Greshko; GitHub and Zenodo repositories
+rights:
+  status: licensed
+  license: Modified MIT-style repository license with mandatory publication citation; Zenodo datasets CC BY 4.0
+  restrictions: Preserve copyright/license notices and cite Greshko 2025 in publications using the code or datasets.
+transcription:
+  scheme_name: Naibbe-generated EVA strings and source plaintext examples
+  scheme_version: Repository commit f2675ec5dd27; Zenodo v2.1
+  character_encoding: UTF-8 text plus original spreadsheet encodings
+  unit_definition: Plaintext unigrams/bigrams map to generated EVA word, prefix, and suffix strings
+  uncertainty_notation: Decoder emits alternatives in parentheses and unknown tokens as [?]; see source implementation
+files:
+- path: data/raw/books/naibbe/greshko-2025-supplementary-materials-1-4.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 2563905
+  sha256: badd602dd3a5f831fe79ed434ee7bada9da35b435531bfa979f5a85c9848bf0e
+- path: data/raw/metadata/naibbe/asymmetrical-word-pairings.xlsx
+  role: metadata
+  media_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  bytes: 2036444
+  sha256: 73c7116c70f3f622840c34d76035ce03ef7f7cab2a7dd3aae4a82910047f122c
+- path: data/raw/metadata/naibbe/ciphertext-similarity-top-1200.gephi
+  role: metadata
+  media_type: application/octet-stream
+  bytes: 648841
+  sha256: aeecefeb1c8b14adb30c0e131e66432f2165844792478d450a5ada70c3fdc2d4
+- path: data/raw/metadata/naibbe/figures-voynichesque-plots.xlsx
+  role: metadata
+  media_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  bytes: 735496
+  sha256: 0babe99b03304caca5143889ecad2b81b29c2935de7f94516c2c76f8a5256c8f
+- path: data/raw/metadata/naibbe/figures.xlsx
+  role: metadata
+  media_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  bytes: 3902567
+  sha256: dc292ea183f53dc4a4a30c5d91c520effb05bb00dc7defed2e78dbedaeb76f31
+- path: data/raw/metadata/naibbe/frequency-rank-distribution-charts.xlsx
+  role: metadata
+  media_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  bytes: 21135550
+  sha256: 1dfefc2fe5886026da6707ca4f009d9291a07e7463b40933d0f3ebd421461b13
+- path: data/raw/metadata/naibbe/gaskell-bowern-2022-comparison.xlsx
+  role: metadata
+  media_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  bytes: 6396861
+  sha256: d9f0721894a77379f61b1d543c3698edb759cd190471d02cef6e570fa2a20d4d
+- path: data/raw/metadata/naibbe/naibbe-cipher.xlsx
+  role: metadata
+  media_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  bytes: 17079437
+  sha256: 890835df665d33b96228d4a587030fee2bc1637783dc627b4e6aa584186cadcd
+- path: data/raw/metadata/naibbe/voynichesque.xlsm
+  role: metadata
+  media_type: application/vnd.ms-excel.sheet.macroEnabled.12
+  bytes: 7711387
+  sha256: a04039b619535c4288a2f6e47802f7cf204613d865abca79691d18e5933df22d
+- path: data/raw/metadata/naibbe/zenodo-record-17219445-v2.1.json
+  role: metadata
+  media_type: application/json
+  bytes: 9098
+  sha256: 2b172ece388319debf7ead45cd8ef20112331705e136521f6835788ea94f6ce8
+- path: data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz
+  role: metadata
+  media_type: application/x-tar
+  bytes: 45534515
+  sha256: 553b05807727b81361e127ca04b788d4ea64298527deffdec875db629346bffc
+notes: A reversible verbose homophonic substitution baseline, not a claimed Voynich key. Preserve source randomness and ambiguity behavior when reproducing it.

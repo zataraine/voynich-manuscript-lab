@@ -1,0 +1,21 @@
+schema_version: "1.0"
+hypothesis_id: progressive-polyalphabetic-template
+status: proposed
+unitization: grapheme
+stages:
+  - family: progressive-key
+    direction: decode
+    parameters:
+      modulus: null
+      period: null
+      key: null
+      step: null
+      progression: per-cycle
+      origin: 0
+      reset_boundary: none
+evaluation:
+  held_out_unit: page
+  baselines: [repeating-key, frequency-preserving-shuffle, random-progressive-key]
+  metrics: [held-out-score, parameter-stability, null-percentile]
+  multiple_testing_correction: define-before-running
+notes: progression must be per-cycle or per-symbol; never leave it implicit.

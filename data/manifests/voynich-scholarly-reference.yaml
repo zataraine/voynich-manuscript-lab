@@ -1,0 +1,49 @@
+schema_version: '1.0'
+source_id: voynich-scholarly-reference
+manifest_created_at: '2026-08-29T13:18:03.266207Z'
+acquisition:
+  obtained_at: '2026-08-29T13:00:00Z'
+  obtained_from: Multiple stable scholarly repositories; per-file URLs are in config/sources/voynich-acquisition.yaml
+  custodian: Yale, ACL Anthology, arXiv, Internet Archive, and cited authors
+rights:
+  status: unknown
+  license: Mixed/unknown; repository and paper-specific terms apply
+  restrictions: Research copies only. The Yale Working Group archive has no repository LICENSE file and must not be redistributed as licensed code.
+transcription:
+  scheme_name: null
+  scheme_version: null
+  character_encoding: not applicable to this mixed reference set
+  unit_definition: not applicable
+  uncertainty_notation: not applicable
+files:
+- path: data/raw/books/primary-reports/mccrone-materials-analysis-2009.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 6058975
+  sha256: fc0978b1bb2c72be69c61e878760d75d7d2943f029c8fc91d425903604d8e44e
+- path: data/raw/books/scholarly-baselines/character-entropy-2021.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 10931819
+  sha256: e4cc5dffecb5ab0312685d553b68abed46d7b564693a9f2041ed512c7df236c8
+- path: data/raw/books/scholarly-baselines/reddy-knight-2011.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 966546
+  sha256: 842e285c544bffefc1eefa58704cbde6a5e93f0706542dc6a67d374f2c7da599
+- path: data/raw/books/scholarly-baselines/topic-modeling-voynich.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 1124564
+  sha256: 239b0c8c26189982291a72069918dfcfadf7903d10ee92e899a96111167ee795
+- path: data/raw/books/scholarly-baselines/word-probability-2020.pdf
+  role: book
+  media_type: application/pdf
+  bytes: 10764939
+  sha256: 6ff686637a7f521ebfb6d5954b51cb3e27bee2c51b7feb0e5b00e79098225aa3
+- path: data/raw/metadata/reference-code/voynich-public-decc4caaa6515.tar.gz
+  role: metadata
+  media_type: application/x-tar
+  bytes: 212010934
+  sha256: 68827655ceb037853fe7ecab44c27500bc0403c113bf355e1957f9bc3b5b21b9
+notes: Secondary computational baselines and archived technical evidence; none is treated as a decipherment ground truth.

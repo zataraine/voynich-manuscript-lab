@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+build_if_missing() {
+  local source_id="$1"
+  shift
+  local manifest="data/manifests/${source_id}.yaml"
+  if [[ -e "${manifest}" ]]; then
+    echo "Preserving existing manifest: ${manifest}"
+    return
+  fi
+  ./scripts/lab manifest build "${source_id}" "$@"
+}
+
+mapfile -d "" yale < <(
+  find data/raw/images/yale-ms408 data/raw/books/yale-ms408 \
+    data/raw/metadata/yale-ms408 -type f -print0
+)
+yale+=(
+  data/raw/metadata/source-pages/yale-beinecke-collection.html
+  data/raw/metadata/source-pages/yale-pre1600-ms408.html
+)
+build_if_missing yale-ms408 "${yale[@]}"
+
+mapfile -d "" voynich_nu < <(
+  find data/raw/transcriptions data/raw/books/formats data/raw/metadata/reference-code \
+    -maxdepth 2 -type f ! -name ".gitkeep" ! -name "voynich-public-*" -print0
+)
+voynich_nu+=(
+  data/raw/metadata/source-pages/voynichnu-folios.html
+  data/raw/metadata/source-pages/voynichnu-transcriptions.html
+  data/raw/metadata/source-pages/voynichnu-analysis.html
+  data/raw/metadata/source-pages/voynichnu-layout.html
+  data/raw/metadata/source-pages/voynichnu-writing.html
+)
+mapfile -d "" analysis_pages < <(find data/raw/metadata/analysis-pages -type f -print0)
+voynich_nu+=("${analysis_pages[@]}")
+mapfile -d "" primary_reports < <(
+  find data/raw/books/primary-reports -type f ! -name "mccrone-*" -print0
+)
+voynich_nu+=("${primary_reports[@]}")
+build_if_missing voynich-nu-reference "${voynich_nu[@]}"
+
+scholarly=(
+  data/raw/books/primary-reports/mccrone-materials-analysis-2009.pdf
+  data/raw/books/scholarly-baselines/*.pdf
+  data/raw/metadata/reference-code/voynich-public-decc4caaa6515.tar.gz
+)
+build_if_missing voynich-scholarly-reference "${scholarly[@]}"
+
+mapfile -d "" naibbe < <(
+  find data/raw/metadata/naibbe data/raw/books/naibbe -type f -print0
+)
+naibbe+=(data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz)
+build_if_missing naibbe-reference "${naibbe[@]}"
+
+eva_currier=(
+  data/raw/metadata/source-pages/voynichnu-currier-original.html
+  data/raw/metadata/source-pages/voynichnu-currier-ab-summary.html
+  data/raw/metadata/source-pages/voynichnu-currier-language-extension.html
+  data/raw/metadata/source-pages/voynichnu-currier-languages-revisited.html
+  data/raw/books/formats/zandbergen-transliteration-state-2022.pdf
+  data/raw/books/primary-reports/davis-voynich-paleography-2022.pdf
+  data/raw/books/scholarly-baselines/currier-ab-quantitative-2026.pdf
+)
+build_if_missing voynich-eva-currier-reference "${eva_currier[@]}"

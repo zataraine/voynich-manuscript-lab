@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/manuscript-lab/numeric-sequence.schema.json",
+  "title": "Reversible numeric sequence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source", "encoding", "sequence", "symbols"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": { "type": "string" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "encoding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "codec", "ordering"],
+      "properties": {
+        "mode": { "enum": ["byte", "codepoint", "grapheme"] },
+        "codec": { "type": "string", "minLength": 1 },
+        "ordering": { "enum": ["first", "sorted"] }
+      }
+    },
+    "sequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "length", "dtype", "sha256"],
+      "properties": {
+        "path": { "type": "string" },
+        "length": { "type": "integer", "minimum": 0 },
+        "dtype": { "enum": ["uint8", "uint32"] },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "surface", "bytes_hex"],
+        "properties": {
+          "id": { "type": "integer", "minimum": 0 },
+          "surface": { "type": ["string", "null"] },
+          "bytes_hex": { "type": "string", "pattern": "^(?:[a-f0-9]{2})+$" }
+        }
+      }
+    }
+  }
+}

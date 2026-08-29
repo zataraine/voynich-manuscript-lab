@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+./scripts/run python - <<'PY'
+from pathlib import Path
+
+from PIL import Image
+
+files = sorted(Path("data/raw/images/yale-ms408").glob("*.jpg"))
+if len(files) != 213:
+    raise SystemExit(f"Expected 213 Yale canvases, found {len(files)}")
+for path in files:
+    with Image.open(path) as image:
+        image.verify()
+print(f"JPEG_VERIFY_PASS count={len(files)}")
+PY
+
+pdf_count=0
+while IFS= read -r -d "" pdf; do
+  pages="$(pdfinfo "${pdf}" | sed -n 's/^Pages:[[:space:]]*//p')"
+  if [[ ! "${pages}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Invalid or zero-page PDF: ${pdf}" >&2
+    exit 1
+  fi
+  pdf_count=$((pdf_count + 1))
+done < <(find data/raw -type f -iname '*.pdf' -print0)
+echo "PDFINFO_PASS count=${pdf_count}"
+
+tar -tzf data/raw/metadata/reference-code/voynich-public-decc4caaa6515.tar.gz >/dev/null
+echo "TAR_VERIFY_PASS"
+tar -tzf data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz >/dev/null
+echo "NAIBBE_TAR_VERIFY_PASS"
+unzip -tq data/raw/metadata/reference-code/bitrans-data.zip >/dev/null
+echo "ZIP_VERIFY_PASS"
+
+./scripts/run python - <<'PY'
+import hashlib
+import json
+import zipfile
+from pathlib import Path
+
+root = Path("data/raw/metadata/naibbe")
+record = json.loads((root / "zenodo-record-17219445-v2.1.json").read_text())
+local = {
+    "Figures - Voynichesque Plots.xlsx": root / "figures-voynichesque-plots.xlsx",
+    "Figures.xlsx": root / "figures.xlsx",
+    "Figures - Gaskell and Bowern 2022 Comparison.xlsx": root
+    / "gaskell-bowern-2022-comparison.xlsx",
+    "Greshko 2025 - Supplementary Materials 1–4.pdf": Path(
+        "data/raw/books/naibbe/greshko-2025-supplementary-materials-1-4.pdf"
+    ),
+    "Naibbe Ciphertext Similarity Chart Top 1200 Word Types.gephi": root
+    / "ciphertext-similarity-top-1200.gephi",
+    "Figures - Frequency-Rank Distribution Charts.xlsx": root
+    / "frequency-rank-distribution-charts.xlsx",
+    "Naibbe Cipher.xlsx": root / "naibbe-cipher.xlsx",
+    "Voynichesque.xlsm": root / "voynichesque.xlsm",
+    "Asymmetrical Word Pairings.xlsx": root / "asymmetrical-word-pairings.xlsx",
+}
+for item in record["files"]:
+    path = local[item["key"]]
+    expected = item["checksum"].removeprefix("md5:")
+    actual = hashlib.md5(path.read_bytes(), usedforsecurity=False).hexdigest()
+    if actual != expected or path.stat().st_size != item["size"]:
+        raise SystemExit(f"Zenodo mismatch: {path}")
+for path in root.iterdir():
+    if path.suffix.lower() in {".xlsx", ".xlsm", ".gephi"}:
+        with zipfile.ZipFile(path) as archive:
+            bad = archive.testzip()
+        if bad is not None:
+            raise SystemExit(f"Corrupt member {bad} in {path}")
+print(f"NAIBBE_ZENODO_VERIFY_PASS count={len(local)}")
+PY
+
+for manifest in \
+  data/manifests/yale-ms408.yaml \
+  data/manifests/voynich-nu-reference.yaml \
+  data/manifests/voynich-scholarly-reference.yaml \
+  data/manifests/naibbe-reference.yaml \
+  data/manifests/voynich-eva-currier-reference.yaml; do
+  ./scripts/lab manifest verify "${manifest}"
+done
+
+./scripts/run python - <<'PY'
+import json
+from pathlib import Path
+
+import yaml
+
+from manuscript_lab.acquisition import iiif_image_assets
+
+config = yaml.safe_load(Path("config/sources/voynich-acquisition.yaml").read_text())
+expected = {item["destination"] for item in config["assets"]}
+iiif = config["iiif_images"]
+manifest_asset = next(
+    item for item in config["assets"] if item["id"] == iiif["manifest_asset_id"]
+)
+manifest = json.loads(Path(manifest_asset["destination"]).read_text())
+expected.update(
+    item["destination"]
+    for item in iiif_image_assets(manifest, iiif["destination_directory"])
+)
+actual = {
+    item["path"]
+    for item in json.loads(
+        Path("artifacts/acquisition/voynich-receipts.json").read_text()
+    )["files"]
+}
+if actual != expected:
+    raise SystemExit(
+        f"Receipt set mismatch: missing={sorted(expected - actual)}, "
+        f"unexpected={sorted(actual - expected)}"
+    )
+print(f"RECEIPT_VERIFY_PASS count={len(actual)}")
+PY

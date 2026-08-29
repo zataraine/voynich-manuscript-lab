@@ -1,0 +1,55 @@
+# Python and editors
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.snakemake/
+.coverage
+htmlcov/
+tmp/
+.venv/
+.vscode/
+.idea/
+.ipynb_checkpoints/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Immutable source material and all machine-derived data. Keep only the layer
+# documentation and empty directory markers under version control.
+data/raw/*
+!data/raw/README.md
+!data/raw/*/
+data/raw/*/*
+!data/raw/*/.gitkeep
+data/interim/*
+!data/interim/README.md
+!data/interim/*/
+data/interim/*/*
+!data/interim/*/.gitkeep
+data/processed/*
+!data/processed/README.md
+!data/processed/*/
+data/processed/*/*
+!data/processed/*/.gitkeep
+
+# Weights and local model caches; keep the registry/readme
+models/**
+!models/README.md
+!models/registry.example.yaml
+!models/local-ai.yaml
+
+# Generated experiment artifacts and diagnostics
+artifacts/*
+!artifacts/README.md
+!artifacts/*/
+artifacts/*/*
+!artifacts/*/.gitkeep
+
+# OS/application noise
+.DS_Store
+Thumbs.db
+desktop.ini
