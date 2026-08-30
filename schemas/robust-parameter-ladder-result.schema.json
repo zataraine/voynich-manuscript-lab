@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/robust-parameter-ladder-result.schema.json",
+  "title": "Robust parameter ladder result",
+  "type": "object",
+  "required": [
+    "schema_version", "experiment_id", "hypothesis_id", "run_finished_at",
+    "corpus_audit", "feature_panel", "transform_variants", "seed_results",
+    "aggregate", "naibbe_external_positive_control", "order_destruction_challenge",
+    "permutation", "interpretation_gate", "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {"const": "E-004-robust-parameter-ladder"},
+    "hypothesis_id": {"const": "H-004"},
+    "run_finished_at": {"type": "string", "format": "date-time"},
+    "corpus_audit": {"type": "object"},
+    "feature_panel": {
+      "type": "object",
+      "required": ["version", "available_features", "selected_count", "selection_audit", "final_model_features_by_seed"]
+    },
+    "transform_variants": {"type": "array", "minItems": 16, "maxItems": 16},
+    "seed_results": {"type": "object", "minProperties": 3, "maxProperties": 3},
+    "aggregate": {"type": "object"},
+    "naibbe_external_positive_control": {"type": "object"},
+    "order_destruction_challenge": {"type": "object"},
+    "permutation": {"type": "object"},
+    "interpretation_gate": {
+      "type": "object",
+      "required": ["checks", "passed", "permitted_next_step", "voynich_scored", "posterior_probability"],
+      "properties": {
+        "checks": {"type": "object", "minProperties": 5, "maxProperties": 5},
+        "passed": {"type": "boolean"},
+        "permitted_next_step": {"type": "string"},
+        "voynich_scored": {"const": false},
+        "posterior_probability": {"type": "null"}
+      }
+    },
+    "provenance": {"type": "object"}
+  },
+  "additionalProperties": false
+}

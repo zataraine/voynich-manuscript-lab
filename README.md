@@ -125,6 +125,11 @@ to both control labels and evaluates unseen documents under an unseen cipher
 family. It deliberately excludes Voynichese. Run it with
 `./scripts/run-transformation-ladder`.
 
+The parameter-robustness campaign is documented in
+`docs/ROBUST_PARAMETER_LADDER.md`. E-004 evaluates 16 transform variants across
+three fixed seeds and selects invariant features strictly inside each training
+boundary. Run it with `./scripts/run-robust-parameter-ladder`.
+
 ## Repository map
 
 | Path | Purpose | Git policy |

@@ -34,12 +34,17 @@ def monoalphabetic(tokens: Sequence[str], *, seed: int, sample_id: str) -> tuple
     return tuple("".join(mapping[character] for character in token) for token in tokens)
 
 
-def homophonic(tokens: Sequence[str], *, seed: int, sample_id: str) -> tuple[str, ...]:
-    """Map each source character to one of three seeded homophones."""
+def homophonic(
+    tokens: Sequence[str], *, seed: int, sample_id: str, homophones: int = 3
+) -> tuple[str, ...]:
+    """Map each source character to one of a fixed number of seeded homophones."""
+    if homophones < 1:
+        raise ValueError("homophones must be positive")
     source = _alphabet(tokens)
-    target = _symbols(len(source) * 3)
+    target = _symbols(len(source) * homophones)
     choices = {
-        character: target[index * 3 : index * 3 + 3] for index, character in enumerate(source)
+        character: target[index * homophones : index * homophones + homophones]
+        for index, character in enumerate(source)
     }
     rng = random.Random(_seed(seed, "homophonic", sample_id))
     return tuple("".join(rng.choice(choices[character]) for character in token) for token in tokens)
@@ -68,36 +73,48 @@ def progressive_polyalphabetic(
 
 
 def nomenclator_homophonic(
-    tokens: Sequence[str], *, seed: int, sample_id: str, codebook_size: int = 12
+    tokens: Sequence[str],
+    *,
+    seed: int,
+    sample_id: str,
+    codebook_size: int = 12,
+    homophones: int = 3,
 ) -> tuple[str, ...]:
     """Code frequent whole tokens; homophonically substitute remaining characters."""
     counts = Counter(tokens)
     codewords = [token for token, count in counts.most_common(codebook_size) if count > 1]
     codes = _symbols(len(codewords), offset=1024)
     codebook = dict(zip(codewords, codes, strict=True))
-    substituted = homophonic(tokens, seed=seed, sample_id=f"{sample_id}:fallback")
+    substituted = homophonic(
+        tokens, seed=seed, sample_id=f"{sample_id}:fallback", homophones=homophones
+    )
     return tuple(
         codebook.get(token, fallback) for token, fallback in zip(tokens, substituted, strict=True)
     )
 
 
-def verbose_homophonic(tokens: Sequence[str], *, seed: int, sample_id: str) -> tuple[str, ...]:
-    """Encode every character as a seeded two-symbol CV-like code group."""
+def verbose_homophonic(
+    tokens: Sequence[str], *, seed: int, sample_id: str, width: int = 2
+) -> tuple[str, ...]:
+    """Encode every character as a seeded fixed-width code group."""
+    if width < 2:
+        raise ValueError("verbose code width must be at least two")
     source = _alphabet(tokens)
-    left = _symbols(max(8, len(source)), offset=2048)
-    right = _symbols(11, offset=3072)
+    columns = [
+        _symbols(max(11, len(source)), offset=2048 + column * 1024) for column in range(width)
+    ]
     rng = random.Random(_seed(seed, "verbose_homophonic", sample_id))
-    base = {
-        character: (left[index % len(left)], rng.randrange(len(right)))
-        for index, character in enumerate(source)
-    }
+    base = {character: [rng.randrange(len(column)) for column in columns] for character in source}
     output = []
     occurrence: Counter[str] = Counter()
     for token in tokens:
         encoded = []
         for character in token:
-            prefix, origin = base[character]
-            encoded.extend((prefix, right[(origin + occurrence[character]) % len(right)]))
+            origins = base[character]
+            encoded.extend(
+                column[(origin + occurrence[character] * (index + 1)) % len(column)]
+                for index, (column, origin) in enumerate(zip(columns, origins, strict=True))
+            )
             occurrence[character] += 1
         output.append("".join(encoded))
     return tuple(output)
@@ -122,6 +139,29 @@ def apply_transform(
     except KeyError as exc:
         raise ValueError(f"Unknown cipher transform: {family}") from exc
     return function(tokens, seed=seed, sample_id=sample_id)
+
+
+def apply_transform_variant(
+    tokens: Sequence[str], variant: dict[str, object], *, seed: int, sample_id: str
+) -> tuple[str, ...]:
+    """Apply a validated parameterized transform variant from an experiment config."""
+    family = str(variant["family"])
+    try:
+        function = TRANSFORMS[family]
+    except KeyError as exc:
+        raise ValueError(f"Unknown cipher transform: {family}") from exc
+    replicate = int(variant.get("replicate", 0))
+    parameters = variant.get("parameters", {})
+    if not isinstance(parameters, dict):
+        raise TypeError("Transform variant parameters must be a mapping")
+    variant_seed = seed + replicate * 1_000_003
+    variant_id = str(variant.get("id", family))
+    return function(
+        tokens,
+        seed=variant_seed,
+        sample_id=f"{sample_id}:{variant_id}",
+        **parameters,
+    )
 
 
 def destroy_token_order(tokens: Sequence[str], *, seed: int, sample_id: str) -> tuple[str, ...]:
