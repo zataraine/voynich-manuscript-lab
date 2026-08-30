@@ -48,7 +48,13 @@ def test_bounded_review_drops_per_sample_target_values(tmp_path: Path) -> None:
     result = {
         "experiment_id": "E-test",
         "naibbe_positive_control": {"sample_count": 1, "samples": [{"secret": 1}]},
-        "voynich_targets": {"w": {"sample_count": 1, "samples": [{"secret": 2}]}},
+        "voynich_targets": {
+            "w": {
+                "sample_count": 1,
+                "median_meaningful_similarity": 0.5,
+                "samples": [{"secret": 2}],
+            }
+        },
     }
     packet = {"passages": [], "policy_note": "notes only"}
     bounded = bounded_record(result, packet)

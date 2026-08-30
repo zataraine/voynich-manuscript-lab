@@ -1,0 +1,10 @@
+FROM glm-4.7-flash:q4_K_M
+
+# Deterministic defaults for schema-bound scientific criticism. API calls repeat
+# these values so behavior remains explicit even when the alias is replaced.
+PARAMETER num_ctx 32768
+PARAMETER temperature 0
+PARAMETER top_p 0.9
+PARAMETER min_p 0.0
+PARAMETER repeat_penalty 1.05
+PARAMETER seed 20260830

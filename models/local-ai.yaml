@@ -63,10 +63,12 @@ models:
     repository: glm-4.7-flash
     revision: ollama-blob-9eba2761cf0b88b8bc11a065a7b5b47f1b13ce820e8e492cb1010b450f9ec950
     license: mit
-    purpose: occasional adversarial review after routine Qwen review
+    purpose: base weights for occasional adversarial review after routine Qwen review
     format: GGUF Q4_K_M
     expected_size_bytes: 19019269280
     sha256: 9eba2761cf0b88b8bc11a065a7b5b47f1b13ce820e8e492cb1010b450f9ec950
     trust_remote_code: false
     approved: true
-    notes: Slow auxiliary tier; never resident alongside voynich-qwen.
+    notes: Slow auxiliary tier; never resident alongside voynich-qwen. The selected runtime alias
+      is voynich-glm-critic:v1, built from config/models/glm-critic-v1.Modelfile; prompts are
+      separately versioned under config/prompts and hashed in each review.

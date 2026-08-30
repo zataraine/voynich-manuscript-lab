@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+ollama create voynich-glm-critic:v1 -f config/models/glm-critic-v1.Modelfile
+ollama show voynich-glm-critic:v1 >/dev/null
+echo "Configured local reviewer profile: voynich-glm-critic:v1"

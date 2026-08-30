@@ -50,6 +50,8 @@ rule qwen_review:
     input:
         result=RESULT,
         packet=PACKET,
+        system_prompt="config/prompts/routine-review-system-v1.txt",
+        user_prompt="config/prompts/routine-review-user-v1.txt",
     output:
         QWEN
     resources:
@@ -64,6 +66,9 @@ rule glm_critic:
     input:
         result=RESULT,
         packet=PACKET,
+        modelfile="config/models/glm-critic-v1.Modelfile",
+        system_prompt="config/prompts/adversarial-critic-system-v1.txt",
+        user_prompt="config/prompts/adversarial-critic-user-v1.txt",
     output:
         CRITIC
     resources:

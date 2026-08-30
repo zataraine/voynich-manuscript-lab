@@ -13,12 +13,17 @@ chat:
   default_max_tokens: 768
   default_temperature: 0.1
   enable_thinking: false
+  review_system_prompt: config/prompts/routine-review-system-v1.txt
+  review_user_prompt: config/prompts/routine-review-user-v1.txt
 
 auxiliary:
   runner: bin/ai-aux-run
   ollama_url: http://127.0.0.1:11434
   embedding_model: qwen3-embedding:0.6b-q8_0
-  critic_model: glm-4.7-flash:q4_K_M
+  critic_model: voynich-glm-critic:v1
+  critic_modelfile: config/models/glm-critic-v1.Modelfile
+  critic_system_prompt: config/prompts/adversarial-critic-system-v1.txt
+  critic_user_prompt: config/prompts/adversarial-critic-user-v1.txt
   reranker_path_key: QWEN_RERANKER
   timeout_seconds: 1800
 

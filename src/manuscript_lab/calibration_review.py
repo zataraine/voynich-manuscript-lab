@@ -21,6 +21,13 @@ def bounded_record(result: dict[str, Any], packet: dict[str, Any]) -> dict[str, 
         witness: {key: value for key, value in summary.items() if key != "samples"}
         for witness, summary in result["voynich_targets"].items()
     }
+    target_counts = {
+        witness: summary["sample_count"] for witness, summary in sorted(targets.items())
+    }
+    target_medians = {
+        witness: summary["median_meaningful_similarity"]
+        for witness, summary in sorted(targets.items())
+    }
     return {
         **result,
         "naibbe_positive_control": naibbe,
@@ -37,6 +44,22 @@ def bounded_record(result: dict[str, Any], packet: dict[str, Any]) -> dict[str, 
             "A failed interpretation gate forbids conclusions about meaning, language, "
             "cipher, or hoax.",
         ],
+        "review_facts": {
+            "target_sample_counts_by_witness": target_counts,
+            "target_medians_by_witness": target_medians,
+            "common_page_count_definition": (
+                "Physical page identifiers with an eligible 100-token sample in all six "
+                "witnesses; it is not any witness's sample count and is unrelated to seeds."
+            ),
+            "leakage_evidence_reported": False,
+            "classifier_capability": "Surface-feature discrimination, not semantic recognition.",
+            "required_assessment_elements": [
+                "Cross-validation separates the training control classes.",
+                "Naibbe transfer and witness-stability gates fail.",
+                "No Voynich target interpretation is permitted.",
+            ],
+            "permitted_effect_strength_values_for_target_claim": ["none", "weak"],
+        },
         "reference_context": packet["passages"],
         "reference_context_policy": packet["policy_note"],
     }

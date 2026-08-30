@@ -49,6 +49,24 @@ sha256sum -c /home/nyx/voynich-local-ai/state/runtime-sha256.txt
   --output artifacts/diagnostics/local-ai.json
 ```
 
+Reviewer roles are reproducible assets rather than informal chat personas. Qwen
+and GLM system/user prompts live under `config/prompts/`; the selected GLM
+runtime defaults live in `config/models/glm-critic-v1.Modelfile`. Their hashes
+are included in review provenance. Install or refresh the idempotent Ollama
+alias after checkout or a Modelfile change:
+
+```bash
+./scripts/configure-local-models
+```
+
+The GLM profile fixes a 32k context, deterministic seed/sampling, and a modest
+repeat penalty. It deliberately has no `num_predict` cap: benchmark runs showed
+that 768- and 2,048-token caps could be consumed by hidden reasoning before any
+schema-bound JSON was emitted. Role prompts require observation/cause
+separation and prohibit moving a preregistered gate merely to obtain a pass.
+These settings improve reviewer discipline; they cannot change deterministic
+experimental results or rescue a failed control.
+
 ## Content boundary
 
 Semantic embedding and reranking are allowed only for `reference`, `metadata`,
@@ -124,6 +142,12 @@ The first complete sequential research DAG is `workflow/mechanism-study.smk`.
 It runs deterministic held-out/null comparisons, embeds and reranks approved
 methodological notes, and then asks Qwen for a schema-bound review. Its design
 and claim boundary are in `docs/MANUFACTURED_VS_HOAX.md`.
+
+`workflow/control-calibration.smk` adds document-grouped control fitting,
+known-payload and witness-stability gates, bounded Qwen review, and an
+adversarial GLM pass. Prompt and Modelfile assets are explicit rule inputs, so
+changing a reviewer profile invalidates only the review stages, not the
+deterministic result.
 
 ## Review and escalation
 

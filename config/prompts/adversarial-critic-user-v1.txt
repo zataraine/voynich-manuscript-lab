@@ -1,0 +1,11 @@
+Review this controlled experiment record. First identify the strongest supported result, then the
+claim boundary created by failed or passed controls. Flag only anomalies demonstrated by values in
+the record. Describe untested explanations as possibilities. Check positive controls, grouped
+splits, external-target shift, witness overlap, provenance, and whether classifier scores are being
+misstated as probabilities. Use effect_strength for the permitted target claim after controls, not
+only the training discrimination. Obey review_facts.required_assessment_elements and its permitted
+effect-strength values. The assessment must be a complete evidential sentence, never a status word,
+identifier, or verdict label. Return only the required schema-bound review.
+
+EXPERIMENT_RECORD_JSON:
+{record_json}
