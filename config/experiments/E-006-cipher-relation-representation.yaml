@@ -1,0 +1,100 @@
+schema_version: "1.0"
+experiment_id: E-006-cipher-relation-representation
+hypothesis_id: H-006
+source_manifest: data/manifests/e005-known-payload-benchmark.yaml
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: latin25-fixed5-v1
+  description: Inherit E-005 byte sources, A-Z/J-to-I normalization, four fixed 600-character segments per document, and fixed five-character grouping without alteration.
+  reversible_parent: E-005 source audit and segment offsets are regenerated and must match the frozen benchmark.
+hypothesis_family: unseen-cipher-character-relation-retrieval
+parameters:
+  benchmark_config: config/experiments/E-005-known-payload-retrieval.yaml
+  benchmark_config_sha256: a2dc503a34bb29ba7e7359ee4a7296822cde1c21f2281b52aedcbac91b61a99b
+  predecessor_result: artifacts/runs/E-005-known-payload-retrieval/result.json
+  predecessor_result_sha256: 3dbbacc53cb0df616ce9f5921a70e12489a207b99dbbc4f8f5efd24e509d0e4d
+  workers: 12
+  extra_trees_estimators: 320
+  classifier_seeds: [20260830, 20260907, 20260913]
+  negatives_per_positive: 3
+  permutation_iterations: 256
+  representations:
+    primary:
+      id: fused-character-relation-v1
+      components:
+        - invariant-signature-v1
+        - modular-relation-v1
+        - compression-distance-v1
+        - relative-surface-sequence-pair-v1
+    diagnostics:
+      - relative-surface-sequence-pair-v1
+      - invariant-signature-v1
+      - modular-relation-v1
+      - compression-distance-v1
+    invariant_signature:
+      equality_lags: 128
+      ngram_orders: [1, 2, 3]
+      retained_sorted_counts: 64
+      residue_periods: [1, 2, 3, 4, 5, 7, 8, 11, 13, 16, 20]
+    modular_relation:
+      modulus: 25
+      periods: [1, 2, 3, 4, 5, 7, 8, 11, 13, 16, 20]
+      affine_multipliers: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24]
+      aligned_shifts: [-20, -13, -8, -5, -3, -2, -1, 0, 1, 2, 3, 5, 8, 13, 20]
+      cipher_unit_widths: [1, 2]
+    compression:
+      algorithms: [zlib, bz2, lzma]
+      views: [raw, first-occurrence-canonical]
+  controls:
+    exact_decryption_ceiling: true
+    same_family_new_document_diagnostic: true
+    ciphertext_position_destruction: independently permute characters within each ciphertext with fixed seed
+  local_ai:
+    reference_query: Which controls distinguish a character-pair representation failure from loss of observable plaintext identity under an unseen cipher family?
+    reference_documents:
+      - docs/RESEARCH_PROTOCOL.md
+      - docs/CRYPTANALYSIS_PROTOCOL.md
+      - docs/KNOWN_PAYLOAD_RETRIEVAL.md
+      - reports/E-005-known-payload-retrieval.md
+      - docs/decisions/0012-separate-representation-from-observability.md
+    lexical_candidates: 28
+    rerank_candidates: 14
+    packet_passages: 7
+seed: 20260830
+splits:
+  train:
+    grouping_key: complete source document
+    assignment: two frozen E-005 document folds; complete evaluated cipher family absent in the primary regime
+  heldout:
+    grouping_key: complete source document plus complete cipher family
+    assignment: one frozen E-005 document fold and all outputs from one cipher family
+null_model:
+  family: within-family-fold permutation of correct plaintext identities over frozen scored candidate matrices
+  replicates: 256
+metrics:
+  primary:
+    - median_family_normalized_mrr
+    - worst_family_normalized_mrr
+    - median_family_top1_lift_over_chance
+    - worst_family_pair_roc_auc
+    - permutation_one_sided_p
+    - exact_roundtrip_fraction
+    - worst_seed_mean_normalized_mrr
+    - exact_decryption_ceiling_mrr
+  interpretation_gates:
+    minimum_median_family_normalized_mrr: 0.20
+    minimum_worst_family_normalized_mrr: 0.05
+    minimum_median_family_top1_lift: 2.5
+    minimum_worst_family_pair_roc_auc: 0.55
+    maximum_permutation_p: 0.05
+    minimum_exact_roundtrip_fraction: 1.0
+    minimum_worst_seed_mean_normalized_mrr: 0.15
+    minimum_exact_decryption_ceiling_mrr: 1.0
+  decision_rule: The named fused representation must pass all eight gates across the three fixed seeds. Diagnostic representations, same-family calibration, or destruction controls cannot replace it after execution. Passing permits an independently implemented replication suite, never Voynich scoring or a language/cipher/hoax posterior.
+effects: {}
+artifacts:
+  root: artifacts/runs/E-006-cipher-relation-representation
+notes: E-005 is an exposed benchmark. E-006 therefore tests one theoretically specified primary representation and treats all component results as diagnostics. The corpus, segments, document folds, cipher families, keys, candidate sets, normalization, and original six thresholds are frozen by hash. No pretrained semantic embeddings receive corpus or manuscript text.
