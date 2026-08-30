@@ -49,6 +49,14 @@ def test_relation_and_compression_vectors_are_finite_and_fixed() -> None:
     assert np.isfinite(compression).all()
 
 
+def test_modular_view_maps_ciphertext_j_into_preregistered_modulus() -> None:
+    config = _representation_config()["modular_relation"]
+    plain = "I" * 600
+    cipher = "J" * 600
+    result = modular_relation_vector(plain, cipher, config)
+    assert np.isfinite(result).all()
+
+
 def test_frozen_e005_contract_hashes_match() -> None:
     root = repository_root()
     config = yaml.safe_load(

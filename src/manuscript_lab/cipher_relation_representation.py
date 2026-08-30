@@ -42,6 +42,7 @@ from manuscript_lab.provenance import repository_root, sha256_file
 
 LATIN25 = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 LATIN25_INDEX = {symbol: index for index, symbol in enumerate(LATIN25)}
+LATIN25_INDEX["J"] = LATIN25_INDEX["I"]
 
 
 def first_occurrence_canonical(text: str) -> bytes:
