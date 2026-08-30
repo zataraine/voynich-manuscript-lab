@@ -39,14 +39,14 @@ def _matrix(samples: list[TextSample]) -> tuple[np.ndarray, list[str]]:
     return np.asarray([[row[name] for name in names] for row in rows]), names
 
 
-def _models(seed: int, *, workers: int) -> list[Any]:
+def _models(seed: int, *, workers: int, trees: int = 400) -> list[Any]:
     return [
         make_pipeline(
             StandardScaler(),
             LogisticRegression(C=1.0, class_weight="balanced", max_iter=4000, random_state=seed),
         ),
         ExtraTreesClassifier(
-            n_estimators=400,
+            n_estimators=trees,
             min_samples_leaf=3,
             max_features="sqrt",
             class_weight="balanced",

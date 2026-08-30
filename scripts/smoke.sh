@@ -12,6 +12,8 @@ cd "${project_root}"
   --dry-run --cores 12 --resources gpu=1 local_ai=1
 ./scripts/run snakemake --snakefile workflow/control-calibration.smk \
   --dry-run --cores 12 --resources gpu=1 local_ai=1 mem_mb=32768
+./scripts/run snakemake --snakefile workflow/transformation-ladder.smk \
+  --dry-run --cores 12 --resources gpu=1 local_ai=1 mem_mb=65536
 ./scripts/lab doctor --strict --output artifacts/diagnostics/latest.json
 ./scripts/lab local-ai doctor --output artifacts/diagnostics/local-ai.json
 ./scripts/run python -m compileall -q src tests

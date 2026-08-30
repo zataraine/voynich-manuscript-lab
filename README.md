@@ -119,6 +119,12 @@ human-gibberish controls, withholds Naibbe ciphertext as a known-payload stress
 test, and measures sensitivity across six IVTFF witnesses. Run its resumable
 deterministic and local-review stages with `./scripts/run-control-calibration`.
 
+The cipher-domain prerequisite is documented in
+`docs/CIPHER_TRANSFORMATION_LADDER.md`. E-003 applies paired seeded transforms
+to both control labels and evaluates unseen documents under an unseen cipher
+family. It deliberately excludes Voynichese. Run it with
+`./scripts/run-transformation-ladder`.
+
 ## Repository map
 
 | Path | Purpose | Git policy |

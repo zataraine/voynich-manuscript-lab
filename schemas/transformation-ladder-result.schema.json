@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/transformation-ladder-result.schema.json",
+  "title": "Cipher transformation ladder result",
+  "type": "object",
+  "required": [
+    "schema_version", "experiment_id", "hypothesis_id", "run_finished_at",
+    "corpus_audit", "feature_panel", "transforms", "identity_only_transfer",
+    "leave_family_out_transfer", "feature_survival", "naibbe_external_positive_control",
+    "order_destruction_challenge", "permutation", "interpretation_gate", "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "hypothesis_id": {"type": "string", "minLength": 1},
+    "run_finished_at": {"type": "string", "format": "date-time"},
+    "corpus_audit": {"type": "object"},
+    "feature_panel": {"type": "object"},
+    "transforms": {"type": "object"},
+    "identity_only_transfer": {"type": "object", "minProperties": 6},
+    "leave_family_out_transfer": {"type": "object", "minProperties": 6},
+    "feature_survival": {"type": "object", "minProperties": 5},
+    "naibbe_external_positive_control": {"type": "object"},
+    "order_destruction_challenge": {"type": "object"},
+    "permutation": {"type": "object"},
+    "interpretation_gate": {
+      "type": "object",
+      "required": ["checks", "passed", "permitted_next_step", "voynich_scored", "posterior_probability"],
+      "properties": {
+        "checks": {"type": "object"},
+        "passed": {"type": "boolean"},
+        "permitted_next_step": {"type": "string"},
+        "voynich_scored": {"const": false},
+        "posterior_probability": {"type": "null"}
+      }
+    },
+    "provenance": {"type": "object"}
+  },
+  "additionalProperties": false
+}

@@ -113,3 +113,53 @@ def extract_features(tokens: Sequence[str]) -> dict[str, float]:
         "most_common_token_rate": token_counts.most_common(1)[0][1] / len(values),
         "most_common_char_rate": char_counts.most_common(1)[0][1] / len(characters),
     }
+
+
+def _mutual_information(pairs: Sequence[tuple[str, str]]) -> float:
+    if not pairs:
+        return 0.0
+    joint = Counter(pairs)
+    left = Counter(first for first, _second in pairs)
+    right = Counter(second for _first, second in pairs)
+    total = len(pairs)
+    return sum(
+        count / total * math.log2(count * total / (left[first] * right[second]))
+        for (first, second), count in joint.items()
+    )
+
+
+def extract_sequence_features(tokens: Sequence[str]) -> dict[str, float]:
+    """Extend the v1 panel with order and within-token positional measurements."""
+    values = tuple(token for token in tokens if token)
+    result = extract_features(values)
+    token_pairs = list(pairwise(values))
+    character_pairs = [pair for token in values for pair in pairwise(token)]
+    length_pairs = [(str(len(left)), str(len(right))) for left, right in token_pairs]
+    first = [token[0] for token in values]
+    last = [token[-1] for token in values]
+    local_matches = 0
+    comparisons = 0
+    for index, token in enumerate(values):
+        recent = values[max(0, index - 20) : index]
+        if not recent:
+            continue
+        comparisons += 1
+        if any(Levenshtein.distance(token, candidate, score_cutoff=1) <= 1 for candidate in recent):
+            local_matches += 1
+    result.update(
+        {
+            "token_bigram_mutual_information": _mutual_information(token_pairs),
+            "char_bigram_mutual_information": _mutual_information(character_pairs),
+            "length_transition_mutual_information": _mutual_information(length_pairs),
+            "token_trigram_type_ratio": len(set(zip(values, values[1:], values[2:], strict=False)))
+            / max(1, len(values) - 2),
+            "first_char_entropy_bits": _entropy(first),
+            "last_char_entropy_bits": _entropy(last),
+            "boundary_char_distribution_l1": sum(
+                abs(first.count(character) / len(first) - last.count(character) / len(last))
+                for character in set(first) | set(last)
+            ),
+            "window20_edit1_copy_rate": local_matches / comparisons if comparisons else 0.0,
+        }
+    )
+    return result

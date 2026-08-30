@@ -1,0 +1,76 @@
+schema_version: "1.0"
+experiment_id: E-003-cipher-transformation-ladder
+hypothesis_id: H-003
+source_manifest: data/manifests/naibbe-reference.yaml
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: unicode-words-v1
+  description: NFKC/casefold Unicode word tokens from immutable archive members, followed by seeded derived transforms.
+  reversible_parent: Archive members remain byte-identical and individually hashed; transform families are code-defined.
+hypothesis_family: heldout-cipher-family-transfer
+parameters:
+  control_archive: data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz
+  chunk_tokens: 100
+  max_chunks_per_document: 4
+  folds: 5
+  workers: 12
+  extra_trees_estimators: 160
+  permutation_iterations: 32
+  transform_families:
+    - identity
+    - monoalphabetic
+    - homophonic
+    - progressive_polyalphabetic
+    - nomenclator_homophonic
+    - verbose_homophonic
+  local_ai:
+    reference_query: Which paired controls and held-out cipher-family tests establish that structural
+      measurements transfer across substitution, homophonic, nomenclator, progressive-key, and verbose encipherment?
+    reference_documents:
+      - docs/RESEARCH_PROTOCOL.md
+      - docs/CRYPTANALYSIS_PROTOCOL.md
+      - docs/CONTROL_CALIBRATION.md
+      - reports/E-002-control-calibration.md
+      - docs/NAIBBE.md
+    lexical_candidates: 28
+    rerank_candidates: 14
+    packet_passages: 7
+transforms:
+  identity: no change
+  monoalphabetic: seeded document-specific bijection over observed characters
+  homophonic: three seeded cipher symbols per observed character
+  progressive_polyalphabetic: period 7, step 3, per-cycle progression, no boundary reset
+  nomenclator_homophonic: up to 12 repeated whole-token codes plus homophonic fallback
+  verbose_homophonic: seeded two-symbol code for every source character
+seed: 20260830
+splits:
+  train:
+    grouping_key: complete source document
+    assignment: five deterministic stratified document folds; all transforms of a document remain together
+  heldout:
+    grouping_key: complete source document plus complete transform family
+    assignment: each test holds out unseen documents and one transform family excluded from fitting
+null_model:
+  family: fixed-fold document-label permutation
+  replicates: 32
+metrics:
+  primary:
+    - median_leave_family_out_document_balanced_accuracy
+    - worst_leave_family_out_document_balanced_accuracy
+    - naibbe_external_median_meaningful_similarity
+    - token_order_destruction_median_score_drop
+  interpretation_gates:
+    minimum_median_heldout_family_accuracy: 0.68
+    minimum_worst_heldout_family_accuracy: 0.55
+    minimum_naibbe_median: 0.55
+    minimum_order_destruction_median_drop: 0.05
+  decision_rule: All gates must pass before independent replication. Even a pass does not authorize
+    Voynich scoring, identify meaning, or estimate manufactured-language versus hoax probability.
+effects: {}
+artifacts:
+  root: artifacts/runs/E-003-cipher-transformation-ladder
+notes: Paired transforms are applied identically to meaningful and human-gibberish controls.
+  Naibbe ciphertext remains an external known-payload stress test. Voynichese is excluded.
