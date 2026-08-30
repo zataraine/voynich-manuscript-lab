@@ -1,0 +1,86 @@
+schema_version: "1.0"
+experiment_id: E-004-robust-parameter-ladder
+hypothesis_id: H-004
+source_manifest: data/manifests/naibbe-reference.yaml
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: unicode-words-v1
+  description: NFKC/casefold Unicode word tokens from immutable archive members, followed by seeded derived transforms.
+  reversible_parent: Archive members remain byte-identical and individually hashed; transform variants are code-defined.
+hypothesis_family: heldout-cipher-family-parameter-robustness
+parameters:
+  control_archive: data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz
+  chunk_tokens: 100
+  max_chunks_per_document: 4
+  folds: 5
+  workers: 12
+  extra_trees_estimators: 120
+  permutation_iterations: 32
+  selected_feature_count: 12
+  evaluation_seeds: [20260831, 20260907, 20260913]
+  transform_variants:
+    - {id: identity-r0, family: identity, replicate: 0, parameters: {}}
+    - {id: mono-r0, family: monoalphabetic, replicate: 0, parameters: {}}
+    - {id: mono-r1, family: monoalphabetic, replicate: 1, parameters: {}}
+    - {id: mono-r2, family: monoalphabetic, replicate: 2, parameters: {}}
+    - {id: homophonic-2, family: homophonic, replicate: 0, parameters: {homophones: 2}}
+    - {id: homophonic-3, family: homophonic, replicate: 1, parameters: {homophones: 3}}
+    - {id: homophonic-5, family: homophonic, replicate: 2, parameters: {homophones: 5}}
+    - {id: progressive-p5-s1, family: progressive_polyalphabetic, replicate: 0, parameters: {period: 5, step: 1}}
+    - {id: progressive-p7-s3, family: progressive_polyalphabetic, replicate: 1, parameters: {period: 7, step: 3}}
+    - {id: progressive-p11-s2, family: progressive_polyalphabetic, replicate: 2, parameters: {period: 11, step: 2}}
+    - {id: progressive-p13-s5, family: progressive_polyalphabetic, replicate: 3, parameters: {period: 13, step: 5}}
+    - {id: nomenclator-6, family: nomenclator_homophonic, replicate: 0, parameters: {codebook_size: 6, homophones: 2}}
+    - {id: nomenclator-12, family: nomenclator_homophonic, replicate: 1, parameters: {codebook_size: 12, homophones: 3}}
+    - {id: nomenclator-24, family: nomenclator_homophonic, replicate: 2, parameters: {codebook_size: 24, homophones: 5}}
+    - {id: verbose-w2, family: verbose_homophonic, replicate: 0, parameters: {width: 2}}
+    - {id: verbose-w3, family: verbose_homophonic, replicate: 1, parameters: {width: 3}}
+  local_ai:
+    reference_query: Which leakage-safe invariant feature-selection and parameter-distribution tests establish transfer to a completely unseen cipher family?
+    reference_documents:
+      - docs/RESEARCH_PROTOCOL.md
+      - docs/CRYPTANALYSIS_PROTOCOL.md
+      - docs/CIPHER_TRANSFORMATION_LADDER.md
+      - reports/E-003-cipher-transformation-ladder.md
+      - docs/NAIBBE.md
+    lexical_candidates: 28
+    rerank_candidates: 14
+    packet_passages: 7
+seed: 20260831
+splits:
+  train:
+    grouping_key: complete source document
+    assignment: five deterministic stratified document folds; every variant of a document remains together
+  heldout:
+    grouping_key: complete source document plus complete transform family
+    assignment: each outer test excludes every parameter variant of one family and scores unseen documents
+feature_selection:
+  method: training-only median standardized class separation divided by cross-variant instability
+  count: 12
+  leakage_boundary: recomputed inside every document fold using only training documents and non-heldout families
+  baseline: all 29 features reported separately and never substituted for the primary model
+null_model:
+  family: fixed-fold document-label permutation of the primary selected-feature model
+  replicates: 32
+  evaluation_seed: 20260831
+metrics:
+  primary:
+    - median_seed_family_document_balanced_accuracy
+    - worst_seed_family_document_balanced_accuracy
+    - worst_seed_mean_document_balanced_accuracy
+    - naibbe_ensemble_median_meaningful_similarity
+    - token_order_destruction_ensemble_median_score_drop
+  interpretation_gates:
+    minimum_median_heldout_family_accuracy: 0.68
+    minimum_worst_heldout_family_accuracy: 0.55
+    minimum_worst_seed_mean_accuracy: 0.60
+    minimum_naibbe_median: 0.55
+    minimum_order_destruction_median_drop: 0.05
+  decision_rule: All gates must pass before independent replication. Even a pass does not authorize Voynich scoring, identify meaning, or estimate manufactured-language versus hoax probability.
+effects: {}
+artifacts:
+  root: artifacts/runs/E-004-robust-parameter-ladder
+notes: Thresholds from E-003 remain frozen. Parameter variants and transform seeds are applied identically to both labels. Naibbe remains external. Voynichese is excluded.
