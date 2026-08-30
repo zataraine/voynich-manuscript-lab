@@ -1,0 +1,88 @@
+schema_version: "1.0"
+experiment_id: E-005-known-payload-retrieval
+hypothesis_id: H-005
+source_manifest: data/manifests/e005-known-payload-benchmark.yaml
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: latin25-fixed5-v1
+  description: Strip Gutenberg framing, retain ASCII A-Z, uppercase, map J to I, take fixed nonoverlapping 600-character segments, and unitize into five-character groups.
+  reversible_parent: Raw source bytes remain immutable; normalized strings, segment offsets, and cipher keys are recorded in the result.
+hypothesis_family: unseen-cipher-known-payload-retrieval
+parameters:
+  source_code_archive: data/raw/metadata/reference-code/pycipher-8f1d7cf3cba4.tar.gz
+  pycipher_revision: 8f1d7cf3cba4e12171e27d9ce723ad890194de19
+  segment_characters: 600
+  segments_per_document: 4
+  group_characters: 5
+  negatives_per_positive: 3
+  workers: 12
+  extra_trees_estimators: 240
+  permutation_iterations: 128
+  documents:
+    - {id: pg11-alice, path: data/raw/benchmarks/e005/pg11-alice.txt, genre: fiction, fold: 0}
+    - {id: pg345-dracula, path: data/raw/benchmarks/e005/pg345-dracula.txt, genre: fiction, fold: 0}
+    - {id: pg1228-origin, path: data/raw/benchmarks/e005/pg1228-origin.txt, genre: nonfiction, fold: 0}
+    - {id: pg2600-war-peace, path: data/raw/benchmarks/e005/pg2600-war-peace.txt, genre: fiction, fold: 0}
+    - {id: pg84-frankenstein, path: data/raw/benchmarks/e005/pg84-frankenstein.txt, genre: fiction, fold: 1}
+    - {id: pg1232-prince, path: data/raw/benchmarks/e005/pg1232-prince.txt, genre: nonfiction, fold: 1}
+    - {id: pg1342-pride, path: data/raw/benchmarks/e005/pg1342-pride.txt, genre: fiction, fold: 1}
+    - {id: pg2701-moby-dick, path: data/raw/benchmarks/e005/pg2701-moby-dick.txt, genre: fiction, fold: 1}
+    - {id: pg98-two-cities, path: data/raw/benchmarks/e005/pg98-two-cities.txt, genre: fiction, fold: 2}
+    - {id: pg174-dorian-gray, path: data/raw/benchmarks/e005/pg174-dorian-gray.txt, genre: fiction, fold: 2}
+    - {id: pg1497-republic, path: data/raw/benchmarks/e005/pg1497-republic.txt, genre: nonfiction, fold: 2}
+    - {id: pg1661-sherlock, path: data/raw/benchmarks/e005/pg1661-sherlock.txt, genre: fiction, fold: 2}
+  cipher_families:
+    - {id: affine, class: Affine, parameters: {a: 5, b: 8}}
+    - {id: vigenere, class: Vigenere, parameters: {key: FORTIFICATION}}
+    - {id: autokey, class: Autokey, parameters: {key: MANUSCRIPT}}
+    - {id: beaufort, class: Beaufort, parameters: {key: CIPHERS}}
+    - {id: bifid, class: Bifid, parameters: {key: PHQGMEAYLNOFDXKRCVSZWBUTI, period: 7}}
+    - {id: columnar, class: ColTrans, parameters: {keyword: GERMAN}}
+    - {id: railfence, class: Railfence, parameters: {key: 5}}
+    - {id: enigma, class: Enigma, parameters: {settings: [A, B, C], rotors: [1, 2, 3], reflector: B, ringstellung: [F, V, N], steckers: [[P, O], [M, L], [I, U], [K, H]]}}
+    - {id: adfgx, class: ADFGX, parameters: {key: PHQGMEAYLNOFDXKRCVSZWBUTI, keyword: GERMAN}}
+  local_ai:
+    reference_query: Which controls establish that a feature metric retrieves an exact known plaintext through a completely unseen cipher family without length or boundary leakage?
+    reference_documents:
+      - docs/RESEARCH_PROTOCOL.md
+      - docs/CRYPTANALYSIS_PROTOCOL.md
+      - docs/ROBUST_PARAMETER_LADDER.md
+      - reports/E-004-robust-parameter-ladder.md
+      - docs/NAIBBE.md
+    lexical_candidates: 28
+    rerank_candidates: 14
+    packet_passages: 7
+seed: 20260830
+splits:
+  train:
+    grouping_key: complete source document
+    assignment: two of three fixed four-document folds; heldout cipher family absent
+  heldout:
+    grouping_key: complete source document plus complete cipher family
+    assignment: one fixed four-document fold and all outputs from one cipher family
+null_model:
+  family: within-fold permutation of correct plaintext identities over the already-scored candidate matrices
+  replicates: 128
+metrics:
+  primary:
+    - median_family_normalized_mrr
+    - worst_family_normalized_mrr
+    - median_family_top1_lift_over_chance
+    - worst_family_pair_roc_auc
+    - permutation_one_sided_p
+    - exact_roundtrip_fraction
+  interpretation_gates:
+    minimum_median_family_normalized_mrr: 0.20
+    minimum_worst_family_normalized_mrr: 0.05
+    minimum_median_family_top1_lift: 2.5
+    minimum_worst_family_pair_roc_auc: 0.55
+    maximum_permutation_p: 0.05
+    minimum_exact_roundtrip_fraction: 1.0
+  decision_rule: All gates must pass before adding another independently implemented cipher suite. Passing does not authorize Voynich scoring or any language, cipher, constructed-language, or hoax probability.
+effects: {}
+artifacts:
+  root: artifacts/runs/E-005-known-payload-retrieval
+notes: The match model receives only relative differences between fixed feature vectors. All candidates have equal normalized plaintext length and fixed grouping. Naibbe is contextual, not a primary paired gate, because the acquired repository lacks a corpus-scale exact plaintext pairing.

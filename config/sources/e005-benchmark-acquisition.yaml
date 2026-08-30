@@ -1,0 +1,17 @@
+schema_version: "1.0"
+source_id: e005-known-payload-benchmark
+user_agent: ManuscriptLab/1.0 (noncommercial research; contact via repository)
+assets:
+  - {id: pycipher-source, group: implementations, url: "https://github.com/jameslyons/pycipher/archive/8f1d7cf3cba4e12171e27d9ce723ad890194de19.tar.gz", destination: data/raw/metadata/reference-code/pycipher-8f1d7cf3cba4.tar.gz, expected_media: application/gzip}
+  - {id: pg-11-alice, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/11/pg11.txt", destination: data/raw/benchmarks/e005/pg11-alice.txt, expected_media: text/plain}
+  - {id: pg-84-frankenstein, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/84/pg84.txt", destination: data/raw/benchmarks/e005/pg84-frankenstein.txt, expected_media: text/plain}
+  - {id: pg-98-two-cities, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/98/pg98.txt", destination: data/raw/benchmarks/e005/pg98-two-cities.txt, expected_media: text/plain}
+  - {id: pg-174-dorian-gray, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/174/pg174.txt", destination: data/raw/benchmarks/e005/pg174-dorian-gray.txt, expected_media: text/plain}
+  - {id: pg-345-dracula, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/345/pg345.txt", destination: data/raw/benchmarks/e005/pg345-dracula.txt, expected_media: text/plain}
+  - {id: pg-1228-origin, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1228/pg1228.txt", destination: data/raw/benchmarks/e005/pg1228-origin.txt, expected_media: text/plain}
+  - {id: pg-1232-prince, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1232/pg1232.txt", destination: data/raw/benchmarks/e005/pg1232-prince.txt, expected_media: text/plain}
+  - {id: pg-1342-pride, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1342/pg1342.txt", destination: data/raw/benchmarks/e005/pg1342-pride.txt, expected_media: text/plain}
+  - {id: pg-1497-republic, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1497/pg1497.txt", destination: data/raw/benchmarks/e005/pg1497-republic.txt, expected_media: text/plain}
+  - {id: pg-1661-sherlock, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1661/pg1661.txt", destination: data/raw/benchmarks/e005/pg1661-sherlock.txt, expected_media: text/plain}
+  - {id: pg-2600-war-peace, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/2600/pg2600.txt", destination: data/raw/benchmarks/e005/pg2600-war-peace.txt, expected_media: text/plain}
+  - {id: pg-2701-moby-dick, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/2701/pg2701.txt", destination: data/raw/benchmarks/e005/pg2701-moby-dick.txt, expected_media: text/plain}
