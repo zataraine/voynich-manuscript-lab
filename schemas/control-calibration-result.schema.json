@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/control-calibration-result.schema.json",
+  "title": "Control-calibration campaign result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "hypothesis_id",
+    "run_finished_at",
+    "feature_panel",
+    "corpus_audit",
+    "cross_validation",
+    "naibbe_positive_control",
+    "voynich_targets",
+    "witness_sensitivity",
+    "interpretation_gate",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "hypothesis_id": {"type": "string", "minLength": 1},
+    "run_finished_at": {"type": "string", "format": "date-time"},
+    "feature_panel": {
+      "type": "object",
+      "required": ["version", "features"]
+    },
+    "corpus_audit": {"type": "object"},
+    "cross_validation": {"type": "object"},
+    "naibbe_positive_control": {"type": "object"},
+    "voynich_targets": {"type": "object", "minProperties": 2},
+    "witness_sensitivity": {"type": "object"},
+    "interpretation_gate": {
+      "type": "object",
+      "required": ["checks", "passed", "permitted_claim", "posterior_probability", "warning"],
+      "properties": {
+        "checks": {"type": "object"},
+        "passed": {"type": "boolean"},
+        "permitted_claim": {"type": "string"},
+        "posterior_probability": {"type": "null"},
+        "warning": {"type": "string"}
+      }
+    },
+    "provenance": {"type": "object"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,68 @@
+schema_version: "1.0"
+experiment_id: E-002-control-calibration
+hypothesis_id: H-002
+source_manifest: data/manifests/naibbe-reference.yaml
+transcription: Six independently formatted IVTFF 2.0 / EVA witnesses
+scope:
+  folio_section: paragraph text on pages with assigned Currier A or B
+  currier: A+B, reported separately when available
+normalization:
+  version: unicode-words-v1+eva-stable-groups-v1
+  description: NFKC/casefold/Unicode-word tokenization for controls; conservative stable EVA groups for targets.
+  reversible_parent: Every control archive member and IVTFF witness remains immutable and separately hashed.
+hypothesis_family: control-calibrated-surface-similarity
+parameters:
+  control_archive: data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz
+  chunk_tokens: 100
+  max_chunks_per_document: 4
+  folds: 5
+  workers: 12
+  bootstrap_iterations: 1000
+  permutation_iterations: 128
+  voynich_witnesses:
+    ZL3b: data/raw/transcriptions/ivtff/ZL3b-n.txt
+    VT0e: data/raw/transcriptions/ivtff/VT0e-n.txt
+    IT2a: data/raw/transcriptions/ivtff/IT2a-n.txt
+    GC2a: data/raw/transcriptions/ivtff/GC2a-n.txt
+    FG2a: data/raw/transcriptions/ivtff/FG2a-n.txt
+    CD2a: data/raw/transcriptions/ivtff/CD2a-n.txt
+  local_ai:
+    reference_query: What controls, calibration tests, positive controls, distribution-shift checks,
+      and claim limits are required before comparing unknown writing with meaningful and human-produced gibberish?
+    reference_documents:
+      - docs/RESEARCH_PROTOCOL.md
+      - docs/CRYPTANALYSIS_PROTOCOL.md
+      - docs/MANUFACTURED_VS_HOAX.md
+      - docs/NAIBBE.md
+    lexical_candidates: 24
+    rerank_candidates: 12
+    packet_passages: 6
+seed: 20260830
+splits:
+  train:
+    grouping_key: complete source document
+    assignment: stratified grouped cross-validation; no Voynich or Naibbe ciphertext
+  heldout:
+    grouping_key: complete source document
+    assignment: five deterministic folds; Naibbe and Voynich are external targets
+null_model:
+  family: document-label permutation
+  replicates: 128
+metrics:
+  primary:
+    - document_balanced_accuracy
+    - document_roc_auc
+    - document_brier
+    - naibbe_median_meaningful_similarity
+    - across_witness_median_score_range
+  interpretation_gates:
+    minimum_balanced_accuracy: 0.65
+    minimum_naibbe_median: 0.60
+    maximum_witness_median_range: 0.25
+  decision_rule: Voynich scores may only be described as surface similarity if calibration,
+    known-payload Naibbe, and witness-stability gates all pass. They are never posterior probabilities.
+effects: {}
+artifacts:
+  root: artifacts/runs/E-002-control-calibration
+notes: This campaign tests whether a limited surface-statistic classifier transfers to held-out
+  enciphered meaningful text and remains stable across transcription witnesses. Failure is informative.

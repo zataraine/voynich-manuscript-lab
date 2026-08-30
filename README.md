@@ -113,6 +113,12 @@ and Qwen stack for bounded methodological retrieval and review. It deliberately
 does not report a probability of meaning before calibrated control families and
 explicit priors exist.
 
+The next control-calibration campaign is documented in
+`docs/CONTROL_CALIBRATION.md`. It uses document-grouped meaningful and
+human-gibberish controls, withholds Naibbe ciphertext as a known-payload stress
+test, and measures sensitivity across six IVTFF witnesses. Run its resumable
+deterministic and local-review stages with `./scripts/run-control-calibration`.
+
 ## Repository map
 
 | Path | Purpose | Git policy |

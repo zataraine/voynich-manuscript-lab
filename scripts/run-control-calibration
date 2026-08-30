@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+exec ./scripts/run snakemake --snakefile workflow/control-calibration.smk \
+  --cores 12 --resources gpu=1 local_ai=1 mem_mb=32768 \
+  --rerun-incomplete --printshellcmds
