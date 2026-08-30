@@ -9,7 +9,7 @@ from manuscript_lab.cipher_transforms import (
     destroy_token_order,
 )
 from manuscript_lab.feature_panel import extract_sequence_features
-from manuscript_lab.ladder_review import bounded_record
+from manuscript_lab.ladder_review import bounded_record, critic_record
 
 TOKENS = ("alpha", "beta", "alpha", "gamma", "delta") * 20
 
@@ -62,3 +62,46 @@ def test_ladder_review_removes_per_feature_correlations() -> None:
     }
     bounded = bounded_record(result, {"passages": [], "policy_note": "notes only"})
     assert "feature_spearman" not in bounded["feature_survival"]["cipher"]
+
+
+def test_critic_record_removes_reference_text_and_feature_names() -> None:
+    record = {
+        "experiment_id": "E-test",
+        "hypothesis_id": "H-test",
+        "corpus_audit": {},
+        "feature_panel": {"version": "v", "features": ["a", "b"]},
+        "identity_only_transfer": {
+            "x": {
+                "document_roc_auc": 0.5,
+                "document_balanced_accuracy": 0.5,
+                "document_brier": 0.25,
+            }
+        },
+        "leave_family_out_transfer": {
+            "x": {
+                "document_roc_auc": 0.5,
+                "document_balanced_accuracy": 0.5,
+                "document_brier": 0.25,
+            }
+        },
+        "feature_survival": {},
+        "naibbe_external_positive_control": {},
+        "order_destruction_challenge": {},
+        "permutation": {},
+        "interpretation_gate": {},
+        "provenance": {
+            "control_archive_sha256": "a",
+            "source_manifest_sha256": "b",
+            "config_sha256": "c",
+            "seed": 1,
+            "git": {},
+        },
+        "review_semantics": [],
+        "review_facts": {},
+        "reference_context": [{"source_path": "p", "heading": "h", "text": "omit me"}],
+        "full_result_sha256": "d",
+        "review_config_sha256": "e",
+    }
+    compact = critic_record(record)
+    assert compact["feature_panel"]["feature_count"] == 2
+    assert "text" not in compact["reference_context"][0]

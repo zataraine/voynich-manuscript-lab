@@ -53,6 +53,57 @@ def bounded_record(
     }
 
 
+def critic_record(record: dict[str, Any]) -> dict[str, Any]:
+    """Reduce the already bounded record to primary facts for the slower critic."""
+    metric_names = (
+        "document_roc_auc",
+        "document_balanced_accuracy",
+        "document_brier",
+    )
+
+    def transfer_summary(section: str) -> dict[str, Any]:
+        return {
+            family: {name: metrics[name] for name in metric_names}
+            for family, metrics in record[section].items()
+        }
+
+    provenance = record["provenance"]
+    return {
+        "experiment_id": record["experiment_id"],
+        "hypothesis_id": record["hypothesis_id"],
+        "corpus_audit": record["corpus_audit"],
+        "feature_panel": {
+            "version": record["feature_panel"]["version"],
+            "feature_count": len(record["feature_panel"]["features"]),
+        },
+        "identity_only_transfer": transfer_summary("identity_only_transfer"),
+        "leave_family_out_transfer": transfer_summary("leave_family_out_transfer"),
+        "feature_survival": record["feature_survival"],
+        "naibbe_external_positive_control": record["naibbe_external_positive_control"],
+        "order_destruction_challenge": record["order_destruction_challenge"],
+        "permutation": record["permutation"],
+        "interpretation_gate": record["interpretation_gate"],
+        "provenance": {
+            "control_archive_sha256": provenance["control_archive_sha256"],
+            "source_manifest_sha256": provenance["source_manifest_sha256"],
+            "config_sha256": provenance["config_sha256"],
+            "seed": provenance["seed"],
+            "git": provenance["git"],
+        },
+        "review_semantics": record["review_semantics"],
+        "review_facts": record["review_facts"],
+        "reference_context": [
+            {
+                "source_path": passage["source_path"],
+                "heading": passage["heading"],
+            }
+            for passage in record["reference_context"]
+        ],
+        "full_result_sha256": record["full_result_sha256"],
+        "review_config_sha256": record["review_config_sha256"],
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("operation", choices=("qwen", "critic"))
@@ -69,7 +120,11 @@ def main() -> None:
     record = bounded_record(result, packet, config)
     record["review_config_sha256"] = sha256_file(config_path)
     client = LocalAIClient()
-    value = client.review_experiment(record) if args.operation == "qwen" else client.critic(record)
+    value = (
+        client.review_experiment(record)
+        if args.operation == "qwen"
+        else client.critic(critic_record(record))
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(
         orjson.dumps(value, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
