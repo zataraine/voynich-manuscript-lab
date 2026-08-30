@@ -59,10 +59,11 @@ alias after checkout or a Modelfile change:
 ./scripts/configure-local-models
 ```
 
-The GLM profile fixes a 32k context, deterministic seed/sampling, and a modest
-repeat penalty. It deliberately has no `num_predict` cap: benchmark runs showed
+The GLM profile fixes a 32k context, deterministic seed/sampling, a modest
+repeat penalty, and an 8,192-token generation ceiling. Benchmark runs showed
 that 768- and 2,048-token caps could be consumed by hidden reasoning before any
-schema-bound JSON was emitted. Role prompts require observation/cause
+schema-bound JSON was emitted, while an uncapped E-003 review ran for more than
+twelve minutes without completing. Role prompts require observation/cause
 separation and prohibit moving a preregistered gate merely to obtain a pass.
 These settings improve reviewer discipline; they cannot change deterministic
 experimental results or rescue a failed control.

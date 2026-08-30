@@ -28,7 +28,8 @@ manuscript/corpus text through semantic retrieval.
 
 The fixed E-002 packet served as the initial regression case. GLM profiles with
 `num_predict` set to 768 and 2,048 both exhausted the hidden reasoning allowance
-and emitted no schema JSON, so the selected profile has no output cap. The
+and emitted no schema JSON. An uncapped E-003 review later exceeded twelve
+minutes without finishing, so the selected compromise is 8,192 tokens. The
 revised Qwen prompt correctly reported no leakage evidence, separated surface
 discrimination from semantic recognition, resolved GC2a versus common-page
 counts, and set target effect strength to `none`.
