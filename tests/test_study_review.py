@@ -27,6 +27,8 @@ class FakeClient:
 
     def review_experiment(self, record):
         assert record["reference_context"]
+        assert len(record["review_semantics"]) >= 4
+        assert any("source_manifest_sha256" in item for item in record["review_semantics"])
         assert all(
             "samples" not in summary
             for metrics in record["null_results"].values()

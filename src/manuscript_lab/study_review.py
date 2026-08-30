@@ -158,6 +158,20 @@ def review_with_packet(
         "full_result_sha256": hashlib.sha256(
             orjson.dumps(result, option=orjson.OPT_SORT_KEYS)
         ).hexdigest(),
+        "review_semantics": [
+            "working_tree_sha256 hashes status and diffs; SHA-256 of empty bytes is expected "
+            "when git_dirty is false.",
+            "source_sha256 hashes the transcription file; source_manifest_sha256 hashes the "
+            "different manifest file, so equality is neither expected nor required.",
+            "within_page_group_shuffle preserves every group internally, so character n-gram "
+            "metrics should be invariant with near-zero variance.",
+            "global_group_resample draws intact observed groups, so it can preserve character "
+            "n-gram structure while disrupting page-local group order.",
+            "A higher-order held-out model may have negative gain when sparse contexts generalize "
+            "worse; compare observed-minus-null in the preregistered direction.",
+            "copy_mutate_pseudotext is intentionally a strong nonsemantic control; failure to "
+            "exceed it is compatibility with that metric, not a contradiction.",
+        ],
         "reference_context": packet["passages"],
         "reference_context_policy": packet["policy_note"],
     }

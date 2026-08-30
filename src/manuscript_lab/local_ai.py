@@ -238,7 +238,8 @@ class LocalAIClient:
             "controlled effect, a reviewer conflict, an architecture issue, or difficult "
             "debugging. Keep every list item below 160 characters and make every item a complete "
             "sentence. The assessment must summarize the evidential conclusion, not merely label "
-            "the input as untrusted.\n\n"
+            "the input as untrusted, and must stay below 280 characters. Treat explicit "
+            "review_semantics as metric/hash definitions, not experimental findings.\n\n"
             f"EXPERIMENT_RECORD_JSON:\n{orjson.dumps(record).decode()}"
         )
         value, usage = self.chat(
