@@ -53,6 +53,7 @@ def bounded_record(
             "All variants are applied identically to both labels.",
             "Naibbe is external known-payload data and is never used for fitting or selection.",
             "A failed gate forbids Voynich scoring regardless of other favorable metrics.",
+            "There are exactly five gates; report the passed and failed counts literally.",
             "Voynichese and witness data are absent; no posterior probability is computed.",
         ],
         "review_facts": {
@@ -60,6 +61,9 @@ def bounded_record(
             "failed_gate_count": sum(
                 not value for value in result["interpretation_gate"]["checks"].values()
             ),
+            "passed_gate_count": sum(result["interpretation_gate"]["checks"].values()),
+            "total_gate_count": len(result["interpretation_gate"]["checks"]),
+            "gate_checks_verbatim": result["interpretation_gate"]["checks"],
             "voynich_or_witness_data_present": False,
             "permitted_effect_strength_values_when_gate_fails": ["none", "weak"],
         },
