@@ -135,6 +135,12 @@ The external known-payload benchmark is documented in
 completely unseen independently implemented cipher families. Run it with
 `./scripts/run-known-payload-retrieval` after acquisition.
 
+The character-relation campaign is documented in
+`docs/CIPHER_RELATION_REPRESENTATION.md`. E-006 freezes the E-005 benchmark and
+tests one preregistered multi-view representation across three fitting seeds,
+with same-family and exact-decryption ceilings. Run it with
+`./scripts/run-cipher-relation-representation`.
+
 ## Repository map
 
 | Path | Purpose | Git policy |

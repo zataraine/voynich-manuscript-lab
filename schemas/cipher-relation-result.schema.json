@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/cipher-relation-result.schema.json",
+  "title": "Cipher-relation representation result",
+  "type": "object",
+  "required": [
+    "schema_version", "experiment_id", "hypothesis_id", "run_finished_at",
+    "source_audit", "normalization", "representations", "cipher_suite",
+    "family_results", "same_family_diagnostic", "destruction_control",
+    "seed_means", "aggregate", "permutation", "interpretation_gate", "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {"const": "E-006-cipher-relation-representation"},
+    "hypothesis_id": {"const": "H-006"},
+    "run_finished_at": {"type": "string", "format": "date-time"},
+    "source_audit": {"type": "array", "minItems": 12, "maxItems": 12},
+    "normalization": {"type": "object"},
+    "representations": {"type": "object"},
+    "cipher_suite": {"type": "object"},
+    "family_results": {"type": "object", "minProperties": 9, "maxProperties": 9},
+    "same_family_diagnostic": {"type": "object", "minProperties": 9, "maxProperties": 9},
+    "destruction_control": {"type": "object"},
+    "seed_means": {"type": "object", "minProperties": 3, "maxProperties": 3},
+    "aggregate": {"type": "object"},
+    "permutation": {"type": "object"},
+    "interpretation_gate": {
+      "type": "object",
+      "required": ["checks", "passed", "permitted_next_step", "voynich_scored", "posterior_probability"],
+      "properties": {
+        "checks": {"type": "object", "minProperties": 8, "maxProperties": 8},
+        "passed": {"type": "boolean"},
+        "permitted_next_step": {"type": "string"},
+        "voynich_scored": {"const": false},
+        "posterior_probability": {"type": "null"}
+      }
+    },
+    "provenance": {"type": "object"}
+  },
+  "additionalProperties": false
+}

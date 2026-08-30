@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+exec ./scripts/run snakemake --snakefile workflow/cipher-relation-representation.smk \
+  --cores 12 --resources gpu=1 local_ai=1 mem_mb=65536 \
+  --rerun-incomplete --printshellcmds
