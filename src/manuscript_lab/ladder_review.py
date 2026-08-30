@@ -8,11 +8,15 @@ from pathlib import Path
 from typing import Any
 
 import orjson
+import yaml
 
 from manuscript_lab.local_ai import LocalAIClient
+from manuscript_lab.provenance import repository_root, sha256_file
 
 
-def bounded_record(result: dict[str, Any], packet: dict[str, Any]) -> dict[str, Any]:
+def bounded_record(
+    result: dict[str, Any], packet: dict[str, Any], config: dict[str, Any] | None = None
+) -> dict[str, Any]:
     survival = {
         family: {key: value for key, value in summary.items() if key != "feature_spearman"}
         for family, summary in result["feature_survival"].items()
@@ -33,6 +37,17 @@ def bounded_record(result: dict[str, Any], packet: dict[str, Any]) -> dict[str, 
             "A failed gate is a valid negative result and forbids a Voynich target comparison.",
             "Voynichese is absent from this experiment and no posterior probability is computed.",
         ],
+        "review_facts": {
+            "preregistered_thresholds": (
+                config["metrics"]["interpretation_gates"] if config is not None else "not supplied"
+            ),
+            "voynich_or_witness_data_present": False,
+            "leakage_evidence_reported": False,
+            "failed_gate_count": sum(
+                not value for value in result["interpretation_gate"]["checks"].values()
+            ),
+            "permitted_effect_strength_values_when_gate_fails": ["none", "weak"],
+        },
         "reference_context": packet["passages"],
         "reference_context_policy": packet["policy_note"],
     }
@@ -49,7 +64,10 @@ def main() -> None:
         raise FileExistsError(f"Immutable output already exists: {args.output}")
     result = orjson.loads(args.result.read_bytes())
     packet = orjson.loads(args.packet.read_bytes())
-    record = bounded_record(result, packet)
+    config_path = repository_root() / result["provenance"]["config_path"]
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    record = bounded_record(result, packet, config)
+    record["review_config_sha256"] = sha256_file(config_path)
     client = LocalAIClient()
     value = client.review_experiment(record) if args.operation == "qwen" else client.critic(record)
     args.output.parent.mkdir(parents=True, exist_ok=True)

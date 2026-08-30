@@ -58,6 +58,7 @@ def test_ladder_review_removes_per_feature_correlations() -> None:
                 "feature_spearman": {"secret": 0.1},
             }
         },
+        "interpretation_gate": {"checks": {"test": False}},
     }
     bounded = bounded_record(result, {"passages": [], "policy_note": "notes only"})
     assert "feature_spearman" not in bounded["feature_survival"]["cipher"]

@@ -115,7 +115,10 @@ def _feature_survival(
             continue
         correlations = {}
         for index, name in enumerate(names):
-            correlation = spearmanr(baseline[:, index], matrix[:, index]).statistic
+            if np.ptp(baseline[:, index]) == 0 or np.ptp(matrix[:, index]) == 0:
+                correlation = np.nan
+            else:
+                correlation = spearmanr(baseline[:, index], matrix[:, index]).statistic
             correlations[name] = None if not np.isfinite(correlation) else float(correlation)
         finite = [value for value in correlations.values() if value is not None]
         standardized = np.std(baseline, axis=0)
