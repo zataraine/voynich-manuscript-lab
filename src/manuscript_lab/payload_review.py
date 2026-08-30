@@ -63,16 +63,49 @@ def bounded_record(
 
 def critic_record(record: dict[str, Any]) -> dict[str, Any]:
     compact = {
-        key: value
-        for key, value in record.items()
-        if key not in {"reference_context", "reference_context_policy"}
+        key: record[key]
+        for key in (
+            "experiment_id",
+            "hypothesis_id",
+            "source_summary",
+            "aggregate",
+            "permutation",
+            "interpretation_gate",
+            "review_semantics",
+            "review_facts",
+            "full_result_sha256",
+            "review_config_sha256",
+        )
     }
+    compact["feature_panel"] = {
+        "version": record["feature_panel"]["version"],
+        "base_feature_count": len(record["feature_panel"]["base_features"]),
+        "comparison": record["feature_panel"]["comparison"],
+    }
+    compact["family_results"] = {
+        family: {
+            "mean_normalized_mrr": values["mean_normalized_mrr"],
+            "mean_top1_lift_over_chance": values["mean_top1_lift_over_chance"],
+            "mean_pair_roc_auc": values["mean_pair_roc_auc"],
+        }
+        for family, values in record["family_results"].items()
+    }
+    roundtrip = record["cipher_suite"]["roundtrip"]
     compact["cipher_suite"] = {
         "implementation": record["cipher_suite"]["implementation"],
         "installed_version": record["cipher_suite"]["installed_version"],
         "revision": record["cipher_suite"]["revision"],
         "family_ids": [item["id"] for item in record["cipher_suite"]["families"]],
-        "roundtrip": record["cipher_suite"]["roundtrip"],
+        "roundtrip_total_pairs": sum(value["pairs"] for value in roundtrip.values()),
+        "roundtrip_total_exact": sum(value["exact"] for value in roundtrip.values()),
+    }
+    provenance = record["provenance"]
+    compact["provenance"] = {
+        "source_manifest_sha256": provenance["source_manifest_sha256"],
+        "source_code_archive_sha256": provenance["source_code_archive_sha256"],
+        "config_sha256": provenance["config_sha256"],
+        "seed": provenance["seed"],
+        "git": provenance["git"],
     }
     compact["reference_context"] = [
         {"source_path": passage["source_path"], "heading": passage["heading"]}
