@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from manuscript_lab.ivtff import iter_page_headers, summarize_page_metadata
+from manuscript_lab.ivtff import iter_page_headers, iter_text_lines, summarize_page_metadata
 
 
 def test_page_metadata_preserves_values_and_missing_fields(tmp_path: Path) -> None:
@@ -22,3 +22,17 @@ def test_page_metadata_preserves_values_and_missing_fields(tmp_path: Path) -> No
     assert report["page_header_count"] == 3
     assert report["currier_language_counts"] == {"<missing>": 1, "A": 1, "B": 1}
     assert report["scribal_hand_counts"] == {"1": 1, "2": 2}
+
+
+def test_iter_text_lines_preserves_diplomatic_surface(tmp_path: Path) -> None:
+    source = tmp_path / "fixture.ivtff"
+    source.write_text(
+        "#=IVTFF Eva- 2.0\n<f1r> <! $L=A $H=1 $I=H>\n<f1r.1,@P0>  <%>qokedy.[a:b]<$>\n",
+        encoding="utf-8",
+    )
+    lines = list(iter_text_lines(source))
+    assert len(lines) == 1
+    assert lines[0].page == "f1r"
+    assert lines[0].locator == "@P0"
+    assert lines[0].text == "<%>qokedy.[a:b]<$>"
+    assert lines[0].raw == "<f1r.1,@P0>  <%>qokedy.[a:b]<$>"

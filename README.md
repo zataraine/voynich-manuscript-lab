@@ -106,6 +106,13 @@ lab also provides Pynini/OpenFST for weighted, invertible transducer experiments
 The local model boundary and unattended-run operations are documented in
 `docs/LOCAL_AI.md`.
 
+The first preregistered mechanism study is documented in
+`docs/MANUFACTURED_VS_HOAX.md`. It compares held-out sequence structure with
+five seeded nonsemantic/null families, then uses the local embedding, reranking,
+and Qwen stack for bounded methodological retrieval and review. It deliberately
+does not report a probability of meaning before calibrated control families and
+explicit priors exist.
+
 ## Repository map
 
 | Path | Purpose | Git policy |

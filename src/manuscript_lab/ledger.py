@@ -76,7 +76,7 @@ def _event_hash(payload: dict[str, Any]) -> str:
     return hashlib.sha256(orjson.dumps(payload, option=orjson.OPT_SORT_KEYS)).hexdigest()
 
 
-def _git_provenance(root: Path) -> dict[str, Any]:
+def git_provenance(root: Path) -> dict[str, Any]:
     def run(*args: str) -> subprocess.CompletedProcess[bytes]:
         return subprocess.run(
             ["git", *args],
@@ -241,7 +241,7 @@ class ExperimentLedger:
             raise LedgerError("source_manifest must remain inside the repository") from exc
         if not source_manifest.is_file():
             raise LedgerError(f"Source manifest does not exist: {source_manifest}")
-        provenance = _git_provenance(root)
+        provenance = git_provenance(root)
         now = _now()
         scope = record["scope"]
         values = [

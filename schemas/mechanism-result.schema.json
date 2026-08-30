@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/mechanism-result.schema.json",
+  "title": "Held-out mechanism comparison result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "hypothesis_id",
+    "run_finished_at",
+    "question",
+    "observed_metrics",
+    "null_results",
+    "split",
+    "corpus_audit",
+    "decision_rule",
+    "interpretation_boundary",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "hypothesis_id": {"type": "string", "minLength": 1},
+    "run_finished_at": {"type": "string", "format": "date-time"},
+    "question": {"type": "string", "minLength": 1},
+    "observed_metrics": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "number"}
+    },
+    "null_results": {"type": "object", "minProperties": 1},
+    "split": {
+      "type": "object",
+      "required": [
+        "grouping_unit",
+        "assignment_method",
+        "train_pages",
+        "heldout_pages",
+        "overlap_page_count",
+        "union_page_count",
+        "coverage_matches_corpus_audit",
+        "train_group_count",
+        "heldout_group_count"
+      ],
+      "properties": {
+        "grouping_unit": {"const": "physical_page"},
+        "assignment_method": {"type": "string", "minLength": 1},
+        "train_pages": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "heldout_pages": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "overlap_page_count": {"const": 0},
+        "union_page_count": {"type": "integer", "minimum": 2},
+        "coverage_matches_corpus_audit": {"const": true},
+        "train_group_count": {"type": "integer", "minimum": 1},
+        "heldout_group_count": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "corpus_audit": {
+      "type": "object",
+      "required": ["pages", "groups", "excluded_uncertain_or_markup_groups", "normalization"],
+      "properties": {
+        "pages": {"type": "integer", "minimum": 2},
+        "groups": {"type": "integer", "minimum": 1},
+        "excluded_uncertain_or_markup_groups": {"type": "integer", "minimum": 0},
+        "normalization": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "decision_rule": {"type": "string", "minLength": 1},
+    "interpretation_boundary": {
+      "type": "object",
+      "required": ["posterior_probability", "reason"],
+      "properties": {
+        "posterior_probability": {"type": "null"},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_path",
+        "source_sha256",
+        "source_manifest",
+        "source_manifest_sha256",
+        "config_path",
+        "config_sha256",
+        "seed",
+        "workers",
+        "git",
+        "environment"
+      ],
+      "properties": {
+        "source_path": {"type": "string", "minLength": 1},
+        "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "source_manifest": {"type": "string", "minLength": 1},
+        "source_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "config_path": {"type": "string", "minLength": 1},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "seed": {"type": "integer", "minimum": 0},
+        "workers": {"type": "integer", "minimum": 1},
+        "git": {
+          "type": "object",
+          "required": ["git_commit", "git_dirty", "working_tree_sha256"],
+          "properties": {
+            "git_commit": {"type": "string", "minLength": 1},
+            "git_dirty": {"type": "boolean"},
+            "working_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          },
+          "additionalProperties": false
+        },
+        "environment": {
+          "type": "object",
+          "required": ["device", "python", "platform", "uv_lock_sha256"],
+          "properties": {
+            "device": {"const": "cpu"},
+            "python": {"type": "string", "minLength": 1},
+            "platform": {"type": "string", "minLength": 1},
+            "uv_lock_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -16,3 +16,8 @@ For long local runs use `--profile workflow/profiles/local`. Rules that call an
 auxiliary local model declare both `gpu=1` and `local_ai=1`; numerical rules
 declare realistic thread and memory resources. Experiment state belongs in the
 DuckDB ledger, not in sentinel filenames alone. See `docs/LOCAL_AI.md`.
+
+`workflow/mechanism-study.smk` is the first long sequential experiment. It uses
+the preregistered `E-001-manufactured-vs-hoax` config and ends with a locally
+retrieved, schema-constrained Qwen review. Run it through `experiment execute`
+so leases, heartbeats, logs, and terminal state remain durable.

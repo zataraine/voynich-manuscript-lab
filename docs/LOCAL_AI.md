@@ -120,6 +120,11 @@ A stale run is inspected before an explicit `RUNNING -> FAILED -> PENDING`
 recovery. Never silently requeue it: the prior process may still own an external
 resource or be writing an artifact.
 
+The first complete sequential research DAG is `workflow/mechanism-study.smk`.
+It runs deterministic held-out/null comparisons, embeds and reranks approved
+methodological notes, and then asks Qwen for a schema-bound review. Its design
+and claim boundary are in `docs/MANUFACTURED_VS_HOAX.md`.
+
 ## Review and escalation
 
 Qwen output must validate against `schemas/local-review.schema.json`. Review an

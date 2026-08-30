@@ -1,0 +1,64 @@
+schema_version: "1.0"
+experiment_id: E-001-manufactured-vs-hoax
+hypothesis_id: H-001
+source_manifest: data/manifests/voynich-nu-reference.yaml
+transcription: ZL3b-n IVTFF 2.0 / EVA
+scope:
+  folio_section: all paragraph text with assigned Currier A or B
+  currier: A+B, stratified
+normalization:
+  version: eva-stable-groups-v1
+  description: Remove IVTFF control comments and intrusion markers; split on firm/uncertain
+    group boundaries; exclude any group containing uncertainty or non-ASCII markup.
+  reversible_parent: raw_surface retained by IVTFF source; normalization is derived only
+hypothesis_family: constrained-generative-vs-nonsemantic-mechanism
+parameters:
+  input_path: data/raw/transcriptions/ivtff/ZL3b-n.txt
+  currier_values: [A, B]
+  paragraph_only: true
+  heldout_fraction: 0.25
+  ngram_alpha: 0.1
+  workers: 5
+  local_ai:
+    reference_query: What methodological evidence can distinguish constrained meaningful or
+      manufactured text from structured nonsemantic pseudotext using held-out sequence tests,
+      explicit null mechanisms, leakage controls, and calibrated claims?
+    reference_documents:
+      - docs/RESEARCH_PROTOCOL.md
+      - docs/CRYPTANALYSIS_PROTOCOL.md
+      - docs/LOCAL_AI.md
+      - docs/NAIBBE.md
+    lexical_candidates: 24
+    rerank_candidates: 12
+    packet_passages: 6
+seed: 20260830
+splits:
+  train:
+    grouping_key: physical_page
+    assignment: deterministic stratification by Currier, hand, and section
+  heldout:
+    grouping_key: physical_page
+    assignment: deterministic stratification by Currier, hand, and section
+null_model:
+  families:
+    - within_page_group_shuffle
+    - within_group_symbol_shuffle
+    - global_group_resample
+    - iid_symbol_length_matched
+    - copy_mutate_pseudotext
+  replicates: 512
+  mutation_rate: 0.18
+metrics:
+  primary:
+    - heldout_char_trigram_gain_bits
+    - heldout_group_bigram_gain_bits
+    - heldout_local_copy_rate
+  correction: Holm family-wise correction across all family/metric comparisons
+  decision_rule: A mechanism is provisionally incompatible only when its one-sided Holm-adjusted
+    p-value is below 0.05 and the observed effect is in the preregistered positive direction.
+    No combination of these metrics is interpreted as detecting meaning.
+effects: {}
+artifacts:
+  root: artifacts/runs/E-001-manufactured-vs-hoax
+notes: This is a mechanism-elimination pilot, not a posterior probability of meaning. Positive
+  controls and priors are required before any calibrated manufactured-language versus hoax odds.
