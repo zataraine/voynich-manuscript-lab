@@ -6,6 +6,7 @@ import numpy as np
 import yaml
 
 from manuscript_lab.cipher_relation_representation import (
+    PairRepresentations,
     compression_distance_vector,
     first_occurrence_canonical,
     invariant_signature,
@@ -72,3 +73,30 @@ def test_frozen_e005_contract_hashes_match() -> None:
         sha256_file(root / parameters["predecessor_result"])
         == parameters["predecessor_result_sha256"]
     )
+
+
+def test_process_feature_bank_populates_normal_and_destruction_views() -> None:
+    config = _representation_config()
+    texts = [("ABAC" * 150), ("BACA" * 150)]
+    segments = [{"text": text} for text in texts]
+    surface = np.asarray([[2.0], [2.0]])
+    factory = PairRepresentations(
+        segments,
+        {"test": texts},
+        config,
+        ["alphabet_size"],
+        surface,
+        {"test": surface},
+        destruction_seed=1,
+    )
+    factory.precompute(
+        "fused-character-relation-v1",
+        ["test"],
+        np.asarray([0, 1]),
+        workers=2,
+    )
+    normal = factory.vector("fused-character-relation-v1", "test", 0, 1)
+    destroyed = factory.vector("fused-character-relation-v1", "test", 0, 0, destroyed=True)
+    assert normal.shape == destroyed.shape
+    assert np.isfinite(normal).all()
+    assert np.isfinite(destroyed).all()

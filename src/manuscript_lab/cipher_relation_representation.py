@@ -8,13 +8,14 @@ import hashlib
 import importlib.metadata
 import lzma
 import math
+import multiprocessing
 import platform
 import random
 import sys
 import zlib
 from collections import Counter
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -400,21 +401,55 @@ class PairRepresentations:
             if folds[query] == folds[candidate]
         ]
 
-        def calculate(task: tuple[str, int, int, bool]) -> None:
-            family, query, candidate, destroyed = task
-            self.vector(
-                representation,
-                family,
-                query,
-                candidate,
-                destroyed=destroyed,
-            )
-
         for label, tasks in (("normal", normal_tasks), ("destruction", destruction_tasks)):
             print(f"E-006 feature bank: {label} {len(tasks)} pairs", flush=True)
-            with ThreadPoolExecutor(max_workers=workers) as executor:
-                list(executor.map(calculate, tasks))
+            with ProcessPoolExecutor(
+                max_workers=workers,
+                mp_context=multiprocessing.get_context("spawn"),
+                initializer=_initialize_feature_worker,
+                initargs=(self, representation),
+            ) as executor:
+                for task, values in executor.map(_calculate_feature_worker, tasks, chunksize=8):
+                    family, query, candidate, destroyed = task
+                    for component, value in values.items():
+                        self.cache[(component, family, query, candidate, destroyed)] = value
             print(f"E-006 feature bank: completed {label}", flush=True)
+
+
+_FEATURE_WORKER_FACTORY: PairRepresentations | None = None
+_FEATURE_WORKER_REPRESENTATION = ""
+
+
+def _initialize_feature_worker(factory: PairRepresentations, representation: str) -> None:
+    global _FEATURE_WORKER_FACTORY, _FEATURE_WORKER_REPRESENTATION
+    _FEATURE_WORKER_FACTORY = factory
+    _FEATURE_WORKER_REPRESENTATION = representation
+
+
+def _calculate_feature_worker(
+    task: tuple[str, int, int, bool],
+) -> tuple[tuple[str, int, int, bool], dict[str, np.ndarray]]:
+    if _FEATURE_WORKER_FACTORY is None:
+        raise RuntimeError("Feature worker was not initialized")
+    family, query, candidate, destroyed = task
+    components = (
+        "relative-surface-sequence-pair-v1",
+        "invariant-signature-v1",
+        "modular-relation-v1",
+        "compression-distance-v1",
+    )
+    values = {
+        component: _FEATURE_WORKER_FACTORY.vector(
+            component,
+            family,
+            query,
+            candidate,
+            destroyed=destroyed,
+        )
+        for component in components
+    }
+    values[_FEATURE_WORKER_REPRESENTATION] = np.concatenate(list(values.values()))
+    return task, values
 
 
 def _training_pairs(
