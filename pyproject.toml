@@ -56,6 +56,7 @@ dependencies = [
   "typer>=0.20,<1",
   "xxhash>=3.6,<4",
   "z3-solver>=5.1,<6",
+  "pycipher",
 ]
 
 [project.scripts]
@@ -83,6 +84,7 @@ torchvision = [
   { index = "pytorch-cu130", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
   { index = "pytorch-cpu", marker = "sys_platform == 'win32'" },
 ]
+pycipher = { git = "https://github.com/jameslyons/pycipher", rev = "8f1d7cf3cba4e12171e27d9ce723ad890194de19" }
 
 [[tool.uv.index]]
 name = "pytorch-cu130"

@@ -130,6 +130,11 @@ The parameter-robustness campaign is documented in
 three fixed seeds and selects invariant features strictly inside each training
 boundary. Run it with `./scripts/run-robust-parameter-ladder`.
 
+The external known-payload benchmark is documented in
+`docs/KNOWN_PAYLOAD_RETRIEVAL.md`. E-005 retrieves exact source segments through
+completely unseen independently implemented cipher families. Run it with
+`./scripts/run-known-payload-retrieval` after acquisition.
+
 ## Repository map
 
 | Path | Purpose | Git policy |
