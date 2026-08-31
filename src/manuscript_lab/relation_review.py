@@ -96,6 +96,8 @@ def bounded_record(
             "and pair ROC AUC is 0.9193.",
             "ADFGX also fails the same-family diagnostic; do not say every same-family "
             "calibration succeeded.",
+            "The cipher family identifier is ADFGX. No reported normalized MRR exceeds 1.0; "
+            "Affine and Vigenere are exactly 1.0.",
         ],
         "review_facts": {
             "preregistered_thresholds": config["metrics"]["interpretation_gates"],
