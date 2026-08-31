@@ -4,9 +4,11 @@ import inspect
 import random
 
 import numpy as np
+import orjson
 
 from manuscript_lab import blind_adfgx_generator
 from manuscript_lab.blind_adfgx_generator import _shuffle_pairs, _source_starts
+from manuscript_lab.blind_adfgx_review import bounded_record
 from manuscript_lab.blind_adfgx_scorer import FORBIDDEN_SCORER_KEYS, _recursive_keys
 from manuscript_lab.blind_adfgx_unblind import retrieval_rows
 
@@ -56,3 +58,24 @@ def test_retrieval_rows_uses_average_tie_ranks() -> None:
     )
     assert metrics["median_rank"] == 1.25
     assert metrics["top1_fraction"] == 0.5
+
+
+def test_review_record_excludes_query_audit_and_source_text() -> None:
+    result = {
+        "experiment_id": "E-008-blind-adfgx-replication",
+        "hypothesis_id": "H-008",
+        "status": "pass",
+        "target_scored": False,
+        "candidate_plaintext_supplied": True,
+        "metrics": {},
+        "gates": {},
+        "overall": {},
+        "by_true_width": {},
+        "broken_control": {},
+        "permutation": {},
+        "runtime": {},
+        "provenance": {},
+        "query_audit": [{"text": "DO NOT SEND"}],
+    }
+    record = bounded_record(result)
+    assert "DO NOT SEND" not in orjson.dumps(record).decode()
