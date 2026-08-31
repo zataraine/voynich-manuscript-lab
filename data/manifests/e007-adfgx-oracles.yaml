@@ -1,0 +1,24 @@
+schema_version: '1.0'
+source_id: e007-adfgx-independent-oracle
+manifest_created_at: '2026-08-31T00:00:00Z'
+acquisition:
+  obtained_at: '2026-08-31T00:00:00Z'
+  obtained_from: GitHub source archive for cryptii commit c04a823b5f3f0c8dfc9d8a4bd10e35ef8177d642
+  custodian: Fränz Friederes and cryptii contributors
+rights:
+  status: licensed
+  license: MIT License, copyright 2024 Fränz Friederes
+  restrictions: Preserve the copyright and MIT permission notice when redistributing source.
+transcription:
+  scheme_name: Independent ADFGX implementation and known-vector source
+  scheme_version: cryptii commit c04a823b5f3f0c8dfc9d8a4bd10e35ef8177d642
+  character_encoding: UTF-8 JavaScript source in a gzip-compressed tar archive
+  unit_definition: The archived test defines alphabet, transposition key, plaintext, and expected ADFGX ciphertext.
+  uncertainty_notation: None.
+files:
+  - path: data/raw/metadata/reference-code/cryptii-c04a823b5f3f.tar.gz
+    role: metadata
+    media_type: application/gzip
+    bytes: 242805
+    sha256: 7c118e270643d264fdf1b5a897ed75c1f8ede130dff8961d2483e00185415ced
+notes: E-007 uses the CARGO test vector as an implementation oracle. The raw archive is immutable and not committed.

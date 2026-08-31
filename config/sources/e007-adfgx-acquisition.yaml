@@ -1,0 +1,9 @@
+schema_version: "1.0"
+source_id: e007-adfgx-independent-oracle
+user_agent: ManuscriptLab/1.0 (noncommercial research; contact via repository)
+assets:
+  - id: cryptii-source
+    group: implementations
+    url: "https://github.com/cryptii/cryptii/archive/c04a823b5f3f0c8dfc9d8a4bd10e35ef8177d642.tar.gz"
+    destination: data/raw/metadata/reference-code/cryptii-c04a823b5f3f.tar.gz
+    expected_media: application/gzip

@@ -81,6 +81,12 @@ generated-cipher properties cannot become manuscript labels.
 EVA and the Currier A/B evidence, terminology, current local page counts, and
 consensus boundary are summarized in `docs/EVA_CURRIER.md`.
 
+E-007 also pins cryptii commit
+`c04a823b5f3f0c8dfc9d8a4bd10e35ef8177d642` under its MIT license. Its ADFGX
+`CARGO` known vector is an independent implementation oracle for the lab's
+stage-wise fractionation and columnar-transposition code; it is not evidence
+about the manuscript.
+
 ## Known but not acquired
 
 | Resource | Reason | Next action |
