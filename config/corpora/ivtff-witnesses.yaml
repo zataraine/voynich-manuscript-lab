@@ -1,0 +1,95 @@
+schema_version: "1.0"
+order_witness: ZL3b
+source_manifest: data/manifests/voynich-nu-reference.yaml
+iiif_manifest: data/raw/metadata/yale-ms408/iiif-presentation-3.json
+witnesses:
+  - id: CD2a
+    path: data/raw/transcriptions/ivtff/CD2a-n.txt
+    alphabet: Curr
+    lineage_group: currier-dimperio
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/CD2a_0.txt
+    comparison_alternates: [data/raw/transcriptions/sta/CD2a_1.txt]
+    independence_role: primary
+    derived_from: []
+  - id: FG2a
+    path: data/raw/transcriptions/ivtff/FG2a-n.txt
+    alphabet: FSG-
+    lineage_group: friedman-fsg
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/FG2a.txt
+    comparison_alternates: []
+    independence_role: primary
+    derived_from: []
+  - id: GC2a
+    path: data/raw/transcriptions/ivtff/GC2a-n.txt
+    alphabet: v101
+    lineage_group: claston-v101
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/GC2a_0.txt
+    comparison_alternates: [data/raw/transcriptions/sta/GC2a_1.txt]
+    independence_role: primary
+    derived_from: []
+  - id: IT2a
+    path: data/raw/transcriptions/ivtff/IT2a-n.txt
+    alphabet: EvaT
+    lineage_group: takahashi-lsi
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/IT2a.txt
+    comparison_alternates: []
+    independence_role: related-primary
+    derived_from: [LSI]
+  - id: VT0e
+    path: data/raw/transcriptions/ivtff/VT0e-n.txt
+    alphabet: EvaT
+    lineage_group: takahashi-lsi
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/VT0e.txt
+    comparison_alternates: []
+    independence_role: related-derivative
+    derived_from: [LSI, TT]
+  - id: ZL3b
+    path: data/raw/transcriptions/ivtff/ZL3b-n.txt
+    alphabet: Eva-
+    lineage_group: zandbergen-lz
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/ZL3b.txt
+    comparison_alternates: []
+    independence_role: primary
+    derived_from: []
+  - id: RF1b-e
+    path: data/raw/transcriptions/ivtff/RF1b-e.txt
+    alphabet: Eva-
+    lineage_group: reference-rf
+    comparison_group: sta1
+    comparison_path: data/raw/transcriptions/sta/RF1b.txt
+    comparison_alternates: []
+    independence_role: synthetic-derivative
+    derived_from: [ZL3b, GC2a]
+  - id: RF1b-er
+    path: data/raw/transcriptions/ivtff/RF1b-er.txt
+    alphabet: Eva-
+    lineage_group: reference-rf
+    comparison_group: null
+    comparison_path: null
+    comparison_alternates: []
+    independence_role: synthetic-derivative
+    derived_from: [RF1b-e]
+comparison_policy:
+  alignment_key: IVTFF page name plus canonical locus number
+  diplomatic_surface: exact IVTFF text after physical continuation unwrapping
+  reading_surface_excludes:
+    - paragraph_start
+    - paragraph_end
+    - free_comment
+    - text_tag
+  retained_in_reading_surface:
+    - alternatives
+    - uncertainty
+    - separators
+    - ligatures
+    - drawing_interruptions
+  rule: Native strings are never compared across alphabets. Text agreement uses the official
+    STA1 comparison_path files only. Lineage groups and derived_from edges remain explicit;
+    agreement is never called independent corroboration. Alternate STA1 conversions are
+    sensitivity views, not extra witnesses.

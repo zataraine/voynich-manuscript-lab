@@ -33,6 +33,11 @@ from manuscript_lab.provenance import (
     verify_manifest_files,
 )
 from manuscript_lab.runtime import collect_diagnostics, write_diagnostics
+from manuscript_lab.witness_alignment import (
+    build_alignment,
+    load_witness_corpus,
+    write_alignment,
+)
 
 app = typer.Typer(no_args_is_help=True, help="Operate and verify the Manuscript Lab.")
 manifest_app = typer.Typer(
@@ -343,6 +348,32 @@ def ivtff_map_audit(
         console.print(encoded.decode())
     if report["unlinked_locus_ids"]:
         raise typer.Exit(code=1)
+
+
+@ivtff_app.command("align")
+def ivtff_align(
+    registry: Annotated[Path, typer.Argument(help="Tracked witness-lineage registry YAML.")],
+    output: Annotated[
+        Path, typer.Option("--output", "-o", help="New lossless lattice JSONL path.")
+    ],
+    audit_output: Annotated[
+        Path, typer.Option("--audit-output", help="New alignment-audit JSON path.")
+    ],
+) -> None:
+    """Build a deterministic witness-preserving locus alignment lattice."""
+    try:
+        corpus = load_witness_corpus(registry)
+        result = build_alignment(corpus)
+        write_alignment(result, output, audit_output)
+    except (OSError, UnicodeError, ValueError, KeyError) as exc:
+        console.print(f"[red]FAIL[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    console.print(
+        f"[green]PASS[/green] {len(result.cells)} canonical loci, "
+        f"{result.audit['output_reading_count']} preserved readings"
+    )
+    console.print(f"Created {output}")
+    console.print(f"Created {audit_output}")
 
 
 @local_ai_app.command("doctor")

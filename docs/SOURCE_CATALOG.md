@@ -107,21 +107,22 @@ plaintext and generated-control identities remain outside the scoring input.
 
 ## Data-engineering status and remaining gaps
 
-The first two representation foundations are implemented and audited:
+The first three representation foundations are implemented and audited:
 
 1. deterministic, many-to-many Yale-canvas ↔ folio ↔ IVTFF-locus links,
    including foldout parts and non-text canvases; and
 2. a byte-reversible IVTFF 2 parser/validator preserving uncertain readings,
-   comments, alternative spaces, tags, ligatures, and witness identity.
+   comments, alternative spaces, tags, ligatures, and witness identity; and
+3. a lineage-aware multi-witness locus lattice with official STA1 comparison
+   views rather than a prematurely merged transcript.
 
 The remaining derived—not raw—artifacts are:
 
-3. a multi-witness alignment lattice rather than a prematurely merged transcript;
 4. page-region annotations linking lines, labels, plants, diagrams, stars, vessels,
    and human figures to image coordinates; and
 5. structure-preserving null generators for homophonic/nomenclator,
    polyalphabetic, progressive-key, verbose-cipher, and non-linguistic controls.
 
-Those are the important missing tools. Generic cryptographic and ML packages are
+These are the important missing tools. Generic cryptographic and ML packages are
 already sufficient for the first experiments; adding more solvers before these
 interfaces exist would not improve evidential quality.

@@ -167,6 +167,18 @@ without selecting a preferred reading:
   data/raw/metadata/yale-ms408/iiif-presentation-3.json
 ```
 
+The witness lattice aligns native readings without merging them and compares
+cross-alphabet readings only through their registered official STA1 views:
+
+```bash
+./scripts/lab ivtff align config/corpora/ivtff-witnesses.yaml \
+  --output artifacts/runs/q011-witness-alignment/lattice.jsonl \
+  --audit-output artifacts/runs/q011-witness-alignment/audit.json
+```
+
+The Q-011 audit and its lineage limits are recorded in
+`reports/Q-011-witness-alignment.md`.
+
 ## Repository map
 
 | Path | Purpose | Git policy |
