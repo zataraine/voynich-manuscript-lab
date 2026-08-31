@@ -1,0 +1,70 @@
+schema_version: "1.0"
+experiment_id: E-007-adfgx-stage-localization
+hypothesis_id: H-007
+source_manifest: data/manifests/e005-known-payload-benchmark.yaml
+oracle_source_manifest: data/manifests/e007-adfgx-oracles.yaml
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: latin25-e005-first-segment-v1
+  description: Reuse the first frozen 600-character E-005 segment from each of twelve documents, A-Z with J mapped to I.
+  reversible_parent: E-005 source audit and segment offsets must match the frozen benchmark.
+hypothesis_family: adfgx-stage-and-unitization-localization
+parameters:
+  benchmark_config: config/experiments/E-005-known-payload-retrieval.yaml
+  benchmark_config_sha256: a2dc503a34bb29ba7e7359ee4a7296822cde1c21f2281b52aedcbac91b61a99b
+  predecessor_result: artifacts/runs/E-006-cipher-relation-representation/result.json
+  predecessor_result_sha256: 922176b82ef359dc2e3d2941a4e1a1fb085016a3a2ad53070b2a5965bb5af2d1
+  candidate_segments: one first frozen segment per source document
+  coordinate_alphabet: ADFGX
+  variants:
+    - {id: cryptii-cargo-w5, square: BTALPDHOZKQFVSNGICUXMREWY, keyword: CARGO, width: 5, wrong_width: 4}
+    - {id: german-w6, square: PHQGMEAYLNOFDXKRCVSZWBUTI, keyword: GERMAN, width: 6, wrong_width: 5}
+    - {id: network-w7-ragged, square: LABYRINTHCDEFGKMOPQSUVWXZ, keyword: NETWORK, width: 7, wrong_width: 6}
+  stages: [fractionation_only, transposition_only, combined]
+  hidden_information:
+    supplied: [ciphertext, candidate_plaintexts, hypothesized_width]
+    withheld_from_scorer: [polybius_square, keyword, column_read_order, correct_candidate]
+  exhaustive_column_orders: true
+  score: bidirectional_modal_symbol_coordinate_consistency_v1
+  ties: average rank; permutation recovery succeeds when the true order is among all score maximizers
+  permutation_iterations: 256
+  seed: 20260831
+  fst:
+    implementation: pynini string-map closure and inversion
+    required_roundtrip: true
+  independent_oracles:
+    - pinned pycipher implementation from E-005
+    - cryptii commit c04a823b5f3f0c8dfc9d8a4bd10e35ef8177d642 and published CARGO test vector
+controls:
+  exact_stage_roundtrip: true
+  wrong_width: frozen lower neighboring width for each variant
+  identity_permutation: permute correct candidate labels within each variant and stage
+  no_language_model_text_scoring: true
+metrics:
+  primary:
+    - independent_oracle_fraction
+    - fst_roundtrip_fraction
+    - fractionation_normalized_mrr
+    - transposition_normalized_mrr
+    - worst_variant_combined_normalized_mrr
+    - worst_variant_combined_pair_roc_auc
+    - true_order_in_maximizer_fraction
+    - median_correct_minus_wrong_width_margin
+    - combined_permutation_one_sided_p
+  interpretation_gates:
+    minimum_independent_oracle_fraction: 1.0
+    minimum_fst_roundtrip_fraction: 1.0
+    minimum_fractionation_normalized_mrr: 0.95
+    minimum_transposition_normalized_mrr: 0.95
+    minimum_worst_variant_combined_normalized_mrr: 0.50
+    minimum_worst_variant_combined_pair_roc_auc: 0.90
+    minimum_true_order_in_maximizer_fraction: 0.95
+    minimum_median_correct_minus_wrong_width_margin: 0.05
+    maximum_combined_permutation_p: 0.05
+  decision_rule: All nine gates must pass. A stage failure localizes the defect and stops scaling. A pass validates only a key-agnostic ADFGX width-and-order diagnostic on known controls; it does not authorize Voynich scoring or any posterior claim.
+artifacts:
+  root: artifacts/runs/E-007-adfgx-stage-localization
+notes: The benchmark is exposed, so the transform variants, widths, scores, controls, gates, and tie handling are frozen before implementation. Width is a supplied hypothesis, not inferred evidence. The ragged width-seven case tests non-divisible column lengths.
