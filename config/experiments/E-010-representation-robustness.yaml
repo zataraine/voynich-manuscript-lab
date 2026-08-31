@@ -1,0 +1,105 @@
+schema_version: "1.0"
+experiment_id: E-010-representation-robustness
+hypothesis_id: H-010
+question_id: Q-012
+protocol: docs/REPRESENTATION_ROBUSTNESS.md
+source_registry: config/corpora/ivtff-witnesses.yaml
+source_lattice: artifacts/runs/q011-witness-alignment/lattice-v4.jsonl
+scope:
+  target: Voynich MS 408 transcription structure
+  inference_excluded:
+    - language identity
+    - translation
+    - meaning
+    - cipher identification
+    - manufactured-language probability
+    - hoax probability
+population:
+  primary_views:
+    - {witness: CD2a, variant: CD2a_0}
+    - {witness: FG2a, variant: FG2a}
+    - {witness: GC2a, variant: GC2a_0}
+    - {witness: IT2a, variant: IT2a}
+    - {witness: ZL3b, variant: ZL3b}
+  excluded_from_gates:
+    VT0e: related derivative of the Takahashi/LSI lineage
+    RF1b: synthetic derivative of ZL3b and GC2a
+  locus_policy: retain only canonical locus keys represented in all five primary views
+  page_policy: require the minimum coverage thresholds in every primary and ZL3b uncertainty view
+unitization:
+  alphabet: STA1 symbols; two-character STA1 codes remain atomic
+  firm_separator: split
+  primary_alternative_policy: first
+  primary_uncertain_space_policy: split
+  unreadable_policy: atomic as <UNK1> or <UNKN>
+  ligature_policy: losslessly labelled atomic symbol
+  drawing_policy: terminate group
+  locus_policy: hard boundary; never create cross-locus adjacency or n-grams
+  excluded_markup: [paragraph_start, paragraph_end, free_comment, text_tag]
+views:
+  conversion_pairs:
+    - [CD2a_0, CD2a_1]
+    - [GC2a_0, GC2a_1]
+  uncertainty_witness: ZL3b
+  alternative_policies: [first, last, opaque]
+  uncertain_space_policies: [split, join]
+  uncertainty_cartesian_views: 6
+eligibility:
+  minimum_groups_per_page_per_view: 20
+  minimum_symbols_per_page_per_view: 100
+  minimum_eligible_pages: 40
+  maximum_nonfinite_fraction: 0.05
+features:
+  all:
+    - symbol_entropy_normalized
+    - symbol_conditional_entropy_normalized
+    - symbol_repeat_rate
+    - symbol_bigram_type_ratio
+    - group_length_mean
+    - group_length_cv
+    - group_type_token_ratio
+    - group_hapax_ratio
+    - adjacent_group_repeat_rate
+    - window20_group_recurrence
+  order_sensitive:
+    - symbol_conditional_entropy_normalized
+    - symbol_repeat_rate
+    - symbol_bigram_type_ratio
+    - adjacent_group_repeat_rate
+    - window20_group_recurrence
+scale:
+  definition: IQR of per-page median across the five primary views
+  zero_or_nonfinite: fail feature
+bootstrap:
+  page_replicates: 1000
+  seed: 20260901
+  confidence: 0.95
+null_model:
+  name: independent non-reference witness page-label permutation
+  reference_witness: ZL3b
+  replicates: 1024
+  seed: 20260902
+  statistic: median pairwise primary-witness Spearman rho after complete comparison
+  alternative: greater
+  multiple_comparisons: Holm across the ten frozen features
+gates:
+  minimum_worst_primary_spearman: 0.80
+  minimum_worst_primary_bootstrap_lower: 0.70
+  maximum_primary_median_normalized_difference: 0.25
+  minimum_worst_conversion_spearman: 0.95
+  maximum_conversion_median_normalized_difference: 0.10
+  minimum_worst_uncertainty_spearman: 0.90
+  maximum_uncertainty_median_normalized_difference: 0.15
+  maximum_holm_adjusted_permutation_p: 0.05
+  hypothesis_minimum_stable_features: 4
+  hypothesis_minimum_stable_order_sensitive_features: 2
+decision_rule: Every listed gate is conjunctive per feature. H-010 passes only when both stable-feature-count gates pass. Diagnostics cannot substitute for failed gates.
+seeds:
+  bootstrap: 20260901
+  page_label_permutation: 20260902
+artifacts:
+  root: artifacts/runs/E-010-representation-robustness
+  page_features: page-features.jsonl
+  result: result.json
+  report: reports/E-010-representation-robustness.md
+notes: Passing permits a later independently preregistered, control-calibrated target experiment using only the stable subset. It is not evidence of meaning or a probability estimate.
