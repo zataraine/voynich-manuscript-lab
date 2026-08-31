@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 
 import numpy as np
+import orjson
 
 from manuscript_lab.adfgx_stage_localization import (
     _encode_coordinates,
@@ -15,6 +16,7 @@ from manuscript_lab.ciphertext_structure_generator import (
     markov1,
     unigram_shuffle,
 )
+from manuscript_lab.ciphertext_structure_review import bounded_record
 from manuscript_lab.ciphertext_structure_scorer import order2_over_order1_scores
 from manuscript_lab.ciphertext_structure_unblind import _paired_auc, _sign_permutation_p
 
@@ -60,3 +62,32 @@ def test_pairwise_auc_and_sign_null() -> None:
     )
     assert 0 < p_value <= 1
     assert abs(null_mean) < 0.1
+
+
+def test_review_record_drops_query_level_text_and_keeps_failure() -> None:
+    result = {
+        "experiment_id": "E-009-ciphertext-only-structure",
+        "hypothesis_id": "H-009",
+        "status": "fail",
+        "target_scored": False,
+        "plaintext_supplied_to_scorer": False,
+        "metrics": {},
+        "adversarial_diagnostics": {},
+        "gates": {"scientific": False},
+        "permutation": {},
+        "runtime": {},
+        "provenance": {},
+        "query_audit": [
+            {
+                "family": family,
+                "true_order_raw_score": score,
+                "maximizing_widths": [4],
+                "true_width": 5,
+                "text": "DO NOT SEND",
+            }
+            for family, score in (("natural", 0.2), ("unigram_shuffle", 0.1))
+        ],
+    }
+    record = bounded_record(result)
+    assert record["status"] == "fail"
+    assert "DO NOT SEND" not in orjson.dumps(record).decode()
