@@ -17,7 +17,7 @@ predecessor:
   result_sha256: be3f43947b39d5d89d9fb9f0b71eb429c489c8809296cfbc92c3927358801ad2
 separation:
   scorer_config: config/experiments/E-009-ciphertext-only-scorer.yaml
-  scorer_config_sha256: 5a5322727634290857623266c6ca18b2f70c2df725dd556ef2155848ff7784f2
+  scorer_config_sha256: 0da4ee333ed0991285c672d2446f395d115f76de2d3af58ae6aeaa0717c9e24b
   public_suite: artifacts/runs/E-009-ciphertext-only-structure/public-suite.json
   sealed_truth: artifacts/runs/E-009-ciphertext-only-structure/sealed-truth.json
   blind_scores: artifacts/runs/E-009-ciphertext-only-structure/blind-scores.json

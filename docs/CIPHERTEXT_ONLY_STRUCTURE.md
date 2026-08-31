@@ -18,6 +18,12 @@ is necessary because the matched Markov control deliberately preserves
 one-step dependency; comparing with a unigram model would reward that control
 for the property it was designed to retain.
 
+Because 625 possible two-symbol contexts are sparse at the frozen lengths, the
+order-two probability is interpolated toward order one with weight
+`context_count / (context_count + 5)`. This backoff is fixed before execution;
+it prevents unseen or rare contexts from manufacturing a negative result by
+parameter count alone.
+
 This score is unchanged by any renaming of the 25 symbols. It does not know the
 Polybius square or map symbols to letters. Width selection subtracts
 `sqrt(2 ln(k) / n_eval)` from the best raw gain, where `k` is the number of

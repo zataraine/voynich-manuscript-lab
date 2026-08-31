@@ -11,11 +11,12 @@ truth_inputs_permitted: false
 generator_seed_permitted: false
 objective:
   id: heldout-order2-over-order1-gain-v1
-  description: Restore and pair the coordinate stream, treat the 25 pairs as anonymous symbols, fit order-1 and order-2 context counts on the first 70%, and score held-out log2 predictive gain of order-2 over order-1 with Jeffreys smoothing.
+  description: Restore and pair the coordinate stream, treat the 25 pairs as anonymous symbols, fit order-1 and order-2 context counts on the first 70%, interpolate the Jeffreys-smoothed order-2 probability toward order 1 with weight context_count/(context_count+5), and score its held-out log2 predictive gain over order 1.
   train_fraction: 0.70
   context_order: 2
   alphabet_size: 25
   smoothing_alpha: 0.5
+  interpolation_backoff_k: 5.0
   symbol_renaming_invariant: true
 search:
   column_orders: exhaustive within each hypothesized width
