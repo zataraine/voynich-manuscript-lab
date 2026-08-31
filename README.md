@@ -147,6 +147,13 @@ documented in `docs/ADFGX_STAGE_LOCALIZATION.md` and
 scoring, and unblinding over new sources and widths 4–7. Run it once with
 `./scripts/run-blind-adfgx-replication`; outputs are immutable.
 
+The ciphertext-only bridge is documented in
+`docs/CIPHERTEXT_ONLY_STRUCTURE.md`. E-009 intentionally removes every
+plaintext candidate and tests intrinsic anonymous-symbol predictability against
+matched nonsemantic controls. Its failed result is recorded in
+`reports/E-009-ciphertext-only-structure.md`; the ADFGX-specific branch is
+closed pending genuinely independent evidence rather than further tuning.
+
 ## Repository map
 
 | Path | Purpose | Git policy |
