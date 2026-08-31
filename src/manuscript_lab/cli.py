@@ -19,9 +19,10 @@ from manuscript_lab.cryptanalysis.statistics import (
     repeated_ngram_spacings,
     shannon_entropy,
 )
-from manuscript_lab.ivtff import summarize_page_metadata
+from manuscript_lab.ivtff import IVTFFFormatError, parse_ivtff, summarize_page_metadata
 from manuscript_lab.ledger import ExperimentLedger, LedgerError
 from manuscript_lab.local_ai import LocalAIClient, LocalAIError, diagnose_local_ai
+from manuscript_lab.manuscript_map import load_iiif_canvases, mapping_audit
 from manuscript_lab.numeric import artifact_paths, verify_numeric_artifact, write_numeric_artifact
 from manuscript_lab.provenance import (
     build_manifest,
@@ -299,6 +300,49 @@ def ivtff_summarize(
         console.print(f"Created {output}")
     else:
         console.print(encoded.decode())
+
+
+@ivtff_app.command("validate")
+def ivtff_validate(
+    source: Annotated[Path, typer.Argument(help="Untouched IVTFF 2.x witness file.")],
+) -> None:
+    """Strictly parse a witness and verify byte-for-byte reconstruction."""
+    try:
+        document = parse_ivtff(source)
+        if document.render_bytes() != source.read_bytes():
+            raise IVTFFFormatError("physical-line reconstruction differs from source bytes")
+    except (OSError, UnicodeError, IVTFFFormatError) as exc:
+        console.print(f"[red]FAIL[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    console.print(
+        f"[green]PASS[/green] {source}: {len(document.pages)} pages, "
+        f"{len(document.loci)} loci, exact byte reconstruction"
+    )
+
+
+@ivtff_app.command("map-audit")
+def ivtff_map_audit(
+    source: Annotated[Path, typer.Argument(help="Untouched IVTFF 2.x witness file.")],
+    iiif_manifest: Annotated[Path, typer.Argument(help="Canonical IIIF Presentation 3 manifest.")],
+    output: Annotated[Path | None, typer.Option(help="Optional JSON audit path.")] = None,
+) -> None:
+    """Audit every locus against all matching ordered manuscript canvases."""
+    try:
+        document = parse_ivtff(source)
+        canvases = load_iiif_canvases(iiif_manifest)
+        report = mapping_audit(document, canvases, iiif_manifest)
+    except (OSError, UnicodeError, ValueError, KeyError) as exc:
+        console.print(f"[red]FAIL[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    encoded = orjson.dumps(report, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(encoded)
+        console.print(f"Created {output}")
+    else:
+        console.print(encoded.decode())
+    if report["unlinked_locus_ids"]:
+        raise typer.Exit(code=1)
 
 
 @local_ai_app.command("doctor")

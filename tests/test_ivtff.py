@@ -1,6 +1,15 @@
 from pathlib import Path
 
-from manuscript_lab.ivtff import iter_page_headers, iter_text_lines, summarize_page_metadata
+import pytest
+
+from manuscript_lab.ivtff import (
+    IVTFFFormatError,
+    iter_page_headers,
+    iter_text_lines,
+    parse_ivtff,
+    parse_surface,
+    summarize_page_metadata,
+)
 
 
 def test_page_metadata_preserves_values_and_missing_fields(tmp_path: Path) -> None:
@@ -36,3 +45,62 @@ def test_iter_text_lines_preserves_diplomatic_surface(tmp_path: Path) -> None:
     assert lines[0].locator == "@P0"
     assert lines[0].text == "<%>qokedy.[a:b]<$>"
     assert lines[0].raw == "<f1r.1,@P0>  <%>qokedy.[a:b]<$>"
+
+
+def test_parser_roundtrips_mixed_line_endings_and_wrapped_locus(tmp_path: Path) -> None:
+    source = tmp_path / "wrapped.ivtff"
+    raw = (
+        b"#=IVTFF Eva- 2.0 D 9\r\n"
+        b"<f1r> <! $L=A $H=1>\n"
+        b"<f1r.1,@P0;Z> <%>qo.[k:t] /\r\n"
+        b"/ dy,ol<!note>@221;<$>\n"
+    )
+    source.write_bytes(raw)
+
+    document = parse_ivtff(source, witness_id="fixture")
+
+    assert document.render_bytes() == raw
+    assert document.header.alphabet == "Eva-"
+    assert len(document.loci) == 1
+    locus = document.loci[0]
+    assert locus.transcriber == "Z"
+    assert locus.line_numbers == (3, 4)
+    assert locus.text == "<%>qo.[k:t]dy,ol<!note>@221;<$>"
+    assert "alternative_reading" in {unit.kind for unit in locus.units}
+    assert "uncertain_space" in {unit.kind for unit in locus.units}
+    assert "free_comment" in {unit.kind for unit in locus.units}
+
+
+def test_surface_parser_preserves_all_structural_text() -> None:
+    surface = "<%>ab.cd,ef<->gh<~>ij{ct}[k:t:s][s:]????<!x><@L=B>@221;<$>"
+    units = parse_surface(surface)
+
+    assert "".join(unit.raw for unit in units) == surface
+    assert [unit.alternatives for unit in units if unit.kind == "alternative_reading"] == [
+        ("k", "t", "s"),
+        ("s", ""),
+    ]
+    kinds = {unit.kind for unit in units}
+    assert {
+        "certain_space",
+        "uncertain_space",
+        "drawing_space",
+        "misaligned_drawing_space",
+        "ligature",
+        "unreadable_unknown_count",
+        "unreadable_character",
+        "text_tag",
+        "high_ascii",
+    } <= kinds
+
+
+def test_strict_parser_rejects_format_1_and_orphan_continuation(tmp_path: Path) -> None:
+    old = tmp_path / "old.ivtff"
+    old.write_text("#=IVTFF Eva- 1.5\n", encoding="ascii")
+    with pytest.raises(IVTFFFormatError, match="unsupported IVTFF version"):
+        parse_ivtff(old)
+
+    broken = tmp_path / "broken.ivtff"
+    broken.write_text("#=IVTFF Eva- 2.0\n/ orphan\n", encoding="ascii")
+    with pytest.raises(IVTFFFormatError, match="orphan-continuation"):
+        parse_ivtff(broken)

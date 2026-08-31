@@ -105,14 +105,17 @@ plaintext and generated-control identities remain outside the scoring input.
 | Multispectral or scientific image stack | No public, stable dataset was found in the supplied sources | Ask Yale/Beinecke whether calibrated or multispectral captures are available |
 | Licensed export from the Voynich Research viewer | Explicit permission required | Request permission if testing its complete key becomes a research priority |
 
-## Remaining data-engineering gaps
+## Data-engineering status and remaining gaps
 
-Before cipher searches, the lab still needs derived—not raw—artifacts:
+The first two representation foundations are implemented and audited:
 
-1. a deterministic Yale-canvas ↔ folio ↔ IVTFF-locus table, including foldouts,
-   missing folios, and non-text covers;
-2. an IVTFF 2 parser/validator that preserves uncertain readings, comments,
-   alternative spaces, and witness identity;
+1. deterministic, many-to-many Yale-canvas ↔ folio ↔ IVTFF-locus links,
+   including foldout parts and non-text canvases; and
+2. a byte-reversible IVTFF 2 parser/validator preserving uncertain readings,
+   comments, alternative spaces, tags, ligatures, and witness identity.
+
+The remaining derived—not raw—artifacts are:
+
 3. a multi-witness alignment lattice rather than a prematurely merged transcript;
 4. page-region annotations linking lines, labels, plants, diagrams, stars, vessels,
    and human figures to image coordinates; and

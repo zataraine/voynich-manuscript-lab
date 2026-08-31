@@ -154,6 +154,19 @@ matched nonsemantic controls. Its failed result is recorded in
 `reports/E-009-ciphertext-only-structure.md`; the ADFGX-specific branch is
 closed pending genuinely independent evidence rather than further tuning.
 
+The format-2 representation prerequisite is now implemented as a lossless
+structural IVTFF parser plus a many-to-many IVTFF-page/Yale-canvas mapping. It
+preserves witness identity, alternatives, uncertain spaces, comments, tags,
+ligatures, foldout parts, and exact source bytes. Validate or audit a witness
+without selecting a preferred reading:
+
+```bash
+./scripts/lab ivtff validate data/raw/transcriptions/ivtff/ZL3b-n.txt
+./scripts/lab ivtff map-audit \
+  data/raw/transcriptions/ivtff/ZL3b-n.txt \
+  data/raw/metadata/yale-ms408/iiif-presentation-3.json
+```
+
 ## Repository map
 
 | Path | Purpose | Git policy |
