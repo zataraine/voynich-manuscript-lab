@@ -3,6 +3,7 @@ from __future__ import annotations
 import itertools
 
 import numpy as np
+import orjson
 
 from manuscript_lab.adfgx_stage_localization import (
     _encode_coordinates,
@@ -20,6 +21,7 @@ from manuscript_lab.adfgx_stage_localization import (
     modal_consistency_score,
     tie_safe_retrieval,
 )
+from manuscript_lab.adfgx_stage_review import bounded_record
 
 
 def test_cryptii_cargo_known_vector() -> None:
@@ -76,3 +78,19 @@ def test_all_small_permutation_roundtrips() -> None:
     stream = "ADFGXADFGXADF"
     for order in itertools.permutations(range(4)):
         assert columnar_decipher(columnar_encipher(stream, order), order) == stream
+
+
+def test_review_record_excludes_source_text() -> None:
+    result = {
+        "experiment_id": "E-007-adfgx-stage-localization",
+        "hypothesis_id": "H-007",
+        "status": "pass",
+        "target_scored": False,
+        "metrics": {},
+        "gates": {},
+        "variants": {},
+        "provenance": {},
+        "source_audit": [{"text": "DO NOT SEND"}],
+    }
+    record = bounded_record(result)
+    assert "DO NOT SEND" not in orjson.dumps(record).decode()
