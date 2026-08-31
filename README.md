@@ -141,6 +141,12 @@ tests one preregistered multi-view representation across three fitting seeds,
 with same-family and exact-decryption ceilings. Run it with
 `./scripts/run-cipher-relation-representation`.
 
+The ADFGX failure localization and independent parameter-blind replication are
+documented in `docs/ADFGX_STAGE_LOCALIZATION.md` and
+`docs/BLIND_ADFGX_REPLICATION.md`. E-008 separates generation, truth-free
+scoring, and unblinding over new sources and widths 4–7. Run it once with
+`./scripts/run-blind-adfgx-replication`; outputs are immutable.
+
 ## Repository map
 
 | Path | Purpose | Git policy |
