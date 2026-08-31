@@ -10,8 +10,8 @@ candidate_inputs_permitted: false
 truth_inputs_permitted: false
 generator_seed_permitted: false
 objective:
-  id: heldout-order2-gain-v1
-  description: Restore and pair the coordinate stream, treat the 25 pairs as anonymous symbols, fit unigram and order-2 context counts on the first 70%, and score held-out log2 predictive gain of order-2 over unigram with Jeffreys smoothing.
+  id: heldout-order2-over-order1-gain-v1
+  description: Restore and pair the coordinate stream, treat the 25 pairs as anonymous symbols, fit order-1 and order-2 context counts on the first 70%, and score held-out log2 predictive gain of order-2 over order-1 with Jeffreys smoothing.
   train_fraction: 0.70
   context_order: 2
   alphabet_size: 25

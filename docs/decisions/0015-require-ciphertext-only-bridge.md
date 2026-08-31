@@ -16,7 +16,7 @@ recovered up to anonymous symbol renaming.
 
 ## Decision
 
-Freeze one intrinsic held-out predictive-gain objective and search widths 4–7
+Freeze one intrinsic held-out order-two-over-order-one predictive-gain objective and search widths 4–7
 with an explicit complexity penalty. Generate natural, unigram-shuffled,
 first-order Markov, block-shuffled, and copy/mutate payloads from six new source
 works, then ADFGX-encipher matched variants with identical parameters. Separate

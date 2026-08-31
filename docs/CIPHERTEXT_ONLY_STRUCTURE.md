@@ -13,7 +13,10 @@ For every width 4–7 and every column read order, invert the columnar stage and
 pair the restored `ADFGX` coordinates. Treat the resulting 25 pair types as
 anonymous symbol IDs. Fit unigram and order-two context counts on the first 70%
 of that sequence with Jeffreys smoothing, then measure held-out log2 predictive
-gain of the context model over the unigram model.
+gain of the order-two model over an order-one model. The first-order baseline
+is necessary because the matched Markov control deliberately preserves
+one-step dependency; comparing with a unigram model would reward that control
+for the property it was designed to retain.
 
 This score is unchanged by any renaming of the 25 symbols. It does not know the
 Polybius square or map symbols to letters. Width selection subtracts
