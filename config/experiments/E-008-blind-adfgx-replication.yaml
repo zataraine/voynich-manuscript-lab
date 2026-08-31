@@ -1,0 +1,83 @@
+schema_version: "1.0"
+experiment_id: E-008-blind-adfgx-replication
+hypothesis_id: H-008
+source_manifest: data/manifests/e008-blind-adfgx-plaintexts.yaml
+source_manifest_sha256: 33eb2860f78cde48009fd5aee99d2fe2189db220a7f6df5d7d0b8b26ef5209e2
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: gutenberg-latin25-random-offset-v1
+  description: Extract framed ebook bodies, retain A-Z, map J to I, then select seeded nonoverlapping candidate segments independently for each suite.
+hypothesis_family: blind-parameter-adfgx-known-payload-replication
+predecessor:
+  experiment: E-007-adfgx-stage-localization
+  result: artifacts/runs/E-007-adfgx-stage-localization/result.json
+  result_sha256: 8bcc38afec4a5d29406dbff0fa566b4295a79f34d0b8c03d0d37a04ee0c760a2
+  frozen_solver_commit: b42f4d6821fc7745558e4a26fd6a2224ae014972
+separation:
+  scorer_config: config/experiments/E-008-blind-adfgx-scorer.yaml
+  scorer_config_sha256: 631f53b3433a01d9e999bfe613deea22450d6dfa90a9c36979afdb8ce624cc59
+  public_suite: artifacts/runs/E-008-blind-adfgx-replication/public-suite.json
+  sealed_truth: artifacts/runs/E-008-blind-adfgx-replication/sealed-truth.json
+  blind_scores: artifacts/runs/E-008-blind-adfgx-replication/blind-scores.json
+  result: artifacts/runs/E-008-blind-adfgx-replication/result.json
+parameters:
+  documents:
+    - {id: huckleberry-finn, path: data/raw/benchmarks/e008/pg76-huckleberry-finn.txt}
+    - {id: heart-darkness, path: data/raw/benchmarks/e008/pg219-heart-darkness.txt}
+    - {id: little-women, path: data/raw/benchmarks/e008/pg514-little-women.txt}
+    - {id: monte-cristo, path: data/raw/benchmarks/e008/pg1184-monte-cristo.txt}
+    - {id: great-expectations, path: data/raw/benchmarks/e008/pg1400-great-expectations.txt}
+    - {id: dolls-house, path: data/raw/benchmarks/e008/pg2542-dolls-house.txt}
+    - {id: ulysses, path: data/raw/benchmarks/e008/pg4300-ulysses.txt}
+    - {id: metamorphosis, path: data/raw/benchmarks/e008/pg5200-metamorphosis.txt}
+  suite_segment_characters: [401, 437, 463, 499, 521, 547, 581, 613, 647, 683, 719, 757]
+  queries_per_suite: 8
+  widths: [4, 5, 6, 7]
+  width_assignment: balanced cyclic assignment across suite and query indices
+  new_square_and_keyword_per_query: true
+  square_generator: seeded uniform permutation of ABCDEFGHIKLMNOPQRSTUVWXYZ
+  keyword_generator: seeded sample without replacement from A-Z at the assigned width
+  generator_implementation: pinned pycipher PolybiusSquare followed by ColTrans; E-007 transform functions forbidden
+  generator_seed: 2026090101
+  segment_seed: 2026090102
+  broken_mapping_seed: 2026090103
+  broken_mapping_control: permute complete coordinate-pair positions before independent columnar transposition, preserving the exact pair multiset
+  identity_permutation_seed: 2026090104
+  identity_permutation_iterations: 512
+  local_ai_text_scoring: forbidden
+splits:
+  generation: public suite and sealed truth are written separately and hashed before scoring
+  scoring: scorer accepts only public suite and public scorer config; it cannot accept experiment config, truth path, generator seeds, square, keyword, or correct identity
+  unblinding: evaluator requires the pre-score public-suite hash, sealed-truth hash, and blind-score input hash to agree
+null_model:
+  family: candidate-identity permutation after the complete width-and-order maximization
+  replicates: 512
+  search_correction: every null statistic uses the already maximized score matrix over all preregistered widths and orders
+metrics:
+  primary:
+    - generator_roundtrip_fraction
+    - public_truth_leak_count
+    - overall_normalized_mrr
+    - worst_width_normalized_mrr
+    - overall_pair_roc_auc
+    - true_width_in_maximizer_fraction
+    - median_correct_mapping_score_drop
+    - median_broken_correct_score
+    - identity_permutation_one_sided_p
+  interpretation_gates:
+    minimum_generator_roundtrip_fraction: 1.0
+    maximum_public_truth_leak_count: 0
+    minimum_overall_normalized_mrr: 0.90
+    minimum_worst_width_normalized_mrr: 0.75
+    minimum_overall_pair_roc_auc: 0.98
+    minimum_true_width_in_maximizer_fraction: 0.95
+    minimum_median_correct_mapping_score_drop: 0.50
+    maximum_median_broken_correct_score: 0.45
+    maximum_identity_permutation_p: 0.01
+  decision_rule: All nine gates must pass. Passing validates known-payload parameter-blind generalization across this independent suite only. Failure records the failing width or control and stops target-side design. Neither outcome permits Voynich scoring or a cipher/language/hoax posterior.
+artifacts:
+  root: artifacts/runs/E-008-blind-adfgx-replication
+notes: Candidate plaintexts are supplied, so blind means parameter/truth separation rather than ciphertext-only cryptanalysis. The experiment tests whether E-007's frozen structural diagnostic generalizes to new sources and unseen transforms while searching a complete preregistered width range.

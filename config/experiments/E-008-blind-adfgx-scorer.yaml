@@ -1,0 +1,13 @@
+schema_version: "1.0"
+scorer_id: E-008-blind-adfgx-width-search
+public_suite: artifacts/runs/E-008-blind-adfgx-replication/public-suite.json
+output: artifacts/runs/E-008-blind-adfgx-replication/blind-scores.json
+coordinate_alphabet: ADFGX
+hypothesized_widths: [4, 5, 6, 7]
+candidate_unit: supplied normalized character sequence
+score: bidirectional_modal_symbol_coordinate_consistency_v1
+search: exhaustive column-read-order permutations within every hypothesized width
+ties: preserve every maximizing width; retrieval uses average tie rank
+truth_inputs_permitted: false
+generator_seed_permitted: false
+plaintext_semantic_model_permitted: false
