@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+exec ./scripts/run python -m manuscript_lab.acquisition \
+  --config config/sources/e008-blind-adfgx-acquisition.yaml --skip-images

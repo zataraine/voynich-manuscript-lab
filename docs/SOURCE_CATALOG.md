@@ -87,6 +87,11 @@ E-007 also pins cryptii commit
 stage-wise fractionation and columnar-transposition code; it is not evidence
 about the manuscript.
 
+E-008 adds eight Project Gutenberg works absent from E-005 as an independent
+known-payload source set. Their raw bytes, acquisition endpoints, and hashes
+are isolated in the E-008 source manifest. They test control generalization;
+they are not linguistic comparators for Voynichese.
+
 ## Known but not acquired
 
 | Resource | Reason | Next action |

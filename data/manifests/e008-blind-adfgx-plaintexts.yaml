@@ -1,0 +1,27 @@
+schema_version: '1.0'
+source_id: e008-blind-adfgx-plaintexts
+manifest_created_at: '2026-08-31T13:20:00Z'
+acquisition:
+  obtained_at: '2026-08-31T13:20:00Z'
+  obtained_from: Project Gutenberg stable plain-text endpoints
+  custodian: Project Gutenberg
+rights:
+  status: licensed
+  license: Files carry the Project Gutenberg license and are marked public domain in the USA.
+  restrictions: Raw texts are retained locally and not committed. Preserve Gutenberg headers and check local jurisdiction before redistribution.
+transcription:
+  scheme_name: E-008 independent known-payload plaintext controls
+  scheme_version: Gutenberg files acquired 2026-08-31
+  character_encoding: UTF-8 plain text
+  unit_definition: Analysis extracts framed ebook bodies, retains A-Z, maps J to I, and records every selected offset. Raw bytes remain unchanged.
+  uncertainty_notation: None introduced; Project Gutenberg editorial content remains in the immutable raw files.
+files:
+  - {path: data/raw/benchmarks/e008/pg76-huckleberry-finn.txt, role: other, media_type: text/plain, bytes: 622460, sha256: d617a37aa7ae1e1a93dcde2634db2bccb86824e31e29a55230bdbf77d6872d59}
+  - {path: data/raw/benchmarks/e008/pg219-heart-darkness.txt, role: other, media_type: text/plain, bytes: 237072, sha256: c0b0bc91c7695f9d01aacb240e82a9b559f57558f98ad0b1f167eba21f6be6f7}
+  - {path: data/raw/benchmarks/e008/pg514-little-women.txt, role: other, media_type: text/plain, bytes: 1071405, sha256: 677d034b4a3d1cea92d075939878f852a7a3ec757dc9ed05ef0c40cab5c1e6de}
+  - {path: data/raw/benchmarks/e008/pg1184-monte-cristo.txt, role: other, media_type: text/plain, bytes: 2787124, sha256: 64f8d5cfa51fcecb904abf7312d395d512a71817e7359b91288beb50517c3836}
+  - {path: data/raw/benchmarks/e008/pg1400-great-expectations.txt, role: other, media_type: text/plain, bytes: 1058204, sha256: 9a637118af8e953e9764ec603d9b0a032883384d465acac2e27966a80cf1c6f8}
+  - {path: data/raw/benchmarks/e008/pg2542-dolls-house.txt, role: other, media_type: text/plain, bytes: 169080, sha256: d72a481b08ca7ace73e8ca2087b2baec29fc00e0d6e493f5e877b12116bccf4f}
+  - {path: data/raw/benchmarks/e008/pg4300-ulysses.txt, role: other, media_type: text/plain, bytes: 1586344, sha256: e03094626f9528cf3fc287a49d6edbdbf47cd40483cb13ceb301e74e15ebbf9e}
+  - {path: data/raw/benchmarks/e008/pg5200-metamorphosis.txt, role: other, media_type: text/plain, bytes: 141933, sha256: 0933283a19a4daaef0d412e8f69c74fae126b0a946cb74b8f3c783a8e869830d}
+notes: These eight works are absent from E-005. E-008 uses them only as independently acquired known-payload controls and does not include Voynich material.

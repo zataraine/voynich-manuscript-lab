@@ -1,0 +1,12 @@
+schema_version: "1.0"
+source_id: e008-blind-adfgx-plaintexts
+user_agent: ManuscriptLab/1.0 (noncommercial research; contact via repository)
+assets:
+  - {id: pg-76-huckleberry-finn, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/76/pg76.txt", destination: data/raw/benchmarks/e008/pg76-huckleberry-finn.txt, expected_media: text/plain}
+  - {id: pg-219-heart-darkness, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/219/pg219.txt", destination: data/raw/benchmarks/e008/pg219-heart-darkness.txt, expected_media: text/plain}
+  - {id: pg-514-little-women, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/514/pg514.txt", destination: data/raw/benchmarks/e008/pg514-little-women.txt, expected_media: text/plain}
+  - {id: pg-1184-monte-cristo, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1184/pg1184.txt", destination: data/raw/benchmarks/e008/pg1184-monte-cristo.txt, expected_media: text/plain}
+  - {id: pg-1400-great-expectations, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1400/pg1400.txt", destination: data/raw/benchmarks/e008/pg1400-great-expectations.txt, expected_media: text/plain}
+  - {id: pg-2542-dolls-house, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/2542/pg2542.txt", destination: data/raw/benchmarks/e008/pg2542-dolls-house.txt, expected_media: text/plain}
+  - {id: pg-4300-ulysses, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/4300/pg4300.txt", destination: data/raw/benchmarks/e008/pg4300-ulysses.txt, expected_media: text/plain}
+  - {id: pg-5200-metamorphosis, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/5200/pg5200.txt", destination: data/raw/benchmarks/e008/pg5200-metamorphosis.txt, expected_media: text/plain}
