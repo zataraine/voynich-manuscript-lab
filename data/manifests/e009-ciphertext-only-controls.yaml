@@ -1,0 +1,25 @@
+schema_version: '1.0'
+source_id: e009-ciphertext-only-controls
+manifest_created_at: '2026-08-31T13:45:00Z'
+acquisition:
+  obtained_at: '2026-08-31T13:45:00Z'
+  obtained_from: Project Gutenberg stable plain-text endpoints
+  custodian: Project Gutenberg
+rights:
+  status: licensed
+  license: Files carry the Project Gutenberg license and are marked public domain in the USA.
+  restrictions: Raw texts are retained locally and not committed. Preserve Gutenberg headers and check local jurisdiction before redistribution.
+transcription:
+  scheme_name: E-009 ciphertext-only natural payload controls
+  scheme_version: Gutenberg files acquired 2026-08-31
+  character_encoding: UTF-8 plain text
+  unit_definition: Generation extracts framed ebook bodies, retains A-Z, maps J to I, and records selected offsets. Raw bytes remain unchanged.
+  uncertainty_notation: None introduced; Project Gutenberg editorial content remains in the immutable raw files.
+files:
+  - {path: data/raw/benchmarks/e009/pg46-christmas-carol.txt, role: other, media_type: text/plain, bytes: 182250, sha256: 8c36b93723d454982df045ec0efdf2664e5a48e6b5e2f670e883575f75ad0cc8}
+  - {path: data/raw/benchmarks/e009/pg55-wizard-oz.txt, role: other, media_type: text/plain, bytes: 237232, sha256: 969bffab7740d4d8a0bac332d78bd0152ad4a40a2efc52f06c74a9bb6120be75}
+  - {path: data/raw/benchmarks/e009/pg829-gulliver.txt, role: other, media_type: text/plain, bytes: 613946, sha256: fca36de3de0d8b831b7588cf1df84639ccf4c503172d6444ee61d1c1b2036edd}
+  - {path: data/raw/benchmarks/e009/pg1260-jane-eyre.txt, role: other, media_type: text/plain, bytes: 1084803, sha256: 13414dee2951c3ee731d76d2ffd822016b2479c892162760c5d0eb2aa5fa7631}
+  - {path: data/raw/benchmarks/e009/pg2591-grimm.txt, role: other, media_type: text/plain, bytes: 560165, sha256: bd62b1bda98393716fcb8632f072c2a38c73827674efb7559c48e2186e139053}
+  - {path: data/raw/benchmarks/e009/pg6130-iliad.txt, role: other, media_type: text/plain, bytes: 1161373, sha256: ca4f23115b384b0219427ef208e875f0351820b8f80f28259272997ea581c36b}
+notes: These six works are absent from E-005 and E-008. E-009 exposes only generated ciphertext to its scorer; plaintext and control family remain in sealed truth.

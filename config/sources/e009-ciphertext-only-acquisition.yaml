@@ -1,0 +1,10 @@
+schema_version: "1.0"
+source_id: e009-ciphertext-only-controls
+user_agent: ManuscriptLab/1.0 (noncommercial research; contact via repository)
+assets:
+  - {id: pg-46-christmas-carol, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/46/pg46.txt", destination: data/raw/benchmarks/e009/pg46-christmas-carol.txt, expected_media: text/plain}
+  - {id: pg-55-wizard-oz, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/55/pg55.txt", destination: data/raw/benchmarks/e009/pg55-wizard-oz.txt, expected_media: text/plain}
+  - {id: pg-829-gulliver, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/829/pg829.txt", destination: data/raw/benchmarks/e009/pg829-gulliver.txt, expected_media: text/plain}
+  - {id: pg-1260-jane-eyre, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/1260/pg1260.txt", destination: data/raw/benchmarks/e009/pg1260-jane-eyre.txt, expected_media: text/plain}
+  - {id: pg-2591-grimm, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/2591/pg2591.txt", destination: data/raw/benchmarks/e009/pg2591-grimm.txt, expected_media: text/plain}
+  - {id: pg-6130-iliad, group: plaintexts, url: "https://www.gutenberg.org/cache/epub/6130/pg6130.txt", destination: data/raw/benchmarks/e009/pg6130-iliad.txt, expected_media: text/plain}

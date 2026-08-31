@@ -92,6 +92,10 @@ known-payload source set. Their raw bytes, acquisition endpoints, and hashes
 are isolated in the E-008 source manifest. They test control generalization;
 they are not linguistic comparators for Voynichese.
 
+E-009 adds six further Project Gutenberg works absent from E-005 and E-008.
+They supply natural-payload controls for a ciphertext-only scorer; their
+plaintext and generated-control identities remain outside the scoring input.
+
 ## Known but not acquired
 
 | Resource | Reason | Next action |
