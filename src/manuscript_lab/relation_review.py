@@ -42,6 +42,25 @@ def bounded_record(
         }
         for representation, families in result["representations"]["diagnostic_results"].items()
     }
+    ordered_primary = sorted(
+        (
+            {
+                "family": family,
+                "mean_normalized_mrr": values["mean_normalized_mrr"],
+                "mean_pair_roc_auc": values["mean_pair_roc_auc"],
+            }
+            for family, values in family_results.items()
+        ),
+        key=lambda value: value["mean_normalized_mrr"],
+    )
+    failed_gates = [
+        name for name, passed in result["interpretation_gate"]["checks"].items() if not passed
+    ]
+    same_family_failures = {
+        family: values
+        for family, values in same_family.items()
+        if values["mean_normalized_mrr"] <= 0 or values["mean_pair_roc_auc"] < 0.5
+    }
     record = {
         "experiment_id": result["experiment_id"],
         "hypothesis_id": result["hypothesis_id"],
@@ -73,6 +92,10 @@ def bounded_record(
             "E-005 is exposed, so even a pass requires a new independent cipher suite.",
             "Voynichese and manuscript witnesses are absent; no posterior is computed.",
             "A failed gate forbids target scoring regardless of a favorable component.",
+            "Enigma is not near chance in the primary fusion: its normalized MRR is 0.6225 "
+            "and pair ROC AUC is 0.9193.",
+            "ADFGX also fails the same-family diagnostic; do not say every same-family "
+            "calibration succeeded.",
         ],
         "review_facts": {
             "preregistered_thresholds": config["metrics"]["interpretation_gates"],
@@ -81,6 +104,14 @@ def bounded_record(
                 not value for value in result["interpretation_gate"]["checks"].values()
             ),
             "passed_gate_count": sum(result["interpretation_gate"]["checks"].values()),
+            "failed_gate_names": failed_gates,
+            "primary_families_ordered_worst_first": ordered_primary,
+            "same_family_failures": same_family_failures,
+            "explicit_result_boundary": (
+                "Two of eight gates failed. Both failed aggregate gates are caused by ADFGX: "
+                "family normalized MRR 0.0472 is below 0.05 and pair ROC AUC 0.5078 is below "
+                "0.55. Enigma passed these family-level magnitudes. No target scoring."
+            ),
             "permitted_effect_strength_values_when_gate_fails": ["none", "weak"],
         },
         "reference_context": packet["passages"],
