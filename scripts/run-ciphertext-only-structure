@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+./scripts/generate-e009-ciphertext-only
+./scripts/score-e009-ciphertext-only
+exec ./scripts/unblind-e009-ciphertext-only
