@@ -24,6 +24,8 @@ cd "${project_root}"
   --dry-run --cores 12 --resources mem_mb=8192
 ./scripts/run snakemake --snakefile workflow/ciphertext-only-structure.smk \
   --dry-run --cores 12 --resources mem_mb=8192
+./scripts/run snakemake --snakefile workflow/representation-robustness.smk \
+  --dry-run --cores 1 --resources mem_mb=8192
 ./scripts/lab doctor --strict --output artifacts/diagnostics/latest.json
 ./scripts/lab local-ai doctor --output artifacts/diagnostics/local-ai.json
 ./scripts/run python -m compileall -q src tests
