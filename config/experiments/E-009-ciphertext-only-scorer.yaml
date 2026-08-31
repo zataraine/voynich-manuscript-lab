@@ -1,0 +1,25 @@
+schema_version: "1.0"
+scorer_id: E-009-ciphertext-only-invariant-search
+public_suite: artifacts/runs/E-009-ciphertext-only-structure/public-suite.json
+output: artifacts/runs/E-009-ciphertext-only-structure/blind-scores.json
+coordinate_alphabet: ADFGX
+hypothesized_widths: [4, 5, 6, 7]
+input_fields: [query_id, ciphertext]
+plaintext_inputs_permitted: false
+candidate_inputs_permitted: false
+truth_inputs_permitted: false
+generator_seed_permitted: false
+objective:
+  id: heldout-order2-gain-v1
+  description: Restore and pair the coordinate stream, treat the 25 pairs as anonymous symbols, fit unigram and order-2 context counts on the first 70%, and score held-out log2 predictive gain of order-2 over unigram with Jeffreys smoothing.
+  train_fraction: 0.70
+  context_order: 2
+  alphabet_size: 25
+  smoothing_alpha: 0.5
+  symbol_renaming_invariant: true
+search:
+  column_orders: exhaustive within each hypothesized width
+  width_score: maximum raw gain minus sqrt(2*ln(number_of_column_orders)/heldout_symbols)
+  retained: every raw order score, raw maximum, corrected width score, and maximizing order indices
+  ties: preserve all maximizers
+semantic_model_permitted: false

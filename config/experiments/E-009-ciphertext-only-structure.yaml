@@ -1,0 +1,87 @@
+schema_version: "1.0"
+experiment_id: E-009-ciphertext-only-structure
+hypothesis_id: H-009
+source_manifest: data/manifests/e009-ciphertext-only-controls.yaml
+source_manifest_sha256: 1da4ca63c550dea208e5d81425b041e75c3853e8d3a6218fb3be508ae6ebebb3
+transcription: none; no Voynich target is scored
+scope:
+  folio_section: null
+  currier: null
+normalization:
+  version: gutenberg-latin25-ciphertext-only-v1
+  description: Extract framed ebook bodies, retain A-Z, map J to I, select seeded nonoverlapping segments, generate matched controls, then expose only ADFGX ciphertext.
+hypothesis_family: ciphertext-only-fractionation-transposition-structure-recovery
+predecessor:
+  experiment: E-008-blind-adfgx-replication
+  result: artifacts/runs/E-008-blind-adfgx-replication/result.json
+  result_sha256: be3f43947b39d5d89d9fb9f0b71eb429c489c8809296cfbc92c3927358801ad2
+separation:
+  scorer_config: config/experiments/E-009-ciphertext-only-scorer.yaml
+  scorer_config_sha256: 8b9f11562ee75e1cefbe92858d0d8e2cac500e25c8c388a9f8cfb25e8b742088
+  public_suite: artifacts/runs/E-009-ciphertext-only-structure/public-suite.json
+  sealed_truth: artifacts/runs/E-009-ciphertext-only-structure/sealed-truth.json
+  blind_scores: artifacts/runs/E-009-ciphertext-only-structure/blind-scores.json
+  result: artifacts/runs/E-009-ciphertext-only-structure/result.json
+parameters:
+  documents:
+    - {id: christmas-carol, path: data/raw/benchmarks/e009/pg46-christmas-carol.txt}
+    - {id: wizard-oz, path: data/raw/benchmarks/e009/pg55-wizard-oz.txt}
+    - {id: gulliver, path: data/raw/benchmarks/e009/pg829-gulliver.txt}
+    - {id: jane-eyre, path: data/raw/benchmarks/e009/pg1260-jane-eyre.txt}
+    - {id: grimm, path: data/raw/benchmarks/e009/pg2591-grimm.txt}
+    - {id: iliad, path: data/raw/benchmarks/e009/pg6130-iliad.txt}
+  segment_characters: [401, 499, 613, 757]
+  base_segments: 24
+  control_families: [natural, unigram_shuffle, markov1, block8_shuffle, copy_mutate]
+  queries: 120
+  widths: [4, 5, 6, 7]
+  width_assignment: balanced cyclic assignment over the 24 base segments; all five matched families share transform parameters
+  new_square_and_keyword_per_base: true
+  square_generator: seeded uniform permutation of ABCDEFGHIKLMNOPQRSTUVWXYZ
+  keyword_generator: seeded sample without replacement from A-Z at assigned width
+  generator_implementation: pinned pycipher PolybiusSquare followed by ColTrans; scorer never imports generator
+  controls:
+    unigram_shuffle: seeded permutation of character positions preserving exact unigram counts
+    markov1: seeded first-order empirical transition generator with unigram fallback, preserving length
+    block8_shuffle: seeded permutation of consecutive eight-character blocks, preserving exact characters and most local transitions
+    copy_mutate: seed 32 symbols from the empirical unigram, repeatedly copy a prior span of length 3-12, and mutate each copied symbol with probability 0.12 from the empirical unigram
+  generator_seed: 2026090201
+  segment_seed: 2026090202
+  control_seed: 2026090203
+  sign_permutation_seed: 2026090204
+  sign_permutation_iterations: 2048
+splits:
+  generation: public ciphertext/query IDs and sealed source/family/plaintext/parameter truth are written separately and hashed
+  scoring: scorer accepts only query_id and ciphertext plus the truth-free scorer config
+  unblinding: evaluator verifies public, truth, score, scorer-config, source-manifest, and predecessor hashes before joining labels
+null_model:
+  primary_families: [unigram_shuffle, markov1]
+  adversarial_diagnostics: [block8_shuffle, copy_mutate]
+  paired_test: random sign flips of each base segment's natural score minus the mean of its matched unigram and markov1 scores
+  replicates: 2048
+  search_correction: scores entering every comparison are maxima after the complete preregistered width/order search and width complexity penalty
+metrics:
+  primary:
+    - generator_roundtrip_fraction
+    - public_truth_leak_count
+    - natural_vs_unigram_roc_auc
+    - natural_vs_markov1_roc_auc
+    - median_natural_minus_unigram_score
+    - natural_correct_width_fraction
+    - natural_true_order_median_percentile
+    - natural_beats_paired_unigram_fraction
+    - paired_sign_permutation_one_sided_p
+  interpretation_gates:
+    minimum_generator_roundtrip_fraction: 1.0
+    maximum_public_truth_leak_count: 0
+    minimum_natural_vs_unigram_roc_auc: 0.95
+    minimum_natural_vs_markov1_roc_auc: 0.75
+    minimum_median_natural_minus_unigram_score: 0.15
+    minimum_natural_correct_width_fraction: 0.60
+    minimum_natural_true_order_median_percentile: 0.90
+    minimum_natural_beats_paired_unigram_fraction: 0.85
+    maximum_paired_sign_permutation_p: 0.01
+  decision_rule: All nine gates must pass. Block8 and copy-mutate outcomes are mandatory ambiguity diagnostics but cannot replace or fail a primary gate. Passing validates this ciphertext-only objective on bounded ADFGX controls only and permits an independent mechanism replication, never Voynich scoring. Failure localizes whether search recovery or natural-vs-simple-null discrimination is inadequate.
+artifacts:
+  root: artifacts/runs/E-009-ciphertext-only-structure
+notes: The primary score uses no plaintext, candidates, hashes, semantic embeddings, language labels, or pretrained model. Adversarial controls deliberately test whether local statistical structure can distinguish language from structured nonsemantic generation; ambiguity is expected to remain possible.
