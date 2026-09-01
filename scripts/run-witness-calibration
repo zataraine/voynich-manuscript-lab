@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${project_root}"
+
+exec ./scripts/run snakemake --snakefile workflow/witness-calibration.smk \
+  --cores 1 --resources mem_mb=4096 --rerun-incomplete --printshellcmds
