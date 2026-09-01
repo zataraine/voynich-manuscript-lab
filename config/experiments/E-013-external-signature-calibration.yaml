@@ -1,0 +1,90 @@
+schema_version: "1.0"
+experiment_id: E-013-external-signature-calibration
+hypothesis_id: H-013
+question_id: Q-015
+transcription: none; Voynichese is excluded
+hypothesis_family: external-payload-vs-no-intended-payload-calibration
+predecessor:
+  experiment: E-012-multi-witness-mechanism-replication
+  result: artifacts/runs/E-012-multi-witness-mechanism-replication/result.json
+  result_sha256: 58110e686f8f19648a6aef348f9ed5b97b1d7a23ca9a90d541c511392ada466e
+sources:
+  development_manifest: data/manifests/e005-known-payload-benchmark.yaml
+  development_manifest_sha256: ae6a26ac04a22bc20bcf746d852cb4d394707ee3fa13126e0d2fb5f8870842c1
+  independent_manifests:
+    - path: data/manifests/e008-blind-adfgx-plaintexts.yaml
+      sha256: 33eb2860f78cde48009fd5aee99d2fe2189db220a7f6df5d7d0b8b26ef5209e2
+    - path: data/manifests/e009-ciphertext-only-controls.yaml
+      sha256: 1da4ca63c550dea208e5d81425b041e75c3853e8d3a6218fb3be508ae6ebebb3
+  external_archive: data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz
+  external_archive_sha256: 553b05807727b81361e127ca04b788d4ea64298527deffdec875db629346bffc
+  external_manifest: data/manifests/naibbe-reference.yaml
+  external_manifest_sha256: f8d9b15193f8963b1d77e2d1e20c508908e23a108dd7bdfc55456029c506ca9b
+normalization:
+  version: unicode-groups-contiguous-blocks-v1
+  minimum_groups: 70
+  maximum_groups: 280
+  groups_per_block: 10
+  train_fraction: 0.75
+parameters:
+  payload_families:
+    - natural
+    - monoalphabetic
+    - vigenere
+    - progressive_key
+    - homophonic
+    - nomenclator_hybrid
+  no_payload_families:
+    - character_markov1
+    - token_markov1
+    - copy_mutate_008
+    - copy_mutate_018
+    - positional_slot
+  null_families:
+    - within_page_group_shuffle
+    - within_group_symbol_shuffle
+    - global_group_resample
+    - iid_symbol_length_matched
+  null_replicates: 64
+  mutation_rates:
+    copy_mutate_008: 0.08
+    copy_mutate_018: 0.18
+  development_folds: 3
+  logistic_c: 1.0
+  class_weight: balanced
+  probability_threshold: 0.5
+  permutation_replicates: 1024
+  workers: 12
+seed: 20260907
+splits:
+  development: complete E-005 source document; fixed hash-derived three-fold assignment
+  independent: all E-008 and E-009 source documents; never used for fitting or scaling
+  external: archive member; scored after final model freeze
+metrics:
+  primary:
+    - development_balanced_accuracy
+    - worst_development_family_recall
+    - family_label_permutation_p
+    - independent_balanced_accuracy
+    - worst_independent_family_recall
+    - external_meaningful_recall
+    - external_human_gibberish_specificity
+    - naibbe_payload_recall
+    - naibbe_median_payload_score
+  interpretation_gates:
+    minimum_development_balanced_accuracy: 0.70
+    minimum_worst_development_family_recall: 0.55
+    maximum_family_label_permutation_p: 0.01
+    minimum_independent_balanced_accuracy: 0.70
+    minimum_worst_independent_family_recall: 0.55
+    minimum_external_meaningful_recall: 0.65
+    minimum_external_human_gibberish_specificity: 0.65
+    minimum_naibbe_payload_recall: 0.60
+    minimum_naibbe_median_payload_score: 0.60
+  decision_rule: All construction controls and all scientific gates must pass before a separate target application may be preregistered.
+artifacts:
+  root: artifacts/runs/E-013-external-signature-calibration
+  case_features: artifacts/runs/E-013-external-signature-calibration/case-features.jsonl
+  model: artifacts/runs/E-013-external-signature-calibration/model.json
+  result: artifacts/runs/E-013-external-signature-calibration/result.json
+notes: Fixed E-012 effects only. No Voynich inputs, semantic embeddings, LLM scores, target thresholds, or post-hoc family removal.
