@@ -1,0 +1,94 @@
+schema_version: "1.0"
+experiment_id: E-011-cross-fitted-witness-calibration
+hypothesis_id: H-011
+question_id: Q-013
+protocol: docs/WITNESS_CALIBRATION.md
+predecessor:
+  experiment: E-010-representation-robustness
+  result: artifacts/runs/E-010-representation-robustness/result.json
+  result_sha256: b93ecb462ca69d71a160d1edad7b6356335d32a8964fe70c24e6ca5cc24ad8c1
+  page_features: artifacts/runs/E-010-representation-robustness/page-features.jsonl
+  page_features_sha256: 0faa913a884a9d0847b03ac4f9e80073bffb1974f8ca059a1768cd3a567a9022
+scope:
+  target: E-010 page features only
+  target_inference_permitted: false
+views:
+  primary: [CD2a_0, FG2a, GC2a_0, IT2a, ZL3b]
+  reference_for_null_only: ZL3b
+  conversion_pairs:
+    - [CD2a_0, CD2a_1]
+    - [GC2a_0, GC2a_1]
+  uncertainty:
+    - ZL3b-alt-first-space-split
+    - ZL3b-alt-first-space-join
+    - ZL3b-alt-last-space-split
+    - ZL3b-alt-last-space-join
+    - ZL3b-alt-opaque-space-split
+    - ZL3b-alt-opaque-space-join
+features:
+  all:
+    - symbol_entropy_normalized
+    - symbol_conditional_entropy_normalized
+    - symbol_repeat_rate
+    - symbol_bigram_type_ratio
+    - group_length_mean
+    - group_length_cv
+    - group_type_token_ratio
+    - group_hapax_ratio
+    - adjacent_group_repeat_rate
+    - window20_group_recurrence
+  order_sensitive:
+    - symbol_conditional_entropy_normalized
+    - symbol_repeat_rate
+    - symbol_bigram_type_ratio
+    - adjacent_group_repeat_rate
+    - window20_group_recurrence
+split:
+  unit: physical manuscript page
+  method: five contiguous folds in E-010 eligible-page order
+  folds: 5
+  random: false
+calibration:
+  method: training-only median/IQR standardization per feature, view, and fold
+  transform: (held_out_value - training_median) / training_IQR
+  nonpositive_or_nonfinite_iqr: fail
+controls:
+  seed: 20260903
+  pages: 256
+  views: 5
+  latent: seeded standard normal
+  offsets: seeded uniform [-3, 3]
+  scales: seeded uniform [0.5, 2.0]
+  noise_standard_deviation: 0.03
+  recoverable_minimum_worst_spearman: 0.95
+  recoverable_maximum_median_normalized_difference: 0.20
+  broken_method: independently permute page identity for four views before calibration
+  broken_maximum_median_pair_spearman: 0.15
+bootstrap:
+  page_replicates: 1000
+  seed: 20260905
+  confidence: 0.95
+null_model:
+  replicates: 1024
+  seed: 20260904
+  statistic: median primary-pair Spearman after complete cross-fitting
+  multiple_comparisons: Holm across all ten features
+gates:
+  minimum_worst_primary_spearman: 0.80
+  minimum_worst_primary_bootstrap_lower: 0.70
+  maximum_primary_median_absolute_difference: 0.25
+  minimum_passing_heldout_folds: 4
+  maximum_fold_primary_median_absolute_difference: 0.35
+  minimum_worst_conversion_spearman: 0.95
+  maximum_conversion_median_absolute_difference: 0.10
+  minimum_worst_uncertainty_spearman: 0.90
+  maximum_uncertainty_median_absolute_difference: 0.15
+  maximum_holm_adjusted_permutation_p: 0.05
+  minimum_stable_features: 4
+  minimum_stable_order_sensitive_features: 2
+artifacts:
+  root: artifacts/runs/E-011-cross-fitted-witness-calibration
+  split: split.json
+  calibrated_features: calibrated-page-features.jsonl
+  result: result.json
+notes: Passing validates only a held-out witness harmonization layer. It does not establish that any stable feature distinguishes meaningful from nonsemantic text.
