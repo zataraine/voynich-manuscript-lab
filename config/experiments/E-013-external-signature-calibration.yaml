@@ -2,6 +2,7 @@ schema_version: "1.0"
 experiment_id: E-013-external-signature-calibration
 hypothesis_id: H-013
 question_id: Q-015
+protocol: docs/EXTERNAL_SIGNATURE_CALIBRATION.md
 transcription: none; Voynichese is excluded
 hypothesis_family: external-payload-vs-no-intended-payload-calibration
 predecessor:

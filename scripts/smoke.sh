@@ -30,6 +30,8 @@ cd "${project_root}"
   --dry-run --cores 1 --resources mem_mb=4096
 ./scripts/run snakemake --snakefile workflow/multi-witness-replication.smk \
   --dry-run --cores 12 --resources mem_mb=16384
+./scripts/run snakemake --snakefile workflow/external-signature-calibration.smk \
+  --dry-run --cores 12 --resources mem_mb=16384
 ./scripts/lab doctor --strict --output artifacts/diagnostics/latest.json
 ./scripts/lab local-ai doctor --output artifacts/diagnostics/local-ai.json
 ./scripts/run python -m compileall -q src tests
