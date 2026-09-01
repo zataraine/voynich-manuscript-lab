@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from manuscript_lab.witness_calibration import contiguous_folds, cross_fit, synthetic_controls
+from manuscript_lab.witness_calibration import (
+    _passes_maximum,
+    _passes_minimum,
+    _strict_extreme,
+    contiguous_folds,
+    cross_fit,
+    synthetic_controls,
+)
 
 
 def test_contiguous_folds_cover_order_without_overlap() -> None:
@@ -38,3 +45,10 @@ def test_frozen_synthetic_controls_pass() -> None:
 
     assert result["passed"]
     assert all(result["gates"].values())
+
+
+def test_nonfinite_required_comparison_can_never_pass() -> None:
+    assert np.isnan(_strict_extreme([0.9, np.nan], maximum=False))
+    assert np.isnan(_strict_extreme([0.1, np.nan], maximum=True))
+    assert not _passes_minimum(np.nan, 0.8)
+    assert not _passes_maximum(np.nan, 0.25)

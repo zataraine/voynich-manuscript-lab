@@ -162,6 +162,21 @@ def _pair_metrics(
     }
 
 
+def _strict_extreme(values: list[float], *, maximum: bool) -> float:
+    """Return an extreme only when every required comparison is finite."""
+    if not values or not all(math.isfinite(value) for value in values):
+        return math.nan
+    return (max if maximum else min)(values)
+
+
+def _passes_minimum(value: float, threshold: float) -> bool:
+    return math.isfinite(value) and value >= threshold
+
+
+def _passes_maximum(value: float, threshold: float) -> bool:
+    return math.isfinite(value) and value <= threshold
+
+
 def analyze(
     config: dict[str, Any],
     page_order: tuple[str, ...],
@@ -198,15 +213,22 @@ def analyze(
         worst = []
         for indices in bootstrap_indices:
             worst.append(
-                min(
-                    _spearman(
-                        calibrated[feature][left][indices],
-                        calibrated[feature][right][indices],
-                    )
-                    for left, right in primary_pairs
+                _strict_extreme(
+                    [
+                        _spearman(
+                            calibrated[feature][left][indices],
+                            calibrated[feature][right][indices],
+                        )
+                        for left, right in primary_pairs
+                    ],
+                    maximum=False,
                 )
             )
-        bootstrap_lower[feature] = float(np.nanpercentile(worst, 2.5))
+        bootstrap_lower[feature] = (
+            float(np.percentile(worst, 2.5))
+            if all(math.isfinite(value) for value in worst)
+            else math.nan
+        )
 
     null_rng = np.random.default_rng(int(config["null_model"]["seed"]))
     null_replicates = int(config["null_model"]["replicates"])
@@ -239,13 +261,23 @@ def analyze(
                     )
                 )
             )
-        raw_p[feature] = float(
-            (1 + sum(value >= observed for value in null_values)) / (null_replicates + 1)
+        raw_p[feature] = (
+            float((1 + sum(value >= observed for value in null_values)) / (null_replicates + 1))
+            if math.isfinite(observed) and all(math.isfinite(value) for value in null_values)
+            else 1.0
         )
         null_summary[feature] = {
             "observed_median_pair_spearman": observed,
-            "null_mean": float(np.mean(null_values)),
-            "null_p95": float(np.percentile(null_values, 95)),
+            "null_mean": (
+                float(np.mean(null_values))
+                if all(math.isfinite(value) for value in null_values)
+                else math.nan
+            ),
+            "null_p95": (
+                float(np.percentile(null_values, 95))
+                if all(math.isfinite(value) for value in null_values)
+                else math.nan
+            ),
         }
     adjusted_p = _holm(raw_p)
 
@@ -282,32 +314,44 @@ def analyze(
         fold_maximum_differences = []
         for positions in folds:
             fold_maximum_differences.append(
-                max(
-                    float(
-                        np.median(
-                            np.abs(
-                                calibrated[feature][left][positions]
-                                - calibrated[feature][right][positions]
+                _strict_extreme(
+                    [
+                        float(
+                            np.median(
+                                np.abs(
+                                    calibrated[feature][left][positions]
+                                    - calibrated[feature][right][positions]
+                                )
                             )
                         )
-                    )
-                    for left, right in primary_pairs
+                        for left, right in primary_pairs
+                    ],
+                    maximum=True,
                 )
             )
         calibration_valid = all(
             item["valid"] for items in parameters[feature].values() for item in items
         )
-        worst_primary = min(item["spearman_rho"] for item in primary_metrics.values())
-        max_primary_difference = max(
-            item["median_absolute_difference"] for item in primary_metrics.values()
+        worst_primary = _strict_extreme(
+            [item["spearman_rho"] for item in primary_metrics.values()], maximum=False
         )
-        worst_conversion = min(item["spearman_rho"] for item in conversion_metrics.values())
-        max_conversion_difference = max(
-            item["median_absolute_difference"] for item in conversion_metrics.values()
+        max_primary_difference = _strict_extreme(
+            [item["median_absolute_difference"] for item in primary_metrics.values()],
+            maximum=True,
         )
-        worst_uncertainty = min(item["spearman_rho"] for item in uncertainty_metrics.values())
-        max_uncertainty_difference = max(
-            item["median_absolute_difference"] for item in uncertainty_metrics.values()
+        worst_conversion = _strict_extreme(
+            [item["spearman_rho"] for item in conversion_metrics.values()], maximum=False
+        )
+        max_conversion_difference = _strict_extreme(
+            [item["median_absolute_difference"] for item in conversion_metrics.values()],
+            maximum=True,
+        )
+        worst_uncertainty = _strict_extreme(
+            [item["spearman_rho"] for item in uncertainty_metrics.values()], maximum=False
+        )
+        max_uncertainty_difference = _strict_extreme(
+            [item["median_absolute_difference"] for item in uncertainty_metrics.values()],
+            maximum=True,
         )
         passing_folds = sum(
             value <= float(gates_config["maximum_fold_primary_median_absolute_difference"])
@@ -315,21 +359,33 @@ def analyze(
         )
         gates = {
             "calibration_iqrs": calibration_valid,
-            "primary_rank": worst_primary >= float(gates_config["minimum_worst_primary_spearman"]),
-            "primary_bootstrap": bootstrap_lower[feature]
-            >= float(gates_config["minimum_worst_primary_bootstrap_lower"]),
-            "primary_agreement": max_primary_difference
-            <= float(gates_config["maximum_primary_median_absolute_difference"]),
+            "primary_rank": _passes_minimum(
+                worst_primary, float(gates_config["minimum_worst_primary_spearman"])
+            ),
+            "primary_bootstrap": _passes_minimum(
+                bootstrap_lower[feature],
+                float(gates_config["minimum_worst_primary_bootstrap_lower"]),
+            ),
+            "primary_agreement": _passes_maximum(
+                max_primary_difference,
+                float(gates_config["maximum_primary_median_absolute_difference"]),
+            ),
             "heldout_fold_agreement": passing_folds
             >= int(gates_config["minimum_passing_heldout_folds"]),
-            "conversion_rank": worst_conversion
-            >= float(gates_config["minimum_worst_conversion_spearman"]),
-            "conversion_agreement": max_conversion_difference
-            <= float(gates_config["maximum_conversion_median_absolute_difference"]),
-            "uncertainty_rank": worst_uncertainty
-            >= float(gates_config["minimum_worst_uncertainty_spearman"]),
-            "uncertainty_agreement": max_uncertainty_difference
-            <= float(gates_config["maximum_uncertainty_median_absolute_difference"]),
+            "conversion_rank": _passes_minimum(
+                worst_conversion, float(gates_config["minimum_worst_conversion_spearman"])
+            ),
+            "conversion_agreement": _passes_maximum(
+                max_conversion_difference,
+                float(gates_config["maximum_conversion_median_absolute_difference"]),
+            ),
+            "uncertainty_rank": _passes_minimum(
+                worst_uncertainty, float(gates_config["minimum_worst_uncertainty_spearman"])
+            ),
+            "uncertainty_agreement": _passes_maximum(
+                max_uncertainty_difference,
+                float(gates_config["maximum_uncertainty_median_absolute_difference"]),
+            ),
             "aligned_page_null": adjusted_p[feature]
             <= float(gates_config["maximum_holm_adjusted_permutation_p"]),
         }
