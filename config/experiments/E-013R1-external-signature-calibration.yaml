@@ -1,0 +1,20 @@
+schema_version: "1.0"
+experiment_id: E-013R1-external-signature-calibration
+hypothesis_id: H-013
+question_id: Q-015
+base_config: config/experiments/E-013-external-signature-calibration.yaml
+base_config_sha256: ca27c9fd702a1f15e8924f8742d560948d60f6df1514f55e9d1c66cc34cfde24
+predecessor_attempt:
+  experiment: E-013-external-signature-calibration
+  result: artifacts/runs/E-013-external-signature-calibration/result.json
+  result_sha256: 15051a0e568337bc0edf750098108d1e6513f1d440e0685c8a294fee4ae8cfb7
+technical_correction:
+  robust_iqr_constant_tolerance: 1.0e-12
+  constant_scale_replacement: 1.0
+  description: Treat floating-point IQR residue at or below the existing metric-invariance tolerance as constant before scaling.
+artifacts:
+  root: artifacts/runs/E-013R1-external-signature-calibration
+  case_features: artifacts/runs/E-013R1-external-signature-calibration/case-features.jsonl
+  model: artifacts/runs/E-013R1-external-signature-calibration/model.json
+  result: artifacts/runs/E-013R1-external-signature-calibration/result.json
+notes: Exact technical retry only. No source, case, feature, label, split, seed, model, threshold, permutation, or gate changes are permitted.
