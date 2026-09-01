@@ -1,0 +1,83 @@
+schema_version: "1.0"
+experiment_id: E-012-multi-witness-mechanism-replication
+hypothesis_id: H-012
+question_id: Q-014
+protocol: docs/MULTI_WITNESS_MECHANISM_REPLICATION.md
+source_manifest: data/manifests/voynich-nu-reference.yaml
+witness_registry: config/corpora/ivtff-witnesses.yaml
+source_lattice: artifacts/runs/q011-witness-alignment/lattice-v4.jsonl
+source_lattice_sha256: 0988585945ac0740900af4398059663456a5a61559c2726b775972fd3f982634
+predecessors:
+  e001_result: artifacts/runs/E-001-manufactured-vs-hoax/result.json
+  e001_result_sha256: b016040784cad0402e29c1ac5f3ac6ba2109d10cb122a848663713d688a8557d
+  e010_result: artifacts/runs/E-010-representation-robustness/result.json
+  e010_result_sha256: b93ecb462ca69d71a160d1edad7b6356335d32a8964fe70c24e6ca5cc24ad8c1
+  e011_result: artifacts/runs/E-011-cross-fitted-witness-calibration/result.json
+  e011_result_sha256: 5f0b643f3342bef387dc6b36c4c1aad970b7f04d51fdf69b0571101e95eadf2b
+scope:
+  locus_type: paragraph
+  currier_values: [A, B]
+  minimum_groups_per_page_per_view: 20
+  minimum_symbols_per_page_per_view: 100
+views:
+  primary:
+    - {name: CD2a_0, witness: CD2a, alternative: first, uncertain_space: split}
+    - {name: FG2a, witness: FG2a, alternative: first, uncertain_space: split}
+    - {name: GC2a_0, witness: GC2a, alternative: first, uncertain_space: split}
+    - {name: IT2a, witness: IT2a, alternative: first, uncertain_space: split}
+    - {name: ZL3b, witness: ZL3b, alternative: first, uncertain_space: split}
+  uncertainty:
+    - {name: ZL3b-alt-first-space-join, witness: ZL3b, alternative: first, uncertain_space: join}
+    - {name: ZL3b-alt-last-space-split, witness: ZL3b, alternative: last, uncertain_space: split}
+    - {name: ZL3b-alt-last-space-join, witness: ZL3b, alternative: last, uncertain_space: join}
+    - {name: ZL3b-alt-opaque-space-split, witness: ZL3b, alternative: opaque, uncertain_space: split}
+    - {name: ZL3b-alt-opaque-space-join, witness: ZL3b, alternative: opaque, uncertain_space: join}
+unitization:
+  alphabet: atomic STA1 symbols
+  transport_encoding: sorted union mapped bijectively to Unicode private-use code points
+  roundtrip_required: true
+  rename_invariance_tolerance: 1.0e-12
+split:
+  seed: 20260906
+  heldout_fraction: 0.25
+  grouping_key: physical_page
+  stratification: Currier, hand, and section metadata
+parameters:
+  ngram_alpha: 0.1
+  workers: 12
+  mutation_rate: 0.18
+null_model:
+  replicates: 512
+  families:
+    - within_page_group_shuffle
+    - within_group_symbol_shuffle
+    - global_group_resample
+    - iid_symbol_length_matched
+    - copy_mutate_pseudotext
+metrics:
+  primary:
+    - heldout_char_trigram_gain_bits
+    - heldout_group_bigram_gain_bits
+    - heldout_local_copy_rate
+  replicated_effects:
+    - {id: R1, family: within_page_group_shuffle, metric: heldout_group_bigram_gain_bits}
+    - {id: R2, family: within_page_group_shuffle, metric: heldout_local_copy_rate}
+    - {id: R3, family: within_group_symbol_shuffle, metric: heldout_char_trigram_gain_bits}
+    - {id: R4, family: within_group_symbol_shuffle, metric: heldout_local_copy_rate}
+    - {id: R5, family: global_group_resample, metric: heldout_group_bigram_gain_bits}
+    - {id: R6, family: global_group_resample, metric: heldout_local_copy_rate}
+    - {id: R7, family: iid_symbol_length_matched, metric: heldout_char_trigram_gain_bits}
+    - {id: R8, family: iid_symbol_length_matched, metric: heldout_local_copy_rate}
+  view_conjunction: maximum raw p across all ten views
+  correction: Holm across eight conjunction p-values
+  maximum_adjusted_p: 0.05
+  minimum_passing_effects: 8
+diagnostics:
+  copy_mutate_metrics: all three primary metrics in all ten views
+  interpretation: mandatory ambiguity report; not a hypothesis gate
+artifacts:
+  root: artifacts/runs/E-012-multi-witness-mechanism-replication
+  symbol_map: symbol-map.json
+  split: split.json
+  result: result.json
+notes: No target classification or probability is permitted. Passing only advances the fixed replicated effects to an external-control campaign.
