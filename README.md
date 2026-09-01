@@ -1,198 +1,150 @@
-# Manuscript Lab
+# Voynich Manuscript Lab
 
-A local, reproducible workbench for studying one book written in an otherwise
-unattested writing system, including possible relationships between text and
-page imagery. The repository begins deliberately neutral: no manuscript
-identity, transcription convention, glyph interpretation, language family, or
-semantic theory is baked into the code.
+A reproducible computational research workspace for Beinecke MS 408, commonly
+called the Voynich Manuscript. The lab is designed to test properties of the
+writing and competing generative mechanisms without assuming that the text is
+a natural language, a cipher, a constructed system, or meaningless.
 
-## What is ready
+This repository contains the research code, frozen configurations, source
+manifests, protocols, tests, ledgers, and reviewed reports. Source scans,
+transcription downloads, model weights, caches, and generated run directories
+are intentionally not committed.
 
-- isolated Python 3.12 environment under Ubuntu 24.04 / WSL 2;
-- PyTorch inference on CPU and NVIDIA CUDA;
-- statistical, corpus, image, PDF, OCR, and transformer tooling;
-- lossless byte/code-point/grapheme integer encodings and classical-cipher tooling;
-- constraint, integer-optimization, modular-algebra, and seeded search backends;
-- Pynini/OpenFST weighted transducers and Snakemake workflow orchestration;
-- managed local Qwen review, reference embedding/reranking, and GLM critic tiers;
-- DuckDB experiment leases, heartbeats, state transitions, and hash-linked events;
-- immutable-source manifests with SHA-256 provenance;
-- separate raw, interim, processed, model, run, report, and notebook layers;
-- research ledgers and a falsification-first experiment protocol;
-- repeatable diagnostics and tests.
+## Current evidence
 
-## Start here
+As of 2026-09-01, the defensible result is narrower than a decipherment claim:
 
-From WSL, at the repository root:
+- The format-2 IVTFF intake can be parsed losslessly and aligned across five
+  primary transcription lineages without merging their readings. See
+  [Q-010](reports/Q-010-lossless-representation.md) and
+  [Q-011](reports/Q-011-witness-alignment.md).
+- Eight low-level order and local-copy effects reject four simple shuffle or
+  resampling nulls across ten witness and uncertainty views. See
+  [E-012](reports/E-012-multi-witness-mechanism-replication.md).
+- Those same effects do **not** reliably distinguish intentional payload from
+  structured no-payload controls. In the corrected external calibration,
+  omitted-family development balanced accuracy was 0.611, its permutation
+  p-value was 0.233, and human-gibberish specificity was 0.368. See
+  [E-013R1](reports/E-013R1-external-signature-calibration.md).
+- Voynichese was therefore not scored by that classifier. The current evidence
+  supports robust low-level non-randomness, but not an inference of meaning,
+  language, cipher, hoax, or authorial intent.
+
+The original E-013 fit was invalid because an effectively constant feature was
+scaled by floating-point noise. It is retained as a documented
+[technical failure](reports/E-013-technical-failure.md); E-013R1 is the
+authoritative corrected result.
+
+## Reproduce the workspace
+
+The supported baseline is Ubuntu 24.04 under WSL 2 with Python 3.12. A fresh
+clone does not need to be placed at any particular Windows or Linux path.
 
 ```bash
+git clone https://github.com/zataraine/voynich-manuscript-lab.git
+cd voynich-manuscript-lab
+./scripts/bootstrap_wsl.sh
 ./scripts/lab doctor
-./scripts/lab local-ai doctor --live
 ./scripts/smoke.sh
-./scripts/run jupyter lab --no-browser
 ```
 
-From PowerShell, enter the configured distribution first:
+Run project commands through `./scripts/run`; it uses the locked environment
+described by `pyproject.toml` and `uv.lock`. CUDA is supplied by the Windows WSL
+driver bridge. Do not install a Linux NVIDIA display driver inside WSL.
 
-```powershell
-wsl.exe -d Ubuntu-24.04
-cd /mnt/c/Users/adminion/Documents/ChatGPT/Voynich
-./scripts/lab doctor
-```
-
-The project environment and package/model caches live on the WSL ext4 disk,
-not inside the Windows working tree. `./scripts/run` supplies the required paths
-automatically. See `INFRASTRUCTURE.md` for the exact layout and recovery steps.
-
-## When the source arrives
-
-1. Copy original book files to `data/raw/books/`, supplied images to
-   `data/raw/images/`, and the untouched encoding to
-   `data/raw/transcriptions/`.
-2. Create a manifest without altering those files:
-
-   ```bash
-   ./scripts/lab manifest build SOURCE_ID \
-     data/raw/books/book.pdf \
-     data/raw/transcriptions/encoding.txt
-   ```
-
-3. Fill in acquisition, rights, transcription-system, and page-mapping details
-   in the generated manifest.
-4. Validate the intake:
-
-   ```bash
-   ./scripts/lab manifest verify data/manifests/SOURCE_ID.yaml
-   ```
-
-5. Add the source facts to `research/QUESTION_LOG.md`. Do not begin semantic
-   interpretation until page IDs, transcription units, uncertainty markers, and
-   image/page alignment are specified.
-
-To create a lossless numeric baseline after intake:
+The deterministic pipeline does not require the author's local language-model
+stack. Local Qwen, embedding, reranking, and critic services are optional aids
+for bounded review and long unattended runs; they do not supply numeric
+evidence. Their machine-specific setup is documented in
+[`docs/LOCAL_AI.md`](docs/LOCAL_AI.md). If that stack is present, check it with:
 
 ```bash
-./scripts/lab numeric encode data/raw/transcriptions/encoding.txt \
-  --output-prefix data/interim/numeric/source-byte --mode byte
-./scripts/lab numeric verify data/interim/numeric/source-byte
-./scripts/lab crypt analyze data/interim/numeric/source-byte \
-  --output artifacts/runs/source-byte-descriptives.json
+./scripts/lab local-ai doctor --live
 ```
 
-The byte baseline accepts any source. Code-point and grapheme variants are
-available when the supplied encoding and codec are documented. Cipher searches
-must follow `docs/CRYPTANALYSIS_PROTOCOL.md`.
+## Acquire the source data
 
-## Voynich source intake
-
-The identified source is Beinecke MS 408. The curated intake configuration,
-rights boundaries, evidence tiers, and known gaps are documented in
-`docs/SOURCE_CATALOG.md`. To reproduce the permitted downloads and validate all
-local files from WSL:
+The source catalog records provenance, evidence tiers, rights notes, and known
+gaps. Review [`docs/SOURCE_CATALOG.md`](docs/SOURCE_CATALOG.md) before download,
+then run:
 
 ```bash
 ./scripts/acquire-voynich
 ./scripts/validate-voynich-intake
 ```
 
-The intake includes Yale's 213 full-resolution IIIF canvases, the complete Yale
-PDF, independent IVTFF/STA transcription witnesses, format specifications,
-physical reports, and selected computational baselines. It intentionally does
-not scrape restricted decipherment sites.
+The acquisition covers the Yale IIIF presentation and PDF, ten acquired
+IVTFF/legacy transcription source files, nine derived official STA conversions,
+format specifications, physical reports, and selected control resources. These
+are not nineteen independent transcription witnesses: some files are derived
+views or related lineages, and the tracked metadata preserves those
+relationships. Restricted decipherment sites are not scraped.
 
-Voynich-specific research notes now include `docs/EVA_CURRIER.md` and
-`docs/NAIBBE.md`. Reproducible orchestration starts at `workflow/Snakefile`; the
-lab also provides Pynini/OpenFST for weighted, invertible transducer experiments.
-The local model boundary and unattended-run operations are documented in
-`docs/LOCAL_AI.md`.
+Because raw source files are excluded from Git, a clone alone cannot reproduce
+every published numerical result. The tracked manifests identify expected
+files and hashes; network availability, third-party terms, and manually
+acquired resources can still affect reconstruction. Generated results are
+immutable local artifacts under `artifacts/runs/`; reviewed conclusions and
+their provenance hashes are promoted to `reports/`.
 
-The first preregistered mechanism study is documented in
-`docs/MANUFACTURED_VS_HOAX.md`. It compares held-out sequence structure with
-five seeded nonsemantic/null families, then uses the local embedding, reranking,
-and Qwen stack for bounded methodological retrieval and review. It deliberately
-does not report a probability of meaning before calibrated control families and
-explicit priors exist.
+## Research trail
 
-The next control-calibration campaign is documented in
-`docs/CONTROL_CALIBRATION.md`. It uses document-grouped meaningful and
-human-gibberish controls, withholds Naibbe ciphertext as a known-payload stress
-test, and measures sensitivity across six IVTFF witnesses. Run its resumable
-deterministic and local-review stages with `./scripts/run-control-calibration`.
+The current state is recorded in four separate ledgers:
 
-The cipher-domain prerequisite is documented in
-`docs/CIPHER_TRANSFORMATION_LADDER.md`. E-003 applies paired seeded transforms
-to both control labels and evaluates unseen documents under an unseen cipher
-family. It deliberately excludes Voynichese. Run it with
-`./scripts/run-transformation-ladder`.
+- [`research/QUESTION_LOG.md`](research/QUESTION_LOG.md) — research questions;
+- [`research/HYPOTHESES.md`](research/HYPOTHESES.md) — falsifiable hypotheses;
+- [`research/EXPERIMENT_INDEX.md`](research/EXPERIMENT_INDEX.md) — experiment status and outputs;
+- [`research/CLAIMS.md`](research/CLAIMS.md) — claims that survived review.
 
-The parameter-robustness campaign is documented in
-`docs/ROBUST_PARAMETER_LADDER.md`. E-004 evaluates 16 transform variants across
-three fixed seeds and selects invariant features strictly inside each training
-boundary. Run it with `./scripts/run-robust-parameter-ladder`.
+The full sequence runs from E-001 through E-013R1. Historical protocols and
+reports retain their original prospective language, including statements about
+what was “next” at the time; the ledgers and the current-evidence section above
+give the present status. The next justified direction is external-control
+development of independently motivated higher-level structural measurements,
+not retuning the failed eight-effect classifier against Voynichese.
 
-The external known-payload benchmark is documented in
-`docs/KNOWN_PAYLOAD_RETRIEVAL.md`. E-005 retrieves exact source segments through
-completely unseen independently implemented cipher families. Run it with
-`./scripts/run-known-payload-retrieval` after acquisition.
+## Main capabilities
 
-The character-relation campaign is documented in
-`docs/CIPHER_RELATION_REPRESENTATION.md`. E-006 freezes the E-005 benchmark and
-tests one preregistered multi-view representation across three fitting seeds,
-with same-family and exact-decryption ceilings. Run it with
-`./scripts/run-cipher-relation-representation`.
+- byte-exact source manifests and reversible numeric encodings;
+- lossless IVTFF parsing, Yale canvas mapping, and witness lattices;
+- page- or document-grouped statistical evaluation and structured null models;
+- classical, homophonic, nomenclator, polyalphabetic, progressive-key,
+  transposition, fractionation, and rotor control generators;
+- Pynini/OpenFST transducers, constraint solving, optimization, and seeded search;
+- CPU/CUDA inference, embeddings, reranking, and optional local-model review;
+- Snakemake orchestration and DuckDB experiment leases, heartbeats, and events.
 
-The ADFGX failure localization and independent parameter-blind replication are
-documented in `docs/ADFGX_STAGE_LOCALIZATION.md` and
-`docs/BLIND_ADFGX_REPLICATION.md`. E-008 separates generation, truth-free
-scoring, and unblinding over new sources and widths 4–7. Run it once with
-`./scripts/run-blind-adfgx-replication`; outputs are immutable.
-
-The ciphertext-only bridge is documented in
-`docs/CIPHERTEXT_ONLY_STRUCTURE.md`. E-009 intentionally removes every
-plaintext candidate and tests intrinsic anonymous-symbol predictability against
-matched nonsemantic controls. Its failed result is recorded in
-`reports/E-009-ciphertext-only-structure.md`; the ADFGX-specific branch is
-closed pending genuinely independent evidence rather than further tuning.
-
-The format-2 representation prerequisite is now implemented as a lossless
-structural IVTFF parser plus a many-to-many IVTFF-page/Yale-canvas mapping. It
-preserves witness identity, alternatives, uncertain spaces, comments, tags,
-ligatures, foldout parts, and exact source bytes. Validate or audit a witness
-without selecting a preferred reading:
-
-```bash
-./scripts/lab ivtff validate data/raw/transcriptions/ivtff/ZL3b-n.txt
-./scripts/lab ivtff map-audit \
-  data/raw/transcriptions/ivtff/ZL3b-n.txt \
-  data/raw/metadata/yale-ms408/iiif-presentation-3.json
-```
-
-The witness lattice aligns native readings without merging them and compares
-cross-alphabet readings only through their registered official STA1 views:
-
-```bash
-./scripts/lab ivtff align config/corpora/ivtff-witnesses.yaml \
-  --output artifacts/runs/q011-witness-alignment/lattice.jsonl \
-  --audit-output artifacts/runs/q011-witness-alignment/audit.json
-```
-
-The Q-011 audit and its lineage limits are recorded in
-`reports/Q-011-witness-alignment.md`.
+The cipher rules are in
+[`docs/CRYPTANALYSIS_PROTOCOL.md`](docs/CRYPTANALYSIS_PROTOCOL.md). No readable
+fragment counts as validation: mappings must be frozen before held-out scoring
+and compared with structure-preserving nulls.
 
 ## Repository map
 
 | Path | Purpose | Git policy |
 |---|---|---|
-| `data/raw/` | untouched source files | ignored; immutable |
-| `data/interim/` | reversible page, region, and text transforms | ignored |
-| `data/processed/` | versioned analysis tables, features, and splits | ignored |
-| `data/manifests/` | hashes and source metadata | tracked |
+| `data/raw/` | untouched acquired source files | ignored; immutable |
+| `data/interim/` | reversible text, page, and region transforms | ignored |
+| `data/processed/` | analysis tables, features, and splits | ignored |
+| `data/manifests/` | source metadata and expected hashes | tracked |
 | `config/` | lab and experiment configuration | tracked |
-| `models/` | model registry and downloaded weights | registry tracked, weights ignored |
-| `artifacts/runs/` | machine-generated experiment records | ignored |
-| `research/` | question, hypothesis, experiment, and claim ledgers | tracked |
+| `models/` | local-model configuration and registry template | weights ignored |
+| `artifacts/runs/` | generated experiment records | ignored |
+| `research/` | questions, hypotheses, experiments, and claims | tracked |
 | `reports/` | reviewed results and selected small figures | tracked |
-| `src/` and `tests/` | reusable code and verification | tracked |
+| `src/`, `tests/` | reusable code and verification | tracked |
+| `workflow/` | Snakemake workflows and local profile | tracked |
 
-The research rules live in `AGENTS.md`, the machine contract in
-`INFRASTRUCTURE.md`, and the data/experiment contracts in `docs/`.
+Read [`AGENTS.md`](AGENTS.md), [`INFRASTRUCTURE.md`](INFRASTRUCTURE.md),
+[`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md), and
+[`docs/RESEARCH_PROTOCOL.md`](docs/RESEARCH_PROTOCOL.md) before changing
+research code or data.
+
+## Rights and licensing
+
+The repository is publicly readable but currently has no repository-wide
+open-source license. Public visibility alone does not grant reuse rights.
+Third-party manuscript images, transcriptions, papers, control texts, and model
+assets remain subject to their own terms, recorded where known in the source
+catalog and manifests. No Yale manuscript images or downloaded model weights
+are committed here.

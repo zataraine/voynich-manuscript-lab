@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A provenance-first multimodal lab for a single unattested writing system"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-license = { text = "Private research workspace" }
+license = { text = "No license granted; see README" }
 dependencies = [
   "accelerate>=1.14,<2",
   "bitsandbytes>=0.50,<0.51; sys_platform == 'linux' and platform_machine == 'x86_64'",

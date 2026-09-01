@@ -1,9 +1,9 @@
 # Snakemake workflow
 
-`workflow/Snakefile` is the reproducible orchestration entry point. The initial
-DAG validates the complete raw intake and its three tracked manifests. Add
-derived rules here as the IVTFF parser, canvas/locus alignment, witness lattice,
-and cipher null models are implemented. Never make a rule modify `data/raw/`.
+`workflow/Snakefile` is the reproducible orchestration entry point. The DAG
+validates the raw intake and tracked manifests and exposes the implemented
+mechanism, cipher-control, representation, witness, and external-calibration
+campaigns. Never make a rule modify `data/raw/`.
 
 Preview or run from WSL:
 
@@ -17,7 +17,8 @@ auxiliary local model declare both `gpu=1` and `local_ai=1`; numerical rules
 declare realistic thread and memory resources. Experiment state belongs in the
 DuckDB ledger, not in sentinel filenames alone. See `docs/LOCAL_AI.md`.
 
-`workflow/mechanism-study.smk` is the first long sequential experiment. It uses
-the preregistered `E-001-manufactured-vs-hoax` config and ends with a locally
-retrieved, schema-constrained Qwen review. Run it through `experiment execute`
-so leases, heartbeats, logs, and terminal state remain durable.
+`workflow/mechanism-study.smk` is the historical E-001 long sequential
+experiment. Later campaign entry points are listed in `scripts/run-*` and in
+`research/EXPERIMENT_INDEX.md`. Run managed campaigns through their wrapper or
+`experiment execute` so leases, heartbeats, logs, and terminal state remain
+durable. Local-model review is advisory and never supplies numeric evidence.
