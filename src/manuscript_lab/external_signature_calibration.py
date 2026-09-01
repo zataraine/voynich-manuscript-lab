@@ -497,7 +497,12 @@ def extract_case_signature(
 
 
 def _fit_model(
-    rows: list[dict[str, Any]], labels: np.ndarray, *, c: float, seed: int
+    rows: list[dict[str, Any]],
+    labels: np.ndarray,
+    *,
+    c: float,
+    seed: int,
+    scale_tolerance: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray, LogisticRegression]:
     matrix = np.asarray(
         [[row["effects"][effect_id] for effect_id, _, _ in EFFECTS] for row in rows]
@@ -505,7 +510,7 @@ def _fit_model(
     median = np.median(matrix, axis=0)
     q25, q75 = np.percentile(matrix, [25, 75], axis=0)
     scale = q75 - q25
-    scale[scale == 0] = 1.0
+    scale[scale <= scale_tolerance] = 1.0
     model = LogisticRegression(
         C=c,
         class_weight="balanced",
@@ -533,6 +538,7 @@ def _cross_family_predictions(
     folds: int,
     c: float,
     seed: int,
+    scale_tolerance: float,
 ) -> tuple[np.ndarray, np.ndarray, list[str]]:
     predictions: list[float] = []
     labels: list[int] = []
@@ -544,7 +550,13 @@ def _cross_family_predictions(
             if not test:
                 continue
             train_labels = np.asarray([family_labels[row["family"]] for row in train])
-            median, scale, model = _fit_model(train, train_labels, c=c, seed=seed + fold)
+            median, scale, model = _fit_model(
+                train,
+                train_labels,
+                c=c,
+                seed=seed + fold,
+                scale_tolerance=scale_tolerance,
+            )
             predictions.extend(_predict(test, median, scale, model).tolist())
             labels.extend([family_labels[family]] * len(test))
             families.extend([family] * len(test))
@@ -585,9 +597,17 @@ def evaluate_controls(
     c = float(params["logistic_c"])
     seed = int(config["seed"])
     folds = int(params["development_folds"])
+    scale_tolerance = float(
+        config.get("technical_correction", {}).get("robust_iqr_constant_tolerance", 0.0)
+    )
 
     dev_scores, dev_labels, dev_families = _cross_family_predictions(
-        development, family_labels, folds=folds, c=c, seed=seed
+        development,
+        family_labels,
+        folds=folds,
+        c=c,
+        seed=seed,
+        scale_tolerance=scale_tolerance,
     )
     development_summary = _classification_summary(dev_scores, dev_labels, dev_families, threshold)
     rng = random.Random(_stable_seed(seed, "family-label-permutation"))
@@ -599,7 +619,12 @@ def evaluate_controls(
         rng.shuffle(permuted)
         mapping = dict(zip(families, permuted, strict=True))
         scores, labels, names = _cross_family_predictions(
-            development, mapping, folds=folds, c=c, seed=seed
+            development,
+            mapping,
+            folds=folds,
+            c=c,
+            seed=seed,
+            scale_tolerance=scale_tolerance,
         )
         null_values.append(
             _classification_summary(scores, labels, names, threshold)["balanced_accuracy"]
@@ -609,7 +634,17 @@ def evaluate_controls(
     ) / (len(null_values) + 1)
 
     train_labels = np.asarray([row["label"] for row in development])
-    median, scale, model = _fit_model(development, train_labels, c=c, seed=seed)
+    development_matrix = np.asarray(
+        [[row["effects"][effect_id] for effect_id, _, _ in EFFECTS] for row in development]
+    )
+    raw_iqr = np.subtract(*np.percentile(development_matrix, [75, 25], axis=0))
+    median, scale, model = _fit_model(
+        development,
+        train_labels,
+        c=c,
+        seed=seed,
+        scale_tolerance=scale_tolerance,
+    )
     independent_scores = _predict(independent, median, scale, model)
     independent_labels = np.asarray([row["label"] for row in independent])
     independent_families = [str(row["family"]) for row in independent]
@@ -670,7 +705,14 @@ def evaluate_controls(
     model_record = {
         "effect_order": [effect_id for effect_id, _, _ in EFFECTS],
         "median": median.tolist(),
+        "raw_iqr": raw_iqr.tolist(),
         "iqr": scale.tolist(),
+        "robust_iqr_constant_tolerance": scale_tolerance,
+        "constant_effects": [
+            effect_id
+            for (effect_id, _, _), value in zip(EFFECTS, raw_iqr, strict=True)
+            if value <= scale_tolerance
+        ],
         "coefficient": model.coef_[0].tolist(),
         "intercept": float(model.intercept_[0]),
         "probability_threshold": threshold,
@@ -705,14 +747,50 @@ def _write_immutable(path: Path, payload: bytes) -> None:
     path.write_bytes(payload)
 
 
+def _load_effective_config(root: Path, config_path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    supplied = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    if "base_config" not in supplied:
+        return supplied, {}
+    base_path = root / supplied["base_config"]
+    if sha256_file(base_path) != supplied["base_config_sha256"]:
+        raise ValueError("E-013R1 base config hash changed")
+    base = yaml.safe_load(base_path.read_text(encoding="utf-8"))
+    effective = {
+        **base,
+        "experiment_id": supplied["experiment_id"],
+        "hypothesis_id": supplied["hypothesis_id"],
+        "question_id": supplied["question_id"],
+        "technical_correction": supplied["technical_correction"],
+        "artifacts": supplied["artifacts"],
+        "notes": supplied["notes"],
+    }
+    retry = {
+        "base_config": supplied["base_config"],
+        "base_config_sha256": supplied["base_config_sha256"],
+        "predecessor_attempt": supplied["predecessor_attempt"],
+        "technical_correction": supplied["technical_correction"],
+    }
+    return effective, retry
+
+
 def run_campaign(config_path: Path) -> dict[str, Any]:
     """Run E-013 without loading or scoring any manuscript transcription."""
     started = time.monotonic()
     root = repository_root()
     config_path = config_path.resolve()
-    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    if config.get("experiment_id") != "E-013-external-signature-calibration":
+    config, retry = _load_effective_config(root, config_path)
+    if config.get("experiment_id") not in {
+        "E-013-external-signature-calibration",
+        "E-013R1-external-signature-calibration",
+    }:
         raise ValueError("not the frozen E-013 config")
+    if retry:
+        predecessor_attempt = retry["predecessor_attempt"]
+        if (
+            sha256_file(root / predecessor_attempt["result"])
+            != predecessor_attempt["result_sha256"]
+        ):
+            raise ValueError("frozen E-013 technical-failure result hash changed")
     if (
         sha256_file(root / config["predecessor"]["result"])
         != config["predecessor"]["result_sha256"]
@@ -808,6 +886,7 @@ def run_campaign(config_path: Path) -> dict[str, Any]:
             **provenance,
             "preregistration_git_commit": _preregistration_revision(root, config_path),
             "config_sha256": sha256_file(config_path),
+            "base_config_sha256": retry.get("base_config_sha256"),
             "protocol_sha256": sha256_file(root / config["protocol"]),
             "case_features_sha256": sha256_file(feature_path),
             "model_sha256": sha256_file(model_path),
@@ -822,6 +901,7 @@ def run_campaign(config_path: Path) -> dict[str, Any]:
             "External calibration of a fixed low-level signature only; scores are not posterior "
             "probabilities of meaning, language, cipher, construction, or hoaxing."
         ),
+        "retry": retry or None,
     }
     _write_immutable(
         result_path,

@@ -4,6 +4,7 @@ import numpy as np
 
 from manuscript_lab.external_signature_calibration import (
     _classification_summary,
+    _fit_model,
     _select_window,
     transform_family,
 )
@@ -76,3 +77,15 @@ def test_classification_summary_uses_family_specific_recall() -> None:
     assert summary["balanced_accuracy"] == 0.75
     assert summary["family_recall"] == {"n": 0.5, "p": 1.0}
     assert summary["worst_family_recall"] == 0.5
+
+
+def test_robust_scaler_floors_floating_point_constant_iqr() -> None:
+    rows = []
+    for index in range(8):
+        effects = {f"R{number}": float(index + number) for number in range(1, 9)}
+        effects["R2"] = 1.0 + index * 1e-16
+        rows.append({"effects": effects})
+    labels = np.asarray([0, 0, 0, 0, 1, 1, 1, 1])
+    _median, scale, model = _fit_model(rows, labels, c=1.0, seed=7, scale_tolerance=1e-12)
+    assert scale[1] == 1.0
+    assert np.all(np.isfinite(model.coef_))
