@@ -1,0 +1,114 @@
+schema_version: "1.0"
+experiment_id: E-014-higher-order-external-calibration
+hypothesis_id: H-014
+question_id: Q-016
+protocol: docs/HIGHER_ORDER_EXTERNAL_CALIBRATION.md
+transcription: none; Voynichese is excluded
+hypothesis_family: higher-order-payload-vs-no-intended-payload-calibration
+predecessor:
+  experiment: E-013R1-external-signature-calibration
+  result: artifacts/runs/E-013R1-external-signature-calibration/result.json
+  result_sha256: 3c8cef151f3fdfff4db6f185f16e820ce86c65b5ddf522f7e13c39cf61d201d8
+sources:
+  development_manifest: data/manifests/e005-known-payload-benchmark.yaml
+  development_manifest_sha256: ae6a26ac04a22bc20bcf746d852cb4d394707ee3fa13126e0d2fb5f8870842c1
+  independent_manifests:
+    - path: data/manifests/e008-blind-adfgx-plaintexts.yaml
+      sha256: 33eb2860f78cde48009fd5aee99d2fe2189db220a7f6df5d7d0b8b26ef5209e2
+    - path: data/manifests/e009-ciphertext-only-controls.yaml
+      sha256: 1da4ca63c550dea208e5d81425b041e75c3853e8d3a6218fb3be508ae6ebebb3
+  external_archive: data/raw/metadata/reference-code/naibbe-cipher-f2675ec5dd27.tar.gz
+  external_archive_sha256: 553b05807727b81361e127ca04b788d4ea64298527deffdec875db629346bffc
+  external_manifest: data/manifests/naibbe-reference.yaml
+  external_manifest_sha256: f8d9b15193f8963b1d77e2d1e20c508908e23a108dd7bdfc55456029c506ca9b
+normalization:
+  version: unicode-groups-contiguous-window-v1
+  minimum_groups: 70
+  maximum_groups: 280
+  groups_per_block: 10
+parameters:
+  payload_families:
+    - natural
+    - monoalphabetic
+    - vigenere
+    - progressive_key
+    - homophonic
+    - nomenclator_hybrid
+  no_payload_families:
+    - character_markov1
+    - token_markov1
+    - copy_mutate_008
+    - copy_mutate_018
+    - positional_slot
+  mutation_rates:
+    copy_mutate_008: 0.08
+    copy_mutate_018: 0.18
+  features:
+    - heaps_exponent
+    - heaps_r2
+    - heaps_early_late_delta
+    - length_autocorrelation_lag_1
+    - length_autocorrelation_lag_2
+    - length_autocorrelation_lag_5
+    - length_autocorrelation_lag_10
+    - length_autocorrelation_lag_20
+    - length_low_frequency_power_fraction
+    - length_block_mean_cv
+    - length_block_std_cv
+    - recurrence_gap_burstiness
+    - recurrence_gap_cv
+    - frequent_token_block_fano
+    - token_block_information_20
+    - token_block_information_40
+    - token_pattern_compression_shuffle_gain
+    - length_pattern_compression_shuffle_gain
+    - cooccurrence_degree_assortativity
+    - cooccurrence_average_clustering
+    - cooccurrence_selectivity_cv
+  length_lags: [1, 2, 5, 10, 20]
+  length_block_size: 10
+  information_block_sizes: [20, 40]
+  frequent_token_limit: 16
+  compression_shuffle_replicates: 32
+  development_folds: 3
+  logistic_c: 1.0
+  class_weight: balanced
+  robust_iqr_constant_tolerance: 1.0e-12
+  probability_threshold: 0.5
+  permutation_replicates: 1024
+  workers: 12
+seed: 20260908
+splits:
+  development: complete E-005 source document; fixed hash-derived three-fold assignment
+  independent: all E-008 and E-009 source documents; never used for fitting or scaling
+  external: archive member; scored after final model freeze
+metrics:
+  primary:
+    - development_balanced_accuracy
+    - worst_development_family_recall
+    - family_label_permutation_p
+    - independent_balanced_accuracy
+    - worst_independent_family_recall
+    - external_meaningful_recall
+    - external_human_gibberish_specificity
+    - naibbe_payload_recall
+    - naibbe_median_payload_score
+  construction_gates:
+    maximum_token_rename_delta: 1.0e-12
+  interpretation_gates:
+    minimum_development_balanced_accuracy: 0.70
+    minimum_worst_development_family_recall: 0.55
+    maximum_family_label_permutation_p: 0.01
+    minimum_independent_balanced_accuracy: 0.70
+    minimum_worst_independent_family_recall: 0.55
+    minimum_external_meaningful_recall: 0.65
+    minimum_external_human_gibberish_specificity: 0.65
+    minimum_naibbe_payload_recall: 0.60
+    minimum_naibbe_median_payload_score: 0.60
+  decision_rule: All construction controls and all nine scientific gates must pass before a witness-robust target experiment may be preregistered.
+artifacts:
+  root: artifacts/runs/E-014-higher-order-external-calibration
+  case_features: artifacts/runs/E-014-higher-order-external-calibration/case-features.jsonl
+  model: artifacts/runs/E-014-higher-order-external-calibration/model.json
+  result: artifacts/runs/E-014-higher-order-external-calibration/result.json
+notes: Fixed higher-order controls only. No Voynich input, E-012 effects, semantic embeddings, LLM scores, feature selection, target thresholds, or post-hoc family removal.
