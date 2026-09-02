@@ -12,7 +12,7 @@ are intentionally not committed.
 
 ## Current evidence
 
-As of 2026-09-01, the defensible result is narrower than a decipherment claim:
+As of 2026-09-02, the defensible result is narrower than a decipherment claim:
 
 - The format-2 IVTFF intake can be parsed losslessly and aligned across five
   primary transcription lineages without merging their readings. See
@@ -26,7 +26,11 @@ As of 2026-09-01, the defensible result is narrower than a decipherment claim:
   omitted-family development balanced accuracy was 0.611, its permutation
   p-value was 0.233, and human-gibberish specificity was 0.368. See
   [E-013R1](reports/E-013R1-external-signature-calibration.md).
-- Voynichese was therefore not scored by that classifier. The current evidence
+- A separate 21-feature higher-order panel also fails external calibration:
+  development balanced accuracy is 0.638 with permutation p=0.155,
+  human-gibberish specificity is 0.289, and Naibbe recall is 0.50. See
+  [E-014](reports/E-014-higher-order-external-calibration.md).
+- Voynichese was therefore not scored by either classifier. The current evidence
   supports robust low-level non-randomness, but not an inference of meaning,
   language, cipher, hoax, or authorial intent.
 
@@ -96,12 +100,13 @@ The current state is recorded in four separate ledgers:
 - [`research/EXPERIMENT_INDEX.md`](research/EXPERIMENT_INDEX.md) — experiment status and outputs;
 - [`research/CLAIMS.md`](research/CLAIMS.md) — claims that survived review.
 
-The full sequence runs from E-001 through E-013R1. Historical protocols and
+The full sequence runs from E-001 through E-014. Historical protocols and
 reports retain their original prospective language, including statements about
 what was “next” at the time; the ledgers and the current-evidence section above
 give the present status. The next justified direction is external-control
-development of independently motivated higher-level structural measurements,
-not retuning the failed eight-effect classifier against Voynichese.
+acquisition or prospective creation of longer human no-intended-payload controls
+and validation of manuscript-scale hierarchical generators, not another
+target-facing binary classifier.
 
 ## Main capabilities
 
