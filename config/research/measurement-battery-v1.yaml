@@ -1,0 +1,24 @@
+schema_version: "1.0"
+battery_id: measurement-battery-v1
+target_access: forbidden
+minimum_records: 4
+conditional_orders: [0, 1]
+context_block_size: 20
+compression_shuffle_replicates: 16
+learned_unit_policy:
+  fit_on_training_records_only: true
+  freeze_before_heldout_measurement: true
+  merge_counts: [16, 32, 64, 128]
+metric_rules:
+  unit_entropy_bits: two_sided
+  conditional_unit_entropy_order1_bits: two_sided
+  group_type_token_ratio: two_sided
+  singleton_type_ratio: two_sided
+  median_recurrence_distance: two_sided
+  adjacent_group_identity_rate: two_sided
+  cross_separator_edge_mi_bits: two_sided
+  line_position_length_spearman: two_sided
+  page_unigram_drift_js: two_sided
+  section_unigram_drift_js: two_sided
+  contextual_block_mi_bits: two_sided
+  compression_shuffle_gain: two_sided

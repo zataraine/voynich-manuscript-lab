@@ -55,3 +55,10 @@ def test_representation_view_registry_matches_schema() -> None:
     schema = json.loads((root / "schemas/representation-view-registry.schema.json").read_text())
     registry = yaml.safe_load((root / "config/corpora/representation-views-v1.yaml").read_text())
     Draft202012Validator(schema).validate(registry)
+
+
+def test_measurement_battery_matches_schema() -> None:
+    root = Path(__file__).parents[1]
+    schema = json.loads((root / "schemas/measurement-battery.schema.json").read_text())
+    battery = yaml.safe_load((root / "config/research/measurement-battery-v1.yaml").read_text())
+    Draft202012Validator(schema).validate(battery)

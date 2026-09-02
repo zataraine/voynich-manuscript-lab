@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/measurement-battery.schema.json",
+  "title": "Target-independent measurement battery",
+  "type": "object",
+  "required": ["schema_version", "battery_id", "target_access", "minimum_records", "conditional_orders", "context_block_size", "compression_shuffle_replicates", "learned_unit_policy", "metric_rules"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "battery_id": {"const": "measurement-battery-v1"},
+    "target_access": {"const": "forbidden"},
+    "minimum_records": {"type": "integer", "minimum": 2},
+    "conditional_orders": {"const": [0, 1]},
+    "context_block_size": {"type": "integer", "minimum": 2},
+    "compression_shuffle_replicates": {"type": "integer", "minimum": 2},
+    "learned_unit_policy": {
+      "type": "object",
+      "required": ["fit_on_training_records_only", "freeze_before_heldout_measurement", "merge_counts"],
+      "properties": {
+        "fit_on_training_records_only": {"const": true},
+        "freeze_before_heldout_measurement": {"const": true},
+        "merge_counts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "integer", "minimum": 1}}
+      },
+      "additionalProperties": false
+    },
+    "metric_rules": {"type": "object", "minProperties": 8, "additionalProperties": {"enum": ["higher", "lower", "two_sided"]}}
+  },
+  "additionalProperties": false
+}
