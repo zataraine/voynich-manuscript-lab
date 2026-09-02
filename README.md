@@ -103,10 +103,12 @@ The current state is recorded in four separate ledgers:
 The full sequence runs from E-001 through E-014. Historical protocols and
 reports retain their original prospective language, including statements about
 what was “next” at the time; the ledgers and the current-evidence section above
-give the present status. The next justified direction is external-control
-acquisition or prospective creation of longer human no-intended-payload controls
-and validation of manuscript-scale hierarchical generators, not another
-target-facing binary classifier.
+give the present status. New research experiments are paused while the seven
+interfaces in the
+[`control-expansion roadmap`](docs/CONTROL_EXPANSION_ROADMAP.md) are built. The
+first implemented interface is the prospective
+[`long-form human-control protocol`](docs/LONG_FORM_HUMAN_CONTROLS.md); this is
+infrastructure for future control collection, not a new experimental result.
 
 ## Main capabilities
 

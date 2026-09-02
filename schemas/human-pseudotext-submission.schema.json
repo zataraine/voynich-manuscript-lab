@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/human-pseudotext-submission.schema.json",
+  "title": "Long-form human pseudo-text submission",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "submission_id",
+    "contributor_id",
+    "condition",
+    "payload_path",
+    "payload_sha256",
+    "created_at",
+    "generation_record",
+    "attestations",
+    "rights",
+    "withdrawal_deadline"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "protocol_id": {"const": "human-pseudotext-v1"},
+    "submission_id": {"type": "string", "pattern": "^HPT-[A-Z0-9]{12}$"},
+    "contributor_id": {"type": "string", "pattern": "^C-[A-F0-9]{16}$"},
+    "condition": {
+      "enum": ["freeform", "copy_mutate", "manual_slot", "self_devised_rule"]
+    },
+    "payload_path": {
+      "type": "string",
+      "pattern": "^data/raw/controls/human-pseudotext/HPT-[A-Z0-9]{12}\\.txt$"
+    },
+    "payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "generation_record": {
+      "type": "object",
+      "required": [
+        "elapsed_minutes",
+        "interruption_count",
+        "tools_used",
+        "self_devised_rule_description"
+      ],
+      "properties": {
+        "elapsed_minutes": {"type": "integer", "minimum": 1, "maximum": 100000},
+        "interruption_count": {"type": "integer", "minimum": 0},
+        "tools_used": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 80}
+        },
+        "self_devised_rule_description": {"type": ["string", "null"], "maxLength": 2000}
+      },
+      "additionalProperties": false
+    },
+    "attestations": {
+      "type": "object",
+      "required": [
+        "adult",
+        "voluntary",
+        "no_intended_semantic_payload",
+        "no_copied_source_text",
+        "no_ai_or_software_generation",
+        "sole_rightsholder",
+        "consent_computational_analysis",
+        "understands_withdrawal_boundary"
+      ],
+      "properties": {
+        "adult": {"const": true},
+        "voluntary": {"const": true},
+        "no_intended_semantic_payload": {"const": true},
+        "no_copied_source_text": {"const": true},
+        "no_ai_or_software_generation": {"const": true},
+        "sole_rightsholder": {"const": true},
+        "consent_computational_analysis": {"const": true},
+        "understands_withdrawal_boundary": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "rights": {
+      "type": "object",
+      "required": ["distribution", "public_release_permitted", "attribution"],
+      "properties": {
+        "distribution": {
+          "enum": ["private-research-only", "CC0-1.0", "CC-BY-4.0"]
+        },
+        "public_release_permitted": {"type": "boolean"},
+        "attribution": {"type": ["string", "null"], "maxLength": 160}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"distribution": {"const": "private-research-only"}}},
+          "then": {"properties": {"public_release_permitted": {"const": false}}}
+        },
+        {
+          "if": {"properties": {"distribution": {"const": "CC0-1.0"}}},
+          "then": {"properties": {"public_release_permitted": {"const": true}}}
+        },
+        {
+          "if": {"properties": {"distribution": {"const": "CC-BY-4.0"}}},
+          "then": {
+            "properties": {
+              "public_release_permitted": {"const": true},
+              "attribution": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "withdrawal_deadline": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}

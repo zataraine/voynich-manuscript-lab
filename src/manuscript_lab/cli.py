@@ -19,6 +19,7 @@ from manuscript_lab.cryptanalysis.statistics import (
     repeated_ngram_spacings,
     shannon_entropy,
 )
+from manuscript_lab.human_controls import HumanControlError, validate_submission
 from manuscript_lab.ivtff import IVTFFFormatError, parse_ivtff, summarize_page_metadata
 from manuscript_lab.ledger import ExperimentLedger, LedgerError
 from manuscript_lab.local_ai import LocalAIClient, LocalAIError, diagnose_local_ai
@@ -61,8 +62,40 @@ experiment_app = typer.Typer(
     help="Register and supervise reproducible experiments.",
 )
 app.add_typer(experiment_app, name="experiment")
+controls_app = typer.Typer(
+    no_args_is_help=True,
+    help="Validate prospective external control submissions.",
+)
+app.add_typer(controls_app, name="controls")
 console = Console()
 SOURCE_ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+
+
+@controls_app.command("validate-submission")
+def controls_validate_submission(
+    metadata: Annotated[Path, typer.Argument(help="Submission metadata YAML under data/raw/.")],
+    output: Annotated[
+        Path | None,
+        typer.Option(help="Optional JSON validation report; must not already exist."),
+    ] = None,
+) -> None:
+    """Validate one long-form human pseudo-text submission without interpreting it."""
+    if output is not None and output.exists():
+        raise typer.BadParameter(f"Output already exists and is immutable: {output}")
+    try:
+        report = validate_submission(metadata)
+    except (OSError, UnicodeError, KeyError, HumanControlError) as exc:
+        console.print(f"[red]FAIL[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    encoded = orjson.dumps(report, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(encoded)
+        console.print(f"Created {output}")
+    console.print(
+        f"[green]PASS[/green] {report['submission_id']}: "
+        f"{report['counts']['groups']} groups, {report['counts']['pages']} pages, exact SHA-256"
+    )
 
 
 @app.command()

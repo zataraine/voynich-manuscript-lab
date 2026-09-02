@@ -1,0 +1,32 @@
+schema_version: "1.0"
+protocol_id: human-pseudotext-v1
+payload_format:
+  encoding: UTF-8 without BOM
+  group_separator: one ASCII space
+  page_separator: one empty physical line
+  minimum_groups: 2000
+  maximum_groups: 20000
+  minimum_lines: 64
+  minimum_pages: 8
+  minimum_lines_per_page: 4
+  maximum_group_codepoints: 64
+conditions:
+  - freeform
+  - copy_mutate
+  - manual_slot
+  - self_devised_rule
+prohibited_assistance:
+  - language model
+  - text or pseudotext generator
+  - cipher program
+  - random-number generator
+  - dictionary or source text
+allowed_assistance:
+  - plain-text editor with autocomplete, predictive text, and spell-check disabled
+minimum_corpus:
+  independent_contributors: 12
+  accepted_submissions: 24
+  submissions_per_condition: 4
+split_group: contributor_id
+default_rights: private-research-only
+
