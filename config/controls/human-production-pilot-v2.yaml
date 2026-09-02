@@ -1,0 +1,41 @@
+schema_version: "2.0"
+protocol_id: human-production-pilot-v2
+status: pilot_not_recruiting
+factorial_design:
+  payload_intent:
+    - no_intended_payload
+    - intended_payload
+  production_strategy:
+    - freeform
+    - copy_mutate
+    - supplied_slots
+    - self_devised_rule
+  modality:
+    - typed
+    - handwritten_transcribed
+payload_format:
+  encoding: UTF-8 without BOM
+  group_separator: one ASCII space
+  page_separator: one empty physical line
+  minimum_groups: 2000
+  maximum_groups: 20000
+  minimum_lines: 64
+  minimum_pages: 8
+  minimum_lines_per_page: 4
+  minimum_sessions: 2
+  maximum_group_codepoints: 64
+  allowed_group_pattern: "^[a-z]+$"
+pilot_balance:
+  contributors_per_factor_cell: 2
+  factor_cells: 16
+  total_independent_contributors: 32
+  submissions_per_contributor: 1
+confirmatory_sample_size: deferred_until_frozen_endpoints
+split_group: contributor_id
+target_material_exposure: prohibited
+default_rights: private-research-only
+analysis_policy:
+  pool_payload_intents: false
+  pool_production_strategies: false
+  pool_modalities: false
+  manuscript_scoring: prohibited

@@ -58,6 +58,16 @@ They provide reproducible comparisons and known methodological cautions, not a
 target answer. The Working Group repository has no `LICENSE` file, so its local
 snapshot is marked research-only and must not be assumed to be open-source.
 
+The pinned Naibbe source archive also contains the public Gaskell--Bowern 2022
+code, metrics, metadata, and anonymized human-gibberish transcriptions. The
+paper reports 42 volunteers and separately discusses author-contributed
+samples; the pinned `gibberish_transcriptions` directory contains 38 text files,
+while its metadata enumerates additional identifiers. The lab therefore treats
+38 as the observed archived-document count, not as a reconstructed participant
+count, and does not impute missing documents or metadata. Its license excludes
+scans that may identify participants; only the provided anonymized Unicode
+transcriptions are eligible controls.
+
 ## E. Analysis and decipherment claims
 
 The [voynich.nu analysis index](https://voynich.nu/analysis.html) and its five

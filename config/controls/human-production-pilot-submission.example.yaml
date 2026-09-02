@@ -1,0 +1,58 @@
+schema_version: "2.0"
+protocol_id: human-production-pilot-v2
+submission_id: HCP-7K3M9Q2R5T8V
+contributor_id: C-4A19D75E02BC86F1
+assignment_id: A-895CD12BA6307FE4
+allocation_slot_id: HCPV2-001
+payload_intent: no_intended_payload
+production_strategy: freeform
+modality: typed
+raw_capture:
+  path: data/raw/controls/human-production-pilot/HCP-7K3M9Q2R5T8V-capture.txt
+  sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+  media_type: text/plain
+  private: true
+analysis_text:
+  path: data/interim/controls/human-production-pilot/HCP-7K3M9Q2R5T8V.txt
+  sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+sessions:
+  - session_index: 1
+    first_page: 1
+    last_page: 4
+    elapsed_minutes: 90
+    gap_since_previous: null
+  - session_index: 2
+    first_page: 5
+    last_page: 8
+    elapsed_minutes: 90
+    gap_since_previous: one_to_seven_days
+experience:
+  voynich_exposure: none
+  linguistics_experience: none
+  constructed_language_experience: none
+  familiar_script_count_band: one
+source_material: null
+transcription_record:
+  method: identity
+  entry_records: []
+  corrections:
+    strikeouts: 0
+    overwrites: 0
+    insertions: 0
+  uncertain_readings: 0
+attestations:
+  adult: true
+  voluntary: true
+  followed_assigned_cell: true
+  payload_intent_attestation: no_intended_payload
+  no_ai_or_software_generation: true
+  source_use_matches_assignment: true
+  rights_to_submit: true
+  consent_computational_analysis: true
+  consent_private_raw_capture: true
+  understands_withdrawal_boundary: true
+rights:
+  distribution: private-research-only
+  public_release_permitted: false
+created_at: "2026-09-02T00:00:00Z"
+withdrawal_deadline: "2026-12-31T00:00:00Z"

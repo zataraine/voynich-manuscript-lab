@@ -19,6 +19,7 @@ from manuscript_lab.cryptanalysis.statistics import (
     repeated_ngram_spacings,
     shannon_entropy,
 )
+from manuscript_lab.human_control_pilot import HumanPilotError, validate_pilot_submission
 from manuscript_lab.human_controls import HumanControlError, validate_submission
 from manuscript_lab.ivtff import IVTFFFormatError, parse_ivtff, summarize_page_metadata
 from manuscript_lab.ledger import ExperimentLedger, LedgerError
@@ -95,6 +96,34 @@ def controls_validate_submission(
     console.print(
         f"[green]PASS[/green] {report['submission_id']}: "
         f"{report['counts']['groups']} groups, {report['counts']['pages']} pages, exact SHA-256"
+    )
+
+
+@controls_app.command("validate-pilot-submission")
+def controls_validate_pilot_submission(
+    metadata: Annotated[Path, typer.Argument(help="Pilot metadata YAML under private raw data.")],
+    output: Annotated[
+        Path | None,
+        typer.Option(help="Optional JSON validation report; must not already exist."),
+    ] = None,
+) -> None:
+    """Validate a paired v2 human-production pilot submission without interpreting it."""
+    if output is not None and output.exists():
+        raise typer.BadParameter(f"Output already exists and is immutable: {output}")
+    try:
+        report = validate_pilot_submission(metadata)
+    except (OSError, UnicodeError, KeyError, HumanPilotError) as exc:
+        console.print(f"[red]FAIL[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    encoded = orjson.dumps(report, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(encoded)
+        console.print(f"Created {output}")
+    console.print(
+        f"[green]PASS PILOT[/green] {report['submission_id']}: "
+        f"{report['counts']['groups']} groups across {report['sessions']} sessions; "
+        "confirmatory and manuscript use remain prohibited"
     )
 
 

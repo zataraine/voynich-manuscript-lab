@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import unicodedata
 from pathlib import Path
 from typing import Any
@@ -47,7 +48,7 @@ def _schema_errors(metadata: dict[str, Any], root: Path) -> list[str]:
     ]
 
 
-def _parse_payload(raw: bytes, protocol: dict[str, Any]) -> dict[str, Any]:
+def parse_control_payload(raw: bytes, protocol: dict[str, Any]) -> dict[str, Any]:
     if raw.startswith(b"\xef\xbb\xbf"):
         raise HumanControlError("payload must be UTF-8 without a byte-order mark")
     try:
@@ -73,6 +74,8 @@ def _parse_payload(raw: bytes, protocol: dict[str, Any]) -> dict[str, Any]:
     pages: list[list[list[str]]] = [[]]
     prior_blank = False
     maximum_group_length = int(protocol["payload_format"]["maximum_group_codepoints"])
+    group_pattern_text = protocol["payload_format"].get("allowed_group_pattern")
+    group_pattern = re.compile(group_pattern_text) if group_pattern_text else None
     for physical_line, line in enumerate(lines, start=1):
         if line == "":
             if prior_blank:
@@ -92,6 +95,10 @@ def _parse_payload(raw: bytes, protocol: dict[str, Any]) -> dict[str, Any]:
             if len(group) > maximum_group_length:
                 raise HumanControlError(
                     f"line {physical_line} contains a group longer than {maximum_group_length}"
+                )
+            if group_pattern is not None and group_pattern.fullmatch(group) is None:
+                raise HumanControlError(
+                    f"line {physical_line} contains a group outside the allowed symbol inventory"
                 )
         pages[-1].append(groups)
     if not pages[-1]:
@@ -151,7 +158,7 @@ def validate_submission(metadata_path: Path, *, root: Path | None = None) -> dic
     protocol = yaml.safe_load((contract_root / PROTOCOL_PATH).read_text(encoding="utf-8"))
     if metadata["condition"] not in protocol["conditions"]:
         raise HumanControlError("condition is not registered by the frozen protocol")
-    counts = _parse_payload(payload_path.read_bytes(), protocol)
+    counts = parse_control_payload(payload_path.read_bytes(), protocol)
     return {
         "schema_version": "1.0",
         "passed": True,

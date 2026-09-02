@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/human-production-pilot-submission.schema.json",
+  "title": "Human production control pilot submission",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "submission_id",
+    "contributor_id",
+    "assignment_id",
+    "allocation_slot_id",
+    "payload_intent",
+    "production_strategy",
+    "modality",
+    "raw_capture",
+    "analysis_text",
+    "sessions",
+    "experience",
+    "source_material",
+    "transcription_record",
+    "attestations",
+    "rights",
+    "created_at",
+    "withdrawal_deadline"
+  ],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "protocol_id": {"const": "human-production-pilot-v2"},
+    "submission_id": {"type": "string", "pattern": "^HCP-[A-Z0-9]{12}$"},
+    "contributor_id": {"type": "string", "pattern": "^C-[A-F0-9]{16}$"},
+    "assignment_id": {"type": "string", "pattern": "^A-[A-F0-9]{16}$"},
+    "allocation_slot_id": {"type": "string", "pattern": "^HCPV2-[0-9]{3}$"},
+    "payload_intent": {
+      "enum": ["no_intended_payload", "intended_payload"]
+    },
+    "production_strategy": {
+      "enum": ["freeform", "copy_mutate", "supplied_slots", "self_devised_rule"]
+    },
+    "modality": {"enum": ["typed", "handwritten_transcribed"]},
+    "raw_capture": {
+      "type": "object",
+      "required": ["path", "sha256", "media_type", "private"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^data/raw/controls/human-production-pilot/HCP-[A-Z0-9]{12}-capture\\.(txt|pdf|png|jpg)$"
+        },
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "media_type": {
+          "enum": ["text/plain", "application/pdf", "image/png", "image/jpeg"]
+        },
+        "private": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "analysis_text": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^data/interim/controls/human-production-pilot/HCP-[A-Z0-9]{12}\\.txt$"
+        },
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "sessions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": [
+          "session_index",
+          "first_page",
+          "last_page",
+          "elapsed_minutes",
+          "gap_since_previous"
+        ],
+        "properties": {
+          "session_index": {"type": "integer", "minimum": 1},
+          "first_page": {"type": "integer", "minimum": 1},
+          "last_page": {"type": "integer", "minimum": 1},
+          "elapsed_minutes": {"type": "integer", "minimum": 1, "maximum": 100000},
+          "gap_since_previous": {
+            "type": ["string", "null"],
+            "enum": [null, "same_day", "one_to_seven_days", "eight_or_more_days"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "experience": {
+      "type": "object",
+      "required": [
+        "voynich_exposure",
+        "linguistics_experience",
+        "constructed_language_experience",
+        "familiar_script_count_band"
+      ],
+      "properties": {
+        "voynich_exposure": {"enum": ["none", "name_only", "general", "technical"]},
+        "linguistics_experience": {"enum": ["none", "informal", "formal"]},
+        "constructed_language_experience": {"enum": ["none", "reader", "creator"]},
+        "familiar_script_count_band": {"enum": ["one", "two", "three_or_more"]}
+      },
+      "additionalProperties": false
+    },
+    "source_material": {
+      "type": ["object", "null"],
+      "required": ["source_identifier", "rights_basis", "source_sha256", "use_description"],
+      "properties": {
+        "source_identifier": {"type": "string", "minLength": 1, "maxLength": 200},
+        "rights_basis": {"enum": ["public_domain", "participant_original"]},
+        "source_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "use_description": {"type": "string", "minLength": 1, "maxLength": 500}
+      },
+      "additionalProperties": false
+    },
+    "transcription_record": {
+      "type": "object",
+      "required": ["method", "entry_records", "corrections", "uncertain_readings"],
+      "properties": {
+        "method": {"enum": ["identity", "manual_double_entry_adjudicated"]},
+        "entry_records": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^data/interim/controls/human-production-pilot/HCP-[A-Z0-9]{12}-entry-[0-9]+\\.txt$"
+              },
+              "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "corrections": {
+          "type": "object",
+          "required": ["strikeouts", "overwrites", "insertions"],
+          "properties": {
+            "strikeouts": {"type": "integer", "minimum": 0},
+            "overwrites": {"type": "integer", "minimum": 0},
+            "insertions": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "uncertain_readings": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "attestations": {
+      "type": "object",
+      "required": [
+        "adult",
+        "voluntary",
+        "followed_assigned_cell",
+        "payload_intent_attestation",
+        "no_ai_or_software_generation",
+        "source_use_matches_assignment",
+        "rights_to_submit",
+        "consent_computational_analysis",
+        "consent_private_raw_capture",
+        "understands_withdrawal_boundary"
+      ],
+      "properties": {
+        "adult": {"const": true},
+        "voluntary": {"const": true},
+        "followed_assigned_cell": {"const": true},
+        "payload_intent_attestation": {
+          "enum": ["no_intended_payload", "intended_payload"]
+        },
+        "no_ai_or_software_generation": {"const": true},
+        "source_use_matches_assignment": {"const": true},
+        "rights_to_submit": {"const": true},
+        "consent_computational_analysis": {"const": true},
+        "consent_private_raw_capture": {"const": true},
+        "understands_withdrawal_boundary": {"const": true},
+        "understands_handwriting_may_identify": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "rights": {
+      "type": "object",
+      "required": ["distribution", "public_release_permitted"],
+      "properties": {
+        "distribution": {"const": "private-research-only"},
+        "public_release_permitted": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "withdrawal_deadline": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"payload_intent": {"const": "no_intended_payload"}}},
+      "then": {
+        "properties": {
+          "source_material": {"const": null},
+          "attestations": {
+            "properties": {
+              "payload_intent_attestation": {"const": "no_intended_payload"}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "source_material": {"type": "object"},
+          "attestations": {
+            "properties": {
+              "payload_intent_attestation": {"const": "intended_payload"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"modality": {"const": "typed"}}},
+      "then": {
+        "properties": {
+          "raw_capture": {"properties": {"media_type": {"const": "text/plain"}}},
+          "transcription_record": {
+            "properties": {
+              "method": {"const": "identity"},
+              "entry_records": {"maxItems": 0},
+              "uncertain_readings": {"const": 0}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "raw_capture": {
+            "properties": {
+              "media_type": {"enum": ["application/pdf", "image/png", "image/jpeg"]}
+            }
+          },
+          "transcription_record": {
+            "properties": {
+              "method": {"const": "manual_double_entry_adjudicated"},
+              "entry_records": {"minItems": 2}
+            }
+          },
+          "attestations": {
+            "required": ["understands_handwriting_may_identify"],
+            "properties": {"understands_handwriting_may_identify": {"const": true}}
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

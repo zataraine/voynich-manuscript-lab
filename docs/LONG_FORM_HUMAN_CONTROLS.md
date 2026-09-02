@@ -11,6 +11,10 @@ correction handling, prior-exposure screening, and coarse relevant experience.
 The public controls can inform a pilot, but confirmatory sample size must wait
 for the frozen measurement endpoints. See `docs/CONTROL_EXPANSION_ROADMAP.md`.
 
+The versioned successor pilot design is `docs/HUMAN_CONTROL_PILOT_V2.md`.
+Version 1 remains available only so its published contract and validator are not
+silently rewritten.
+
 ## Purpose
 
 This protocol collects long sequences intentionally produced without a semantic

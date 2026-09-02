@@ -1,0 +1,36 @@
+schema_version: "1.0"
+pilot_id: human-production-pilot-v2
+status: frozen_not_allocated
+slots:
+  - {slot_id: HCPV2-001, payload_intent: no_intended_payload, production_strategy: freeform, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-002, payload_intent: no_intended_payload, production_strategy: freeform, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-003, payload_intent: no_intended_payload, production_strategy: freeform, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-004, payload_intent: no_intended_payload, production_strategy: freeform, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-005, payload_intent: no_intended_payload, production_strategy: copy_mutate, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-006, payload_intent: no_intended_payload, production_strategy: copy_mutate, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-007, payload_intent: no_intended_payload, production_strategy: copy_mutate, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-008, payload_intent: no_intended_payload, production_strategy: copy_mutate, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-009, payload_intent: no_intended_payload, production_strategy: supplied_slots, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-010, payload_intent: no_intended_payload, production_strategy: supplied_slots, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-011, payload_intent: no_intended_payload, production_strategy: supplied_slots, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-012, payload_intent: no_intended_payload, production_strategy: supplied_slots, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-013, payload_intent: no_intended_payload, production_strategy: self_devised_rule, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-014, payload_intent: no_intended_payload, production_strategy: self_devised_rule, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-015, payload_intent: no_intended_payload, production_strategy: self_devised_rule, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-016, payload_intent: no_intended_payload, production_strategy: self_devised_rule, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-017, payload_intent: intended_payload, production_strategy: freeform, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-018, payload_intent: intended_payload, production_strategy: freeform, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-019, payload_intent: intended_payload, production_strategy: freeform, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-020, payload_intent: intended_payload, production_strategy: freeform, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-021, payload_intent: intended_payload, production_strategy: copy_mutate, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-022, payload_intent: intended_payload, production_strategy: copy_mutate, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-023, payload_intent: intended_payload, production_strategy: copy_mutate, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-024, payload_intent: intended_payload, production_strategy: copy_mutate, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-025, payload_intent: intended_payload, production_strategy: supplied_slots, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-026, payload_intent: intended_payload, production_strategy: supplied_slots, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-027, payload_intent: intended_payload, production_strategy: supplied_slots, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-028, payload_intent: intended_payload, production_strategy: supplied_slots, modality: handwritten_transcribed, replicate: 2}
+  - {slot_id: HCPV2-029, payload_intent: intended_payload, production_strategy: self_devised_rule, modality: typed, replicate: 1}
+  - {slot_id: HCPV2-030, payload_intent: intended_payload, production_strategy: self_devised_rule, modality: typed, replicate: 2}
+  - {slot_id: HCPV2-031, payload_intent: intended_payload, production_strategy: self_devised_rule, modality: handwritten_transcribed, replicate: 1}
+  - {slot_id: HCPV2-032, payload_intent: intended_payload, production_strategy: self_devised_rule, modality: handwritten_transcribed, replicate: 2}
