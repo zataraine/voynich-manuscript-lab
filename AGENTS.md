@@ -68,3 +68,12 @@ the authoritative machine handoff at `/home/nyx/voynich-local-ai/CODEX_HANDOFF.m
 3. Make the smallest reversible change in the correct layer.
 4. Add or update tests and provenance records.
 5. Run `./scripts/smoke.sh`. Summarize evidence, limitations, and exact outputs.
+
+## Publication checkpoint
+
+Before each substantive commit, refresh the remote `main` branch and review the
+public README, the current roadmap/ledgers relevant to the change, and the full
+staged diff. Confirm that the change extends an active design rather than adding
+an orphaned stub, duplicates no existing capability, leaves no misleading
+status language, and preserves source/provenance boundaries. Commit and publish
+only after that review and the appropriate verification gate pass.
