@@ -1,0 +1,91 @@
+schema_version: "1.0"
+registry_id: representation-views-v1
+witness_registry: config/corpora/ivtff-witnesses.yaml
+witness_policy:
+  required_primary: [CD2a, FG2a, GC2a, IT2a, ZL3b]
+  sensitivity_only: [VT0e]
+  prohibited_as_independent: [RF1b-e, RF1b-er]
+  merge_or_vote: forbidden
+split_policy:
+  minimum_group: physical_page
+  shared_across_views: true
+view_selection_after_target_access: forbidden
+views:
+  - id: native-codepoint-structural
+    source_layer: native
+    alphabet_requirement: any
+    glyph_unit: codepoint
+    alternative_policy: preserve
+    ligature_policy: preserve
+    certain_space_policy: distinct_boundary
+    uncertain_space_policy: distinct_boundary
+    editorial_policy: exclude_with_audit
+    role: required
+  - id: native-grapheme-structural
+    source_layer: native
+    alphabet_requirement: any
+    glyph_unit: grapheme
+    alternative_policy: preserve
+    ligature_policy: preserve
+    certain_space_policy: distinct_boundary
+    uncertain_space_policy: distinct_boundary
+    editorial_policy: exclude_with_audit
+    role: sensitivity
+  - id: sta1-atomic-structural
+    source_layer: sta1_comparison
+    alphabet_requirement: STA1
+    glyph_unit: sta1_pair
+    alternative_policy: preserve
+    ligature_policy: preserve
+    certain_space_policy: distinct_boundary
+    uncertain_space_policy: distinct_boundary
+    editorial_policy: exclude_with_audit
+    role: required
+  - id: sta1-atomic-first-alternative
+    source_layer: sta1_comparison
+    alphabet_requirement: STA1
+    glyph_unit: sta1_pair
+    alternative_policy: first
+    ligature_policy: preserve
+    certain_space_policy: distinct_boundary
+    uncertain_space_policy: distinct_boundary
+    editorial_policy: exclude_with_audit
+    role: sensitivity
+  - id: sta1-atomic-ligature-decomposed
+    source_layer: sta1_comparison
+    alphabet_requirement: STA1
+    glyph_unit: sta1_pair
+    alternative_policy: preserve
+    ligature_policy: decompose
+    certain_space_policy: distinct_boundary
+    uncertain_space_policy: distinct_boundary
+    editorial_policy: exclude_with_audit
+    role: sensitivity
+  - id: sta1-atomic-uncertain-internal
+    source_layer: sta1_comparison
+    alphabet_requirement: STA1
+    glyph_unit: sta1_pair
+    alternative_policy: preserve
+    ligature_policy: preserve
+    certain_space_policy: distinct_boundary
+    uncertain_space_policy: erase_with_audit
+    editorial_policy: exclude_with_audit
+    role: required
+  - id: sta1-atomic-space-erased
+    source_layer: sta1_comparison
+    alphabet_requirement: STA1
+    glyph_unit: sta1_pair
+    alternative_policy: preserve
+    ligature_policy: preserve
+    certain_space_policy: erase_with_audit
+    uncertain_space_policy: erase_with_audit
+    editorial_policy: exclude_with_audit
+    role: required
+alternate_conversion_policy:
+  registered_alternates_are_required_sensitivity_views: true
+  count_as_independent_witnesses: false
+learned_unit_policy:
+  base_view: sta1-atomic-space-erased
+  fit_on_training_physical_groups_only: true
+  frozen_before_heldout_projection: true
+  merge_counts: [16, 32, 64, 128]

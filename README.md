@@ -111,6 +111,8 @@ first implemented interface is the prospective
 pilot intake infrastructure, not an approved confirmatory sampling plan or a
 new experimental result. The admissible question is fixed by the
 [`mechanism-compatibility estimand`](docs/MECHANISM_COMPATIBILITY_ESTIMAND.md).
+All later measurements consume the frozen
+[`reversible representation views`](docs/REPRESENTATION_VIEWS.md).
 
 ## Main capabilities
 

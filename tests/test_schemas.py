@@ -48,3 +48,10 @@ def test_mechanism_compatibility_estimand_matches_schema() -> None:
         (root / "config/research/mechanism-compatibility-v1.yaml").read_text()
     )
     Draft202012Validator(schema).validate(estimand)
+
+
+def test_representation_view_registry_matches_schema() -> None:
+    root = Path(__file__).parents[1]
+    schema = json.loads((root / "schemas/representation-view-registry.schema.json").read_text())
+    registry = yaml.safe_load((root / "config/corpora/representation-views-v1.yaml").read_text())
+    Draft202012Validator(schema).validate(registry)

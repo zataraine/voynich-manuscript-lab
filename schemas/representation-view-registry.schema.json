@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/representation-view-registry.schema.json",
+  "title": "Reversible representation view registry",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "registry_id",
+    "witness_registry",
+    "witness_policy",
+    "split_policy",
+    "view_selection_after_target_access",
+    "views",
+    "alternate_conversion_policy",
+    "learned_unit_policy"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "registry_id": {"const": "representation-views-v1"},
+    "witness_registry": {"type": "string", "minLength": 1},
+    "witness_policy": {
+      "type": "object",
+      "required": ["required_primary", "sensitivity_only", "prohibited_as_independent", "merge_or_vote"],
+      "properties": {
+        "required_primary": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+        "sensitivity_only": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "prohibited_as_independent": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "merge_or_vote": {"const": "forbidden"}
+      },
+      "additionalProperties": false
+    },
+    "split_policy": {
+      "type": "object",
+      "required": ["minimum_group", "shared_across_views"],
+      "properties": {
+        "minimum_group": {"const": "physical_page"},
+        "shared_across_views": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "view_selection_after_target_access": {"const": "forbidden"},
+    "views": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "id", "source_layer", "alphabet_requirement", "glyph_unit",
+          "alternative_policy", "ligature_policy", "certain_space_policy",
+          "uncertain_space_policy", "editorial_policy", "role"
+        ],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "source_layer": {"enum": ["native", "sta1_comparison"]},
+          "alphabet_requirement": {"enum": ["any", "STA1"]},
+          "glyph_unit": {"enum": ["codepoint", "grapheme", "sta1_pair"]},
+          "alternative_policy": {"enum": ["preserve", "first"]},
+          "ligature_policy": {"enum": ["preserve", "decompose"]},
+          "certain_space_policy": {"enum": ["distinct_boundary", "erase_with_audit"]},
+          "uncertain_space_policy": {"enum": ["distinct_boundary", "erase_with_audit"]},
+          "editorial_policy": {"const": "exclude_with_audit"},
+          "role": {"enum": ["required", "sensitivity"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "alternate_conversion_policy": {
+      "type": "object",
+      "required": [
+        "registered_alternates_are_required_sensitivity_views",
+        "count_as_independent_witnesses"
+      ],
+      "properties": {
+        "registered_alternates_are_required_sensitivity_views": {"const": true},
+        "count_as_independent_witnesses": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "learned_unit_policy": {
+      "type": "object",
+      "required": [
+        "base_view",
+        "fit_on_training_physical_groups_only",
+        "frozen_before_heldout_projection",
+        "merge_counts"
+      ],
+      "properties": {
+        "base_view": {"type": "string", "minLength": 1},
+        "fit_on_training_physical_groups_only": {"const": true},
+        "frozen_before_heldout_projection": {"const": true},
+        "merge_counts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "integer", "minimum": 1}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
