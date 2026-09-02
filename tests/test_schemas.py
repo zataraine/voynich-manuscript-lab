@@ -39,3 +39,12 @@ def test_cipher_templates_match_schema() -> None:
     assert templates
     for path in templates:
         validator.validate(yaml.safe_load(path.read_text(encoding="utf-8")))
+
+
+def test_mechanism_compatibility_estimand_matches_schema() -> None:
+    root = Path(__file__).parents[1]
+    schema = json.loads((root / "schemas/mechanism-compatibility-estimand.schema.json").read_text())
+    estimand = yaml.safe_load(
+        (root / "config/research/mechanism-compatibility-v1.yaml").read_text()
+    )
+    Draft202012Validator(schema).validate(estimand)

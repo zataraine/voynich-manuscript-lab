@@ -1,68 +1,159 @@
-# Pre-experiment implementation roadmap
+# Calibrated mechanism-comparison roadmap
 
-No new manuscript-facing or control-calibration research experiment starts
-until all seven lanes below have an implemented, reviewed interface. Unit tests,
-schema validation, smoke checks, and dry-runs are software verification and do
-not count as research experiments.
+The lab does not estimate the probability that the manuscript is a hoax,
+language, or cipher. It tests whether frozen, explicit production mechanisms
+can reproduce preregistered observations outside and then, at most once per
+frozen bundle, across admissible manuscript representations. The estimand and
+interpretive limits are fixed in `docs/MECHANISM_COMPATIBILITY_ESTIMAND.md`.
 
-## 1. Long-form human no-payload controls
+No new manuscript-facing inference starts until phases 1--6 have passed their
+readiness gates. Control-only power studies, replications, simulations, and
+negative tests are required development work; they may not read a manuscript
+transcription. Unit tests, schema checks, smoke checks, and dry-runs remain
+software verification rather than research results.
 
-Implement a privacy-minimal collection protocol, immutable UTF-8 payload format,
-consent/rights metadata, schema, validator, and manifest path. Collection is
-complete only after multiple independent adult contributors supply at least
-2,000 groups each under balanced documented conditions. No contributor names,
-email addresses, IP addresses, or free-form biographies enter the repository.
+## Phase 1. Estimand and failure semantics
 
-## 2. Manuscript-scale hierarchical generators
+Freeze the question, mechanism-family registry, admissible conclusions, and
+rejection semantics. Compatibility is not identity, decipherment, meaning, or
+posterior probability. Failure of one implementation rejects that
+implementation over its tested parameter range, not every possible member of a
+broad family.
 
-Implement independently seeded generators for hierarchical cache/renewal,
-sectional topic-state, Pitman--Yor/Simon vocabulary growth, page/line slots, and
-section-conditioned copy/mutate processes. Each generator must expose its exact
-parameters and inverse/audit information where applicable and must produce line,
-page, and section records rather than a flat string.
+**Ready when:** the estimand contract is machine-addressable from every future
+experiment config and reports refuse forbidden probability or semantic labels.
 
-## 3. External-control validation harness
+## Phase 2. Human and documentary controls
 
-Implement document/family isolation, power and sample-length diagnostics,
-multiple-comparison control, serialized replay, and a sealed target boundary.
-The harness must accept the human and hierarchical controls without reading a
-manuscript transcription.
+Revise the long-form human protocol using the public Gaskell--Bowern corpus for
+pilot variance and power planning. Keep intuitive invention, copy/mutate,
+slot-table, and self-devised-rule conditions separate. Record typed versus
+handwritten-transcribed production, longitudinal sessions, correction handling,
+prior Voynich exposure, and coarse relevant experience without collecting
+direct identifiers. Add matched meaningful human-production controls so that
+production modality cannot become the classifier.
 
-## 4. Witness-robust measurement adapter
+The existing `human-pseudotext-v1` contract is a validated pilot intake format,
+not a confirmatory sampling plan. Do not recruit against it until a versioned
+successor and an appropriate consent/ethics review are complete.
 
-Implement every candidate metric over the five primary transcription lineages
-and admissible uncertainty views without merging them. Require page/section
-alignment, length-coverage reporting, worst-view conjunctions, and reversible
-unitization.
+**Ready when:** a versioned pilot collection packet and validator cover both
+no-payload and matched payload arms; pilot balance and exclusions are frozen;
+no condition is pooled into a generic "gibberish" class. Confirmatory sample
+size cannot be frozen until the phase-4 endpoints exist and is therefore a
+phase-6 gate.
 
-## 5. Sealed target application
+## Phase 3. Representation and witness contract
 
-Implement a separate command that accepts only a frozen model bundle and a
-predeclared witness registry. It must refuse uncalibrated bundles, record a
-one-time target run ID, prevent threshold/feature changes, and report
-compatibility rather than posterior odds or semantic labels.
+Move the former witness adapter ahead of generator design. Implement reversible
+views in which observed marks remain glyphs, blank-delimited strings remain
+groups, and gaps remain separators until evidence supports linguistic names.
+Views must include primary transcription lineages, uncertainty alternatives,
+composite versus decomposed glyphs, certain versus uncertain separators,
+space-erased learned units, and preserved line/page/section boundaries. Never
+merge witnesses into a vote.
 
-## 6. Visual and layout lane
+This phase defines measurement interfaces without selecting a view because it
+favours any mechanism.
 
-Implement a versioned annotation schema and tool for page regions, lines,
-labels, plants, diagrams, stars, vessels, and figures. Preserve canvas
-coordinates and annotator provenance. Multimodal evaluation must split by
-physical page or larger codicological unit and compare against page-position,
-section, and frequency baselines.
+**Ready when:** synthetic fixtures round-trip exactly; all metrics report
+coverage and missingness by view; split groups are physical pages or larger;
+view choice cannot be changed by a model implementation.
 
-## 7. Predictive cipher-hypothesis workbench
+## Phase 4. Frozen joint measurement battery
 
-Implement an explicit staged pipeline for segmentation, nomenclator,
-homophonic/substitution, alphabet selection, progression, and transposition.
-Every candidate must be reversible, freeze mappings before held-out scoring,
-record rejected candidates, and test new page-level predictions against
-structure-preserving nulls. Readable fragments remain inadmissible evidence.
+Implement a compact battery motivated independently of target classification:
 
-## Ordering
+- conditional uncertainty at several reversible unit scales;
+- learned-unit scale and out-of-group stability;
+- vocabulary growth, singleton tail, and recurrence distance;
+- adjacent group-identity and cross-separator edge association;
+- separator-class and space-erasure sensitivity;
+- line/paragraph position effects;
+- page, section, and longitudinal drift; and
+- compression and contextual-domain measures with length-matched nulls.
 
-Lanes 1 and 2 supply the controls required by lane 3. Lane 3 must be complete
-before lanes 4 and 5 can be scientifically exercised, although their interfaces
-can be built and tested with synthetic fixtures. Lanes 6 and 7 are independent
-evidence channels and can be implemented in parallel after the control data
-contract is stable.
+Each statistic needs finite-sample bias checks, structure-preserving nulls,
+known positive and negative controls, and a declared direction or two-sided
+criterion. A single attractive statistic can never decide compatibility.
 
+**Ready when:** the complete battery passes estimator, length, rename,
+round-trip, and synthetic recovery tests without reading Voynichese.
+
+## Phase 5. Literature-anchored mechanism controls
+
+Replicate published mechanisms before inventing flexible ones:
+
+1. intuitive human no-payload production;
+2. Rugg-style table and grille production;
+3. Timm--Schinner-style local self-citation/copy-mutation;
+4. the published Naibbe verbose homophonic cipher;
+5. natural, constructed, catalogue, formulaic, and abbreviated meaningful
+   controls; and
+6. classical through polyalphabetic, nomenclator, fractionating,
+   transposition, progressive-key, and rotor transforms with known truth.
+
+Only after those replications pass may manuscript-scale cache/renewal,
+sectional-state, vocabulary-growth, or other hierarchical generators be added.
+Such extensions must have a plausible production interpretation, expose their
+parameters and seeds, and be calibrated on controls rather than tuned to the
+target.
+
+**Ready when:** independent implementations reproduce their published
+headline behaviour within declared tolerance; every family has a deliberately
+broken control; generator selection and parameter ranges are frozen.
+
+## Phase 6. External validation and sealed target boundary
+
+Implement contributor/document/family isolation and prospective power for the
+now-frozen phase-4 endpoints,
+sample-length diagnostics, nested model selection, multiplicity control,
+serialized replay, and a target-access barrier. Development and independent
+evaluation corpora must remain separate. The harness reports family-specific
+failure rather than hiding it in aggregate accuracy.
+
+**Ready when:** the frozen bundle passes all construction and scientific gates
+on external controls, replays byte-for-byte, and refuses target access when any
+gate fails.
+
+## Phase 7. Preregistered manuscript compatibility run
+
+A separate command accepts only a calibrated immutable bundle, a predeclared
+witness/view registry, and a new target-run identifier. It cannot alter
+features, thresholds, mechanism ranges, splits, or multiplicity corrections.
+It reports compatibility or incompatibility with the tested implementations,
+including worst-view and family-specific uncertainty. It never reports
+posterior odds, a translation, or a semantic label.
+
+One bundle receives one target application. A later application requires a
+new externally calibrated bundle and a new preregistration, not retuning the
+failed bundle.
+
+## Parallel evidence programmes
+
+These are required lab capabilities but are not global blockers for
+control-only work:
+
+### Visual and layout evidence
+
+Use versioned annotations for page regions, lines, labels, plants, diagrams,
+stars, vessels, and figures, preserving canvas coordinates and annotator
+provenance. Split by physical page or larger codicological unit and compare
+against page-position, section, and frequency baselines.
+
+### Predictive numerical cryptanalysis
+
+Represent every reversible segmentation numerically and support explicit
+stages for alphabet/unit selection, nomenclators, homophonic substitution,
+polyalphabetic and progressive keys, fractionation, and transposition. Search
+may be exhaustive where the keyspace is genuinely bounded. A candidate must
+predict held-out pages or known control truth under a frozen mapping and beat
+structure-preserving nulls. Readability and local language-model scores are not
+verifiers.
+
+## Implementation order
+
+Phases 1, 2, and 3 come first. Phases 4 and 5 then co-develop against external
+controls, followed by phase 6. Phase 7 is the only manuscript-facing inference.
+The visual and numerical-cryptanalysis programmes can be built in parallel once
+the phase-3 representation contract is stable.

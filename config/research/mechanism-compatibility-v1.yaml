@@ -1,0 +1,38 @@
+schema_version: "1.0"
+estimand_id: mechanism-compatibility-v1
+unit_of_inference: versioned_implementation_and_parameter_domain
+question: >-
+  Are manuscript observations incompatible with the externally calibrated
+  distribution of this frozen production-mechanism implementation across every
+  required representation view?
+allowed_statuses:
+  - compatible
+  - incompatible
+  - indeterminate
+required_scope_fields:
+  - implementation_id
+  - parameter_domain_id
+  - representation_registry_id
+  - measurement_battery_id
+  - calibration_bundle_id
+forbidden_claims:
+  - posterior_probability_of_hoax
+  - posterior_probability_of_language
+  - posterior_probability_of_cipher
+  - semantic_identification
+  - historical_identity
+  - rejection_of_untested_family_members
+target_access:
+  external_gates_required: true
+  applications_per_frozen_bundle: 1
+  retuning_requires_external_recalibration: true
+view_rule:
+  selection_after_target_access: forbidden
+  aggregation: preregistered_conjunction_or_worst_view
+failure_scope: >-
+  Incompatibility rejects only the named implementation over its frozen tested
+  parameter domain unless that domain was prospectively shown to exhaust a
+  broader family.
+compatibility_scope: >-
+  Compatibility means not rejected by this battery; it does not establish
+  truth, uniqueness, meaning, historical plausibility, or decipherment.

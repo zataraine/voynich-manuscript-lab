@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://manuscript-lab.local/schemas/mechanism-compatibility-estimand.schema.json",
+  "title": "Mechanism compatibility estimand",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "estimand_id",
+    "unit_of_inference",
+    "question",
+    "allowed_statuses",
+    "required_scope_fields",
+    "forbidden_claims",
+    "target_access",
+    "view_rule",
+    "failure_scope",
+    "compatibility_scope"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "estimand_id": {"const": "mechanism-compatibility-v1"},
+    "unit_of_inference": {
+      "const": "versioned_implementation_and_parameter_domain"
+    },
+    "question": {"type": "string", "minLength": 40},
+    "allowed_statuses": {
+      "const": ["compatible", "incompatible", "indeterminate"]
+    },
+    "required_scope_fields": {
+      "const": [
+        "implementation_id",
+        "parameter_domain_id",
+        "representation_registry_id",
+        "measurement_battery_id",
+        "calibration_bundle_id"
+      ]
+    },
+    "forbidden_claims": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "posterior_probability_of_hoax",
+          "posterior_probability_of_language",
+          "posterior_probability_of_cipher",
+          "semantic_identification",
+          "historical_identity",
+          "rejection_of_untested_family_members"
+        ]
+      }
+    },
+    "target_access": {
+      "type": "object",
+      "required": [
+        "external_gates_required",
+        "applications_per_frozen_bundle",
+        "retuning_requires_external_recalibration"
+      ],
+      "properties": {
+        "external_gates_required": {"const": true},
+        "applications_per_frozen_bundle": {"const": 1},
+        "retuning_requires_external_recalibration": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "view_rule": {
+      "type": "object",
+      "required": ["selection_after_target_access", "aggregation"],
+      "properties": {
+        "selection_after_target_access": {"const": "forbidden"},
+        "aggregation": {"const": "preregistered_conjunction_or_worst_view"}
+      },
+      "additionalProperties": false
+    },
+    "failure_scope": {"type": "string", "minLength": 80},
+    "compatibility_scope": {"type": "string", "minLength": 80}
+  },
+  "additionalProperties": false
+}

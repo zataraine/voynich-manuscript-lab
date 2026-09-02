@@ -1,6 +1,7 @@
 schema_version: "1.0"
 experiment_id: replace-me
 hypothesis_id: H-000
+estimand_id: mechanism-compatibility-v1
 source_manifest: data/manifests/replace-me.yaml
 transcription: replace-me
 scope:

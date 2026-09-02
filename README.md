@@ -108,7 +108,9 @@ interfaces in the
 [`control-expansion roadmap`](docs/CONTROL_EXPANSION_ROADMAP.md) are built. The
 first implemented interface is the prospective
 [`long-form human-control protocol`](docs/LONG_FORM_HUMAN_CONTROLS.md); this is
-infrastructure for future control collection, not a new experimental result.
+pilot intake infrastructure, not an approved confirmatory sampling plan or a
+new experimental result. The admissible question is fixed by the
+[`mechanism-compatibility estimand`](docs/MECHANISM_COMPATIBILITY_ESTIMAND.md).
 
 ## Main capabilities
 

@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted on 2026-09-02.
+Superseded on 2026-09-02 by ADR 0025. The target-facing freeze remains, but
+control-only research is required during implementation.
 
 ## Context
 
@@ -25,4 +26,3 @@ outcomes.
   without exposing Voynichese.
 - No new E-number is assigned merely for infrastructure work.
 - Research resumes only after the implementation readiness review is recorded.
-

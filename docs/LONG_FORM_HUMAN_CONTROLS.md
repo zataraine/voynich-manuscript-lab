@@ -1,5 +1,16 @@
 # Long-form human pseudo-text control protocol
 
+## Status
+
+`human-pseudotext-v1` is a validated pilot intake format, not an approved or
+powered confirmatory collection plan. Do not begin recruitment against this
+version. The successor must be informed by a target-blind power analysis of the
+public Gaskell--Bowern controls and add matched meaningful production, separate
+typed and handwritten-transcribed modalities, longitudinal session boundaries,
+correction handling, prior-exposure screening, and coarse relevant experience.
+The public controls can inform a pilot, but confirmatory sample size must wait
+for the frozen measurement endpoints. See `docs/CONTROL_EXPANSION_ROADMAP.md`.
+
 ## Purpose
 
 This protocol collects long sequences intentionally produced without a semantic
@@ -95,4 +106,3 @@ no contributor appearing in both development and final evaluation partitions.
 Freeze contributor-level splits before feature fitting. Report refusals,
 withdrawals, exclusions, and failed validations without retaining unnecessary
 personal information.
-
