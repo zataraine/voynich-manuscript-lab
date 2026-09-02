@@ -161,6 +161,10 @@ Read [`AGENTS.md`](AGENTS.md), [`INFRASTRUCTURE.md`](INFRASTRUCTURE.md),
 [`docs/RESEARCH_PROTOCOL.md`](docs/RESEARCH_PROTOCOL.md) before changing
 research code or data.
 
+## Maintainer
+
+This repository is owned and maintained by [@zataraine](https://github.com/zataraine).
+
 ## Rights and licensing
 
 The repository is publicly readable but currently has no repository-wide
