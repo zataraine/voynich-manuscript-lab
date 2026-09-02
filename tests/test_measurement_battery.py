@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import math
+from copy import deepcopy
+
+import pytest
 
 from manuscript_lab.measurement_battery import (
+    MeasurementError,
     MeasurementRecord,
+    adapt_locus_projections,
     fit_learned_units,
     load_measurement_battery,
     measure_core,
@@ -11,6 +16,7 @@ from manuscript_lab.measurement_battery import (
     measure_training_heldout,
     structural_nulls,
 )
+from manuscript_lab.representation_views import load_representation_registry, project_surface
 
 
 def _records(offset: int = 0) -> tuple[MeasurementRecord, ...]:
@@ -74,3 +80,32 @@ def test_learned_units_are_fit_only_on_training_records() -> None:
     result = measure_training_heldout(training * 2, heldout * 2, battery=battery, seed=29)
     assert result["battery_sha256"] == battery.sha256
     assert set(result["learned_units"]) == {"16", "32", "64", "128"}
+
+
+def test_reversible_locus_projections_become_scoped_numeric_groups() -> None:
+    spec = next(
+        view
+        for view in load_representation_registry().views
+        if view.view_id == "sta1-atomic-structural"
+    )
+    projections = []
+    for index, surface in enumerate(("A1B2,C3.D4", "A1,B2", "A1B2.C3", "<%>A1B2")):
+        projection = project_surface(surface, spec, alphabet="STA1", witness_id="synthetic-a")
+        projection["source"] = {
+            "record_id": f"synthetic-a:locus:f1r.{index + 1}",
+            "page": "f1r",
+            "section": "H",
+            "line_numbers": [index + 1],
+        }
+        projections.append(projection)
+    adapted = adapt_locus_projections(projections)
+    first = adapted["records"][0]
+    assert [len(group) for group in first.groups] == [2, 1, 1]
+    assert first.boundaries == ("uncertain_space", "certain_space")
+    assert adapted["scope"]["witness_id"] == "synthetic-a"
+    assert adapted["coverage"]["adapted_record_count"] == 4
+    assert all(item["projection_sha256"] for item in adapted["record_provenance"])
+    incompatible = deepcopy(projections)
+    incompatible[-1]["witness_id"] = "synthetic-b"
+    with pytest.raises(MeasurementError, match="cannot merge"):
+        adapt_locus_projections(incompatible)

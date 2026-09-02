@@ -194,6 +194,125 @@ def _flatten(records: Sequence[MeasurementRecord]) -> tuple[tuple[int, ...], ...
     return tuple(group for record in records for group in record.groups)
 
 
+def adapt_locus_projections(projections: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """Convert one isolated reversible view into numeric groups with an audit.
+
+    Separator observations become typed boundaries. Every other observation kind
+    remains an opaque numeric symbol; this function never calls it a letter or a
+    word. Loci with no retained group are reported as missing rather than hidden.
+    """
+    if not projections:
+        raise MeasurementError("cannot adapt an empty projection set")
+    required = {
+        "registry_sha256",
+        "view_id",
+        "alphabet",
+        "witness_id",
+        "source",
+        "observations",
+        "projection_sha256",
+    }
+    if any(not required <= projection.keys() for projection in projections):
+        raise MeasurementError("measurement adaptation requires locus projections with provenance")
+    scopes = {
+        (
+            projection["registry_sha256"],
+            projection["view_id"],
+            projection["alphabet"],
+            projection["witness_id"],
+        )
+        for projection in projections
+    }
+    if len(scopes) != 1:
+        raise MeasurementError("measurement records cannot merge views, alphabets, or witnesses")
+    symbols = sorted(
+        {
+            (observation["kind"], observation["surface"])
+            for projection in projections
+            for observation in projection["observations"]
+            if observation["kind"] not in {"certain_space", "uncertain_space"}
+        }
+    )
+    symbol_ids = {symbol: index for index, symbol in enumerate(symbols)}
+    records: list[MeasurementRecord] = []
+    missing: list[dict[str, Any]] = []
+    boundary_audit = Counter[str]()
+    provenance: list[dict[str, str]] = []
+    for projection in projections:
+        source = projection["source"]
+        source_required = {"record_id", "page", "line_numbers"}
+        if not source_required <= source.keys() or not source["line_numbers"]:
+            raise MeasurementError("locus projection source identity is incomplete")
+        groups: list[tuple[int, ...]] = []
+        boundaries: list[str] = []
+        current: list[int] = []
+        pending: str | None = None
+        for observation in projection["observations"]:
+            kind = observation["kind"]
+            if kind in {"certain_space", "uncertain_space"}:
+                boundary_audit[f"{kind}_seen"] += 1
+                if current:
+                    groups.append(tuple(current))
+                    current = []
+                    pending = kind
+                else:
+                    boundary_audit["empty_side_separator"] += 1
+                    pending = kind
+                continue
+            if pending is not None and groups and not current:
+                boundaries.append(pending)
+                pending = None
+            current.append(symbol_ids[(kind, observation["surface"])])
+        if current:
+            if pending is not None and groups:
+                boundaries.append(pending)
+            groups.append(tuple(current))
+        elif pending is not None:
+            boundary_audit["trailing_separator"] += 1
+        if not groups:
+            missing.append({"record_id": source["record_id"], "reason": "no_retained_group"})
+            continue
+        if len(boundaries) != len(groups) - 1:
+            raise MeasurementError("adapter lost a group/boundary relationship")
+        records.append(
+            MeasurementRecord(
+                record_id=source["record_id"],
+                page=source["page"],
+                section=source.get("section"),
+                line_index=min(source["line_numbers"]),
+                groups=tuple(groups),
+                boundaries=tuple(boundaries),
+            )
+        )
+        provenance.append(
+            {
+                "record_id": source["record_id"],
+                "projection_sha256": projection["projection_sha256"],
+            }
+        )
+    scope = next(iter(scopes))
+    return {
+        "scope": {
+            "registry_sha256": scope[0],
+            "view_id": scope[1],
+            "alphabet": scope[2],
+            "witness_id": scope[3],
+        },
+        "symbol_table": [
+            {"id": index, "kind": kind, "surface": surface}
+            for index, (kind, surface) in enumerate(symbols)
+        ],
+        "records": tuple(records),
+        "coverage": {
+            "source_locus_count": len(projections),
+            "adapted_record_count": len(records),
+            "missing_records": missing,
+            "boundary_audit": dict(sorted(boundary_audit.items())),
+        },
+        "record_provenance": provenance,
+    }
+
+
 def measure_core(
     records: Sequence[MeasurementRecord], *, battery: MeasurementBattery, seed: int
 ) -> dict[str, float]:

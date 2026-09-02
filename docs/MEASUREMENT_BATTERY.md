@@ -6,6 +6,12 @@ decipherment method. It accepts only reversible numeric records whose symbols,
 groups, separator classes, page, section, and line identities have already been
 frozen by the representation contract.
 
+The adapter accepts only one `(registry, view, alphabet, witness)` scope at a
+time. It converts retained non-separator observations to deterministic integer
+IDs, turns certain and uncertain separators into distinct typed boundaries, and
+keeps the projection hash plus the physical record/page/section/line identity.
+Loci with no retained group are reported in coverage as missing records.
+
 ## Measurements
 
 The battery reports conditional unit uncertainty, group vocabulary and singleton
