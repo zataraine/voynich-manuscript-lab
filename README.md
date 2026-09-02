@@ -105,14 +105,24 @@ reports retain their original prospective language, including statements about
 what was “next” at the time; the ledgers and the current-evidence section above
 give the present status. New research experiments are paused while the seven
 interfaces in the
-[`control-expansion roadmap`](docs/CONTROL_EXPANSION_ROADMAP.md) are built. The
-first implemented interface is the prospective
-[`long-form human-control protocol`](docs/LONG_FORM_HUMAN_CONTROLS.md); this is
-pilot intake infrastructure, not an approved confirmatory sampling plan or a
-new experimental result. The admissible question is fixed by the
-[`mechanism-compatibility estimand`](docs/MECHANISM_COMPATIBILITY_ESTIMAND.md).
-All later measurements consume the frozen
-[`reversible representation views`](docs/REPRESENTATION_VIEWS.md).
+[`control-expansion roadmap`](docs/CONTROL_EXPANSION_ROADMAP.md) are built. Its
+first three infrastructure phases are now implemented:
+
+1. the admissible question and failure semantics are fixed by the
+   [`mechanism-compatibility estimand`](docs/MECHANISM_COMPATIBILITY_ESTIMAND.md);
+2. the prospective
+   [`paired human-control pilot`](docs/HUMAN_CONTROL_PILOT_V2.md) has a frozen
+   allocation and validated intake packet, but is not an approved confirmatory
+   sampling plan and authorizes no recruitment; and
+3. all later measurements consume the frozen
+   [`reversible representation views`](docs/REPRESENTATION_VIEWS.md), which keep
+   witnesses separate and preserve uncertainty and source provenance.
+
+Phases 4--6—the joint measurement battery, literature-anchored mechanism
+replications, and external validation barrier—remain to be implemented. Phase 7
+is the only new manuscript-facing run and remains prohibited until those gates
+pass. None of the three completed infrastructure phases is a new experimental
+result.
 
 ## Main capabilities
 
