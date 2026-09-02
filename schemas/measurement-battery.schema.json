@@ -3,7 +3,7 @@
   "$id": "https://manuscript-lab.local/schemas/measurement-battery.schema.json",
   "title": "Target-independent measurement battery",
   "type": "object",
-  "required": ["schema_version", "battery_id", "target_access", "minimum_records", "conditional_orders", "context_block_size", "compression_shuffle_replicates", "learned_unit_policy", "metric_rules"],
+  "required": ["schema_version", "battery_id", "target_access", "minimum_records", "conditional_orders", "context_block_size", "compression_shuffle_replicates", "null_families", "finite_sample_record_counts", "learned_unit_policy", "metric_rules"],
   "properties": {
     "schema_version": {"const": "1.0"},
     "battery_id": {"const": "measurement-battery-v1"},
@@ -12,6 +12,16 @@
     "conditional_orders": {"const": [0, 1]},
     "context_block_size": {"type": "integer", "minimum": 2},
     "compression_shuffle_replicates": {"type": "integer", "minimum": 2},
+    "null_families": {
+      "type": "array",
+      "const": ["group_order_shuffle", "within_group_unit_shuffle", "iid_symbol_length_matched"]
+    },
+    "finite_sample_record_counts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 2}
+    },
     "learned_unit_policy": {
       "type": "object",
       "required": ["fit_on_training_records_only", "freeze_before_heldout_measurement", "merge_counts"],

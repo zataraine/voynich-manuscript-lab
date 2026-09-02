@@ -79,6 +79,11 @@ def load_measurement_battery(
     merge_counts = value["learned_unit_policy"]["merge_counts"]
     if merge_counts != sorted(merge_counts):
         raise MeasurementError("learned-unit merge counts must be ascending")
+    sample_counts = value["finite_sample_record_counts"]
+    if sample_counts != sorted(sample_counts):
+        raise MeasurementError("finite-sample record counts must be ascending")
+    if sample_counts[0] < value["minimum_records"]:
+        raise MeasurementError("finite-sample record counts cannot be below minimum_records")
     return MeasurementBattery(
         path=battery_path,
         sha256=sha256_file(battery_path),
@@ -438,21 +443,75 @@ def measure_training_heldout(
     }
 
 
+def measure_finite_sample_profile(
+    records: Sequence[MeasurementRecord], *, battery: MeasurementBattery, seed: int
+) -> tuple[dict[str, Any], ...]:
+    """Measure fixed increasing record prefixes for finite-sample diagnostics.
+
+    This is deliberately a diagnostic, not a bias correction: it makes sample
+    size sensitivity visible while retaining complete physical records, their
+    groups, and their boundaries. Only configured sizes supported by the input
+    are emitted; callers must report the resulting coverage.
+    """
+    if len(records) < battery.config["minimum_records"]:
+        raise MeasurementError("insufficient records for finite-sample profile")
+    result: list[dict[str, Any]] = []
+    for record_count in battery.config["finite_sample_record_counts"]:
+        if record_count > len(records):
+            continue
+        subset = tuple(records[:record_count])
+        result.append(
+            {
+                "record_count": record_count,
+                "unit_count": sum(len(group) for record in subset for group in record.groups),
+                "metrics": measure_core(subset, battery=battery, seed=seed),
+            }
+        )
+    if not result:
+        raise MeasurementError("no configured finite-sample size is supported by the records")
+    return tuple(result)
+
+
 def structural_nulls(
     records: Sequence[MeasurementRecord], *, seed: int
 ) -> dict[str, tuple[MeasurementRecord, ...]]:
-    """Return deterministic order and within-group structural diagnostic nulls."""
-    rng = random.Random(seed)
+    """Return deterministic structural diagnostic nulls with named invariants.
+
+    The IID family preserves record identity, group widths, and typed boundary
+    sequence exactly. It draws units from the observed global marginal with
+    replacement, so counts are matched in expectation rather than silently
+    claimed to be fixed exactly.
+    """
+
+    def family_rng(name: str) -> random.Random:
+        material = f"measurement-battery-v1:{seed}:{name}".encode()
+        return random.Random(int.from_bytes(hashlib.sha256(material).digest()[:8], "big"))
+
+    order_rng = family_rng("group_order_shuffle")
+    within_rng = family_rng("within_group_unit_shuffle")
+    iid_rng = family_rng("iid_symbol_length_matched")
     order = []
     within = []
+    iid = []
+    population = [symbol for record in records for group in record.groups for symbol in group]
+    if not population:
+        raise MeasurementError("structural nulls require at least one observed unit")
     for record in records:
         shuffled_groups = list(record.groups)
-        rng.shuffle(shuffled_groups)
+        order_rng.shuffle(shuffled_groups)
         order.append(replace(record, groups=tuple(shuffled_groups)))
         unit_groups = []
         for group in record.groups:
             shuffled = list(group)
-            rng.shuffle(shuffled)
+            within_rng.shuffle(shuffled)
             unit_groups.append(tuple(shuffled))
         within.append(replace(record, groups=tuple(unit_groups)))
-    return {"group_order_shuffle": tuple(order), "within_group_unit_shuffle": tuple(within)}
+        iid_groups = tuple(
+            tuple(iid_rng.choice(population) for _ in group) for group in record.groups
+        )
+        iid.append(replace(record, groups=iid_groups))
+    return {
+        "group_order_shuffle": tuple(order),
+        "within_group_unit_shuffle": tuple(within),
+        "iid_symbol_length_matched": tuple(iid),
+    }

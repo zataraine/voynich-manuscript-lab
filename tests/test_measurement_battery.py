@@ -12,6 +12,7 @@ from manuscript_lab.measurement_battery import (
     fit_learned_units,
     load_measurement_battery,
     measure_core,
+    measure_finite_sample_profile,
     measure_learned_units,
     measure_training_heldout,
     structural_nulls,
@@ -63,9 +64,60 @@ def test_structural_nulls_are_seeded_and_change_order_sensitive_measurements() -
     first = structural_nulls(records, seed=23)
     second = structural_nulls(records, seed=23)
     assert first == second
+    assert set(first) == set(battery.config["null_families"])
+    for name, null_records in first.items():
+        assert [record.boundaries for record in null_records] == [
+            record.boundaries for record in records
+        ]
+        assert [tuple(map(len, record.groups)) for record in null_records] == [
+            tuple(map(len, record.groups)) for record in records
+        ], name
     observed = measure_core(records, battery=battery, seed=23)
     shuffled = measure_core(first["group_order_shuffle"], battery=battery, seed=23)
     assert observed["compression_shuffle_gain"] != shuffled["compression_shuffle_gain"]
+
+
+def test_finite_sample_profile_is_finite_and_stable_for_exact_balanced_control() -> None:
+    battery = load_measurement_battery()
+    records = tuple(
+        MeasurementRecord(
+            record_id=f"balanced-{index}",
+            page=f"p{index // 4}",
+            section="balanced",
+            line_index=index,
+            groups=((0,), (1,), (0,), (1,)),
+            boundaries=("certain", "certain", "certain"),
+        )
+        for index in range(32)
+    )
+    profile = measure_finite_sample_profile(records, battery=battery, seed=31)
+    assert [item["record_count"] for item in profile] == [4, 8, 16, 32]
+    assert [item["metrics"]["unit_entropy_bits"] for item in profile] == [1.0] * 4
+    assert all(math.isfinite(value) for item in profile for value in item["metrics"].values())
+
+
+def test_known_order_signal_is_recovered_against_length_matched_iid_null() -> None:
+    battery = load_measurement_battery()
+    records = tuple(
+        MeasurementRecord(
+            record_id=f"order-{index}",
+            page=f"p{index // 4}",
+            section="order",
+            line_index=index,
+            groups=((0, 1, 0, 1), (0, 1, 0, 1)),
+            boundaries=("certain",),
+        )
+        for index in range(16)
+    )
+    observed = measure_core(records, battery=battery, seed=37)
+    null_records = structural_nulls(records, seed=37)["iid_symbol_length_matched"]
+    null = measure_core(null_records, battery=battery, seed=37)
+    assert observed["unit_entropy_bits"] == 1.0
+    assert observed["conditional_unit_entropy_order1_bits"] == 0.0
+    assert (
+        null["conditional_unit_entropy_order1_bits"]
+        > observed["conditional_unit_entropy_order1_bits"]
+    )
 
 
 def test_learned_units_are_fit_only_on_training_records() -> None:

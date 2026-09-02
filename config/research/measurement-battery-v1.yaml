@@ -5,6 +5,11 @@ minimum_records: 4
 conditional_orders: [0, 1]
 context_block_size: 20
 compression_shuffle_replicates: 16
+null_families:
+  - group_order_shuffle
+  - within_group_unit_shuffle
+  - iid_symbol_length_matched
+finite_sample_record_counts: [4, 8, 16, 32]
 learned_unit_policy:
   fit_on_training_records_only: true
   freeze_before_heldout_measurement: true
