@@ -22,7 +22,7 @@ from scipy.stats import rankdata
 
 from manuscript_lab.provenance import repository_root, sha256_file
 
-BATTERY_PATH = Path("config/research/measurement-battery-v1.yaml")
+BATTERY_PATH = Path("config/research/measurement-battery-v2.yaml")
 SCHEMA_PATH = Path("schemas/measurement-battery.schema.json")
 Unit = int | tuple["Unit", "Unit"]
 
@@ -76,6 +76,10 @@ def load_measurement_battery(
             for error in errors
         )
         raise MeasurementError(f"invalid measurement battery: {rendered}")
+    if value["battery_id"] != "measurement-battery-v2":
+        raise MeasurementError(
+            "v1 is historical; corrected measurements require measurement-battery-v2"
+        )
     merge_counts = value["learned_unit_policy"]["merge_counts"]
     if merge_counts != sorted(merge_counts):
         raise MeasurementError("learned-unit merge counts must be ascending")
@@ -150,7 +154,7 @@ def _compression_gain(groups: Sequence[tuple[int, ...]], *, seed: int, replicate
 
 
 def _rank_correlation(values: Sequence[float], positions: Sequence[float]) -> float:
-    if len(values) < 3 or len(set(values)) < 2:
+    if len(values) < 3 or len(set(values)) < 2 or len(set(positions)) < 2:
         return 0.0
     left = rankdata(np.asarray(values, dtype=float), method="average")
     right = rankdata(np.asarray(positions, dtype=float), method="average")
@@ -179,7 +183,8 @@ def _mean_partition_drift(records: Sequence[MeasurementRecord], key: str) -> flo
         label = record.page if key == "page" else record.section
         if label is not None:
             partitions[str(label)].update(symbol for group in record.groups for symbol in group)
-    values = [partitions[label] for label in sorted(partitions)]
+    # First appearance follows supplied physical order; label spelling is opaque.
+    values = list(partitions.values())
     return (
         statistics.mean(_js_divergence(left, right) for left, right in pairwise(values))
         if len(values) > 1
@@ -327,7 +332,10 @@ def measure_core(
     groups = _flatten(records)
     units = tuple(symbol for group in groups for symbol in group)
     counts = Counter(groups)
-    group_pairs = list(pairwise(groups))
+    group_pairs = [pair for record in records for pair in pairwise(record.groups)]
+    edge_pairs = [
+        (left[-1], right[0]) for record in records for left, right in pairwise(record.groups)
+    ]
     boundary_pairs = [
         (boundary, int(left == right))
         for record in records
@@ -348,7 +356,8 @@ def measure_core(
         "median_recurrence_distance": _median_recurrence(groups),
         "adjacent_group_identity_rate": sum(left == right for left, right in group_pairs)
         / max(1, len(group_pairs)),
-        "cross_separator_edge_mi_bits": _mutual_information(boundary_pairs),
+        "cross_separator_edge_mi_bits": _mutual_information(edge_pairs),
+        "separator_identity_mi_bits": _mutual_information(boundary_pairs),
         "line_position_length_spearman": _rank_correlation(line_lengths, line_positions),
         "page_unigram_drift_js": _mean_partition_drift(records, "page"),
         "section_unigram_drift_js": _mean_partition_drift(records, "section"),
@@ -391,7 +400,9 @@ def fit_learned_units(
         counts = Counter(pair for sequence in sequences for pair in pairwise(sequence))
         if not counts:
             break
-        best = min(counts, key=lambda pair: (-counts[pair], repr(pair)))
+        # Counter retains first-occurrence order. Ties must not depend on the
+        # arbitrary integer labels assigned to symbols.
+        best = min(counts, key=lambda pair: -counts[pair])
         merges.append(best)
         sequences = [_replace_pairs(sequence, best) for sequence in sequences]
     return tuple(merges)
@@ -426,6 +437,16 @@ def measure_training_heldout(
     seed: int,
 ) -> dict[str, Any]:
     """Produce core metrics and held-out learned-unit diagnostics with no refitting."""
+    for name, records in (("training", training_records), ("heldout", heldout_records)):
+        ids = [record.record_id for record in records]
+        if len(ids) != len(set(ids)):
+            raise MeasurementError(f"duplicate record IDs in {name} split")
+    if {record.record_id for record in training_records} & {
+        record.record_id for record in heldout_records
+    }:
+        raise MeasurementError("record IDs overlap between training and heldout")
+    if {record.page for record in training_records} & {record.page for record in heldout_records}:
+        raise MeasurementError("physical pages overlap between training and heldout")
     learned = {}
     for merge_count in battery.config["learned_unit_policy"]["merge_counts"]:
         merges = fit_learned_units(training_records, merge_count=merge_count)
@@ -439,7 +460,54 @@ def measure_training_heldout(
         "battery_sha256": battery.sha256,
         "training": measure_core(training_records, battery=battery, seed=seed),
         "heldout": measure_core(heldout_records, battery=battery, seed=seed),
+        "training_support": measurement_support(training_records, battery=battery),
+        "heldout_support": measurement_support(heldout_records, battery=battery),
         "learned_units": learned,
+    }
+
+
+def measurement_support(
+    records: Sequence[MeasurementRecord], *, battery: MeasurementBattery
+) -> dict[str, Any]:
+    """Expose undefined zero placeholders separately from measured zero values."""
+    groups = _flatten(records)
+    pages = {record.page for record in records}
+    sections = {record.section for record in records if record.section is not None}
+    transitions = sum(max(0, len(group) - 1) for group in groups)
+    edges = sum(len(record.boundaries) for record in records)
+    recurrence_gaps = sum(count - 1 for count in Counter(groups).values())
+    undefined: dict[str, str] = {}
+    if not transitions:
+        undefined["conditional_unit_entropy_order1_bits"] = "no_within_group_transitions"
+    if not edges:
+        for name in (
+            "adjacent_group_identity_rate",
+            "cross_separator_edge_mi_bits",
+            "separator_identity_mi_bits",
+        ):
+            undefined[name] = "no_within_record_group_edges"
+    if not recurrence_gaps:
+        undefined["median_recurrence_distance"] = "no_repeated_groups"
+    lengths = {len(group) for group in groups}
+    positions = {record.line_index for record in records}
+    if len(groups) < 3 or len(lengths) < 2 or len(positions) < 2:
+        undefined["line_position_length_spearman"] = "insufficient_or_constant_rank_data"
+    if len(pages) < 2:
+        undefined["page_unigram_drift_js"] = "fewer_than_two_pages"
+    if len(sections) < 2:
+        undefined["section_unigram_drift_js"] = "fewer_than_two_observed_sections"
+    return {
+        "record_count": len(records),
+        "page_count": len(pages),
+        "section_count": len(sections),
+        "records_missing_section": sum(record.section is None for record in records),
+        "group_count": len(groups),
+        "within_group_transition_count": transitions,
+        "within_record_group_edge_count": edges,
+        "recurrence_gap_count": recurrence_gaps,
+        "undefined_metrics": {
+            name: undefined[name] for name in battery.config["metric_rules"] if name in undefined
+        },
     }
 
 
@@ -465,6 +533,7 @@ def measure_finite_sample_profile(
                 "record_count": record_count,
                 "unit_count": sum(len(group) for record in subset for group in record.groups),
                 "metrics": measure_core(subset, battery=battery, seed=seed),
+                "support": measurement_support(subset, battery=battery),
             }
         )
     if not result:

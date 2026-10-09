@@ -6,7 +6,7 @@
   "required": ["schema_version", "battery_id", "target_access", "minimum_records", "conditional_orders", "context_block_size", "compression_shuffle_replicates", "null_families", "finite_sample_record_counts", "learned_unit_policy", "metric_rules"],
   "properties": {
     "schema_version": {"const": "1.0"},
-    "battery_id": {"const": "measurement-battery-v1"},
+    "battery_id": {"enum": ["measurement-battery-v1", "measurement-battery-v2"]},
     "target_access": {"const": "forbidden"},
     "minimum_records": {"type": "integer", "minimum": 2},
     "conditional_orders": {"const": [0, 1]},

@@ -60,5 +60,6 @@ def test_representation_view_registry_matches_schema() -> None:
 def test_measurement_battery_matches_schema() -> None:
     root = Path(__file__).parents[1]
     schema = json.loads((root / "schemas/measurement-battery.schema.json").read_text())
-    battery = yaml.safe_load((root / "config/research/measurement-battery-v1.yaml").read_text())
-    Draft202012Validator(schema).validate(battery)
+    for path in (root / "config/research").glob("measurement-battery-v*.yaml"):
+        battery = yaml.safe_load(path.read_text())
+        Draft202012Validator(schema).validate(battery)
