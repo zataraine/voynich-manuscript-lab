@@ -9,7 +9,7 @@ this phase, and no checklist row grants target access.
 |---|---|---|
 | Conditional uncertainty at reversible scales | Native/STA1 order-0 and within-group order-1 entropy; learned-scale order-0/order-1 panels with frozen tables, record resets, exact/nested/oracle and IID finite-size checks; seven view inverses and saved-table replay | Broader learned-scale sample-size/sparsity and production-parameter recovery checks; learned-scale null calibration is not supplied. |
 | Learned-unit transfer | Training-only pair merges, held-out application, saved-table replay, exact expansion, rename and known-motif controls | Broader recovery controls with matched inventory and varied production parameters; freeze failure semantics. |
-| Vocabulary growth/tail/recurrence | Type/token ratio, singleton ratio, global recurrence and fixed record-prefix profiles | Freeze a growth endpoint and resolve recurrence reset scope; a type/token ratio is not a full growth model. |
+| Vocabulary growth/tail/recurrence | Type/token and singleton ratios; ordered discovery curves and fixed second-half novel-type rate; pooled/page-reset recurrence with retained events, exact/odd/even/oracle controls and serialized replay | Broader length/page-size, production-parameter and sparse-sample calibration; repeated null ensembles do not yet include the extension. No power-law fit or unseen-vocabulary estimate is claimed. |
 | Adjacency and separator effects | Within-record identity, true edge-unit MI, separator/identity MI; exact dependence and independence controls | Complete low-count and unbalanced-class sensitivity checks. |
 | Line/paragraph effects | Line association and within-paragraph correlations; positive/negative, offsets and missingness controls | Complete sparse/missing annotation stress cases and ensure eligible support is sufficient for later calibration. |
 | Page/section/session drift | Ordered page/section JS and explicit-session endpoints; rename/order and stationary/changing controls | Quantify sample-size and unequal-group effects across registered scopes. Physical order remains distinct from chronological order. |
@@ -41,7 +41,7 @@ this phase, and no checklist row grants target access.
 ./scripts/run pytest tests/test_measurement_battery.py \
   tests/test_measurement_records.py tests/test_layout_measurements.py \
   tests/test_sampling_diagnostics.py tests/test_representation_views.py \
-  tests/test_schemas.py
+  tests/test_vocabulary_growth.py tests/test_schemas.py
 ./scripts/smoke.sh
 ```
 
@@ -53,9 +53,10 @@ These are diagnostic differences, not p-values or compatibility decisions.
 
 ## Next implementation order
 
-1. Finish the still-missing vocabulary-growth endpoint, with explicit
-   recurrence/reset scope; extend learned-scale uncertainty recovery checks.
-2. Complete bias/sparsity and missingness checks for the whole assembled panel.
+1. Extend learned-scale uncertainty and vocabulary-growth recovery checks
+   across sample sizes, inventories and production parameters.
+2. Complete bias/sparsity, boundary-scope and missingness checks for the whole
+   assembled panel, including the optional extensions.
 3. Freeze joint exclusion rules and issue a reproducible acceptance report that
    names every satisfied and failed requirement.
 

@@ -48,6 +48,25 @@ positive pooled gain and zero page-reset gain. Unique groups give zero gain;
 ordered repeated runs give positive gain at both tested lengths. These checks
 do not turn compression into a semantic or calibrated mechanism score.
 
+## Ordered vocabulary growth and recurrence
+
+`vocabulary_growth.measure_vocabulary_growth` now adds a separate
+`vocabulary-growth-v1` extension to training, held-out and each single-draw null.
+It retains one-based first-discovery positions and successive recurrence gaps
+for exact numeric group types. With N groups and h=floor(N/2), the growth
+endpoint is `(V(N)-V(h))/(N-h)`: new types discovered in the remaining groups
+per remaining group. It is undefined for N<2. Curves retain powers-of-two,
+half-prefix and final checkpoints; discovery positions recover all prefixes.
+No power law is fitted and no unseen vocabulary is estimated.
+
+Pooled results follow supplied record/group order, including cross-page gaps.
+Page-reset results reunite each page's records in their relative supplied order
+and reset both discovery and recurrence by page. Pages retain first-appearance
+order. No-repeat recurrence is explicitly undefined. Serialized summaries replay
+from events and are checked against core group/page/gap counts and pooled median
+recurrence. Historical records lacking the extension remain readable. Existing
+repeated core-null ensembles do not yet include these panels. See ADR 0034.
+
 ## Explicit paragraph and session annotations
 
 Numeric records accept optional paired `paragraph_id`/`paragraph_line_index`
@@ -181,9 +200,9 @@ paragraph/session sensitivity across external controls, and the complete joint a
 report. Passing the current tests does not mark the phase complete.
 
 The [Phase 4 acceptance audit](PHASE4_ACCEPTANCE.md) lists implemented evidence,
-missing endpoints and remaining gates. Learned-scale uncertainty now accompanies
-width/count diagnostics, but type/token ratio alone is still not a
-vocabulary-growth endpoint. The audit prevents these gaps from being
+missing endpoints and remaining gates. Learned-scale uncertainty and ordered
+vocabulary growth now accompany width/count and type/token diagnostics, but
+broader calibration and missingness checks remain open. The audit prevents these gaps from being
 mistaken for completed roadmap requirements.
 
 ## Boundary

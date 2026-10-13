@@ -28,6 +28,7 @@ from manuscript_lab.representation_views import (
     project_surface,
     verify_projection,
 )
+from manuscript_lab.vocabulary_growth import measure_vocabulary_growth
 
 VIEWS = load_representation_registry().views
 
@@ -101,6 +102,8 @@ def test_scoped_result_replays_byte_for_byte_through_json(spec) -> None:
     assert replay["split"]["training_record_ids"] == [f"synthetic-control:r{i}" for i in range(4)]
     assert set(replay["nulls"]) == set(load_measurement_battery().config["null_families"])
     records = adapt_locus_projections(projections)["records"]
+    assert replay["vocabulary_growth"]["training"] == measure_vocabulary_growth(records[:4])
+    assert replay["vocabulary_growth"]["heldout"] == measure_vocabulary_growth(records[4:])
     for entry in replay["measurements"]["learned_units"].values():
         assert (
             entry["merge_table_sha256"]
@@ -291,4 +294,35 @@ def test_historical_records_without_learned_uncertainty_remain_readable() -> Non
     result = _build(_projections(spec), spec)
     for entry in result["measurements"]["learned_units"].values():
         del entry["uncertainty"]
+    assert canonical_measurement_bytes(result)
+
+
+@pytest.mark.parametrize(
+    "failure", ["metric", "events", "curve", "missingness", "page", "nonfinite"]
+)
+def test_growth_serialization_rejects_corrupted_summaries(failure):
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec)
+    panel = result["vocabulary_growth"]["heldout"]
+    summary = panel["pooled"]
+    if failure == "metric":
+        summary["metrics"]["second_half_novel_type_rate"] = 0.125
+    elif failure == "events":
+        summary["discovery_positions"].append(1)
+    elif failure == "curve":
+        summary["curve"][0]["type_count"] = 2
+    elif failure == "missingness":
+        summary["undefined_metrics"] = {"median_recurrence_distance": "invented"}
+    elif failure == "nonfinite":
+        summary["metrics"]["median_recurrence_distance"] = float("inf")
+    else:
+        panel["page_reset"][0]["page"] = panel["page_reset"][1]["page"]
+    with pytest.raises(MeasurementError):
+        canonical_measurement_bytes(result)
+
+
+def test_historical_records_without_growth_remain_readable():
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec)
+    del result["vocabulary_growth"]
     assert canonical_measurement_bytes(result)

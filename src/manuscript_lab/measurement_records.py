@@ -28,6 +28,7 @@ from manuscript_lab.measurement_battery import (
 from manuscript_lab.provenance import repository_root
 from manuscript_lab.representation_views import ViewSpec, verify_projection
 from manuscript_lab.sampling_diagnostics import measure_null_ensemble
+from manuscript_lab.vocabulary_growth import measure_vocabulary_growth, validate_vocabulary_growth
 
 SCHEMA_PATH = Path("schemas/measurement-record.schema.json")
 
@@ -128,6 +129,27 @@ def canonical_measurement_bytes(record: dict[str, Any]) -> bytes:
                     )
                 ):
                     raise MeasurementError("null ensemble summaries do not replay from samples")
+    if "vocabulary_growth" in value:
+        growth = value["vocabulary_growth"]
+        contexts = [
+            (growth[split], measurements[f"{split}_support"], measurements[split])
+            for split in ("training", "heldout")
+        ]
+        contexts.extend(
+            (panel, value["nulls"][name]["support"], value["nulls"][name]["metrics"])
+            for name, panel in growth["nulls"].items()
+        )
+        for panel, support, metrics in contexts:
+            validate_vocabulary_growth(panel)
+            pooled = panel["pooled"]
+            if (
+                pooled["group_count"] != support["group_count"]
+                or len(panel["page_reset"]) != support["page_count"]
+                or len(pooled["recurrence_gaps"]) != support["recurrence_gap_count"]
+                or pooled["metrics"]["median_recurrence_distance"]
+                != metrics["median_recurrence_distance"]
+            ):
+                raise MeasurementError("vocabulary growth differs from core measurement scope")
     return encoded
 
 
@@ -219,6 +241,14 @@ def build_control_measurement_record(
             "heldout": measure_layout(evaluation, battery=battery, seed=seed),
             "nulls": {
                 name: measure_layout(null_records[name], battery=battery, seed=seed)
+                for name in battery.config["null_families"]
+            },
+        },
+        "vocabulary_growth": {
+            "training": measure_vocabulary_growth(training),
+            "heldout": measure_vocabulary_growth(evaluation),
+            "nulls": {
+                name: measure_vocabulary_growth(null_records[name])
                 for name in battery.config["null_families"]
             },
         },

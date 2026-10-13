@@ -91,6 +91,19 @@
         "additionalProperties": false
       }
     },
+    "vocabulary_growth": {
+      "type": "object", "required": ["training", "heldout", "nulls"],
+      "properties": {
+        "training": {"$ref": "#/$defs/growth"},
+        "heldout": {"$ref": "#/$defs/growth"},
+        "nulls": {
+          "type": "object", "required": ["group_order_shuffle", "within_group_unit_shuffle", "iid_symbol_length_matched"],
+          "propertyNames": {"enum": ["group_order_shuffle", "within_group_unit_shuffle", "iid_symbol_length_matched"]},
+          "additionalProperties": {"$ref": "#/$defs/growth"}
+        }
+      },
+      "additionalProperties": false
+    },
     "decision": {"const": "not_calibrated"},
     "null_ensemble": {
       "type": "object",
@@ -141,6 +154,51 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "growth": {
+      "type": "object", "required": ["panel_id", "order", "metric_order", "metric_rules", "pooled", "page_reset"],
+      "properties": {
+        "panel_id": {"const": "vocabulary-growth-v1"},
+        "order": {"const": "supplied_record_then_group_order"},
+        "metric_order": {"const": ["second_half_novel_type_rate", "median_recurrence_distance"]},
+        "metric_rules": {"const": {"second_half_novel_type_rate": "two_sided", "median_recurrence_distance": "two_sided"}},
+        "pooled": {"$ref": "#/$defs/growth_summary"},
+        "page_reset": {
+          "type": "array", "items": {
+            "type": "object", "required": ["page", "summary"],
+            "properties": {"page": {"type": "string", "minLength": 1}, "summary": {"$ref": "#/$defs/growth_summary"}},
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "growth_summary": {
+      "type": "object",
+      "required": ["group_count", "type_count", "half_prefix_group_count", "half_prefix_type_count", "discovery_positions", "recurrence_gaps", "curve", "metrics", "undefined_metrics"],
+      "properties": {
+        "group_count": {"type": "integer", "minimum": 0},
+        "type_count": {"type": "integer", "minimum": 0},
+        "half_prefix_group_count": {"type": "integer", "minimum": 0},
+        "half_prefix_type_count": {"type": "integer", "minimum": 0},
+        "discovery_positions": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+        "recurrence_gaps": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+        "curve": {"type": "array", "items": {
+          "type": "object", "required": ["group_count", "type_count"],
+          "properties": {"group_count": {"type": "integer", "minimum": 1}, "type_count": {"type": "integer", "minimum": 1}},
+          "additionalProperties": false
+        }},
+        "metrics": {
+          "type": "object", "required": ["second_half_novel_type_rate", "median_recurrence_distance"],
+          "properties": {
+            "second_half_novel_type_rate": {"type": "number", "minimum": 0, "maximum": 1},
+            "median_recurrence_distance": {"type": "number", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "undefined_metrics": {"type": "object", "additionalProperties": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
     "learned_uncertainty": {
       "type": "object",
       "required": ["panel_id", "scope", "metric_order", "metric_rules", "metrics", "support"],

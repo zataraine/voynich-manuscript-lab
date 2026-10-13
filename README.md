@@ -124,8 +124,9 @@ replayable control records, and synthetic estimator/view/scale checks are
 implemented. An explicit paragraph/session panel and page-reset compression
 diagnostic now accompany those records, but the complete acceptance gate has
 not passed. Frozen learned-unit tables now also carry descriptive uncertainty
-panels with record resets and explicit support; vocabulary growth and broader
-calibration checks remain unfinished. Phases 5--6—the literature-anchored mechanism replications
+panels with record resets and explicit support. Ordered vocabulary-growth curves,
+second-half novelty and separate page-reset recurrence are also implemented;
+broader calibration checks remain unfinished. Phases 5--6—the literature-anchored mechanism replications
 and external validation barrier—remain to be implemented. Phase 7
 is the only new manuscript-facing run and remains prohibited until those gates
 pass. None of the three completed infrastructure phases is a new experimental
