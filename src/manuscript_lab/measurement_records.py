@@ -64,6 +64,21 @@ def canonical_measurement_bytes(record: dict[str, Any]) -> bytes:
         table = restore_learned_merge_table(entry["merge_table"])
         if hashlib.sha256(orjson.dumps(table)).hexdigest() != entry["merge_table_sha256"]:
             raise MeasurementError("learned-unit table SHA-256 mismatch")
+        for panel in entry.get("uncertainty", {}).values():
+            support = panel["support"]
+            undefined = {}
+            if not support["learned_unit_count"]:
+                undefined["unit_entropy_bits"] = "no_learned_units"
+            if not support["transition_count"]:
+                undefined["conditional_unit_entropy_order1_bits"] = "no_within_record_transitions"
+            if (
+                support["undefined_metrics"] != undefined
+                or support["learned_type_count"] > support["learned_unit_count"]
+                or support["transition_count"] > support["learned_unit_count"]
+                or support["base_unit_count"] < support["learned_unit_count"]
+                or any(panel["metrics"][name] != 0 for name in undefined)
+            ):
+                raise MeasurementError("learned uncertainty support is inconsistent")
     if "layout" in value:
         panels = [value["layout"]["training"], value["layout"]["heldout"]]
         panels.extend(value["layout"]["nulls"].values())

@@ -16,12 +16,96 @@ from manuscript_lab.measurement_battery import (
     load_measurement_battery,
     measure_core,
     measure_finite_sample_profile,
+    measure_learned_uncertainty,
     measure_learned_units,
     measure_training_heldout,
     measurement_support,
     structural_nulls,
 )
 from manuscript_lab.representation_views import load_representation_registry, project_surface
+
+
+def test_learned_uncertainty_exact_answers_and_record_resets() -> None:
+    records = tuple(replace(r, groups=((0, 1, 0, 1),), boundaries=()) for r in _records())
+    panel = measure_learned_uncertainty(records, merges=())
+    assert panel["metrics"] == {
+        "unit_entropy_bits": 1.0,
+        "conditional_unit_entropy_order1_bits": 0.0,
+    }
+    assert panel["support"]["transition_count"] == 12
+    merged = measure_learned_uncertainty(records, merges=((0, 1),))
+    assert merged["metrics"]["unit_entropy_bits"] == 0
+    assert merged["support"]["learned_unit_count"] == 8
+    assert merged["support"]["base_unit_count"] == 16
+    singletons = tuple(replace(r, groups=((i % 2,),), boundaries=()) for i, r in enumerate(records))
+    panel = measure_learned_uncertainty(singletons, merges=())
+    assert panel["metrics"]["unit_entropy_bits"] == 1
+    assert panel["support"]["transition_count"] == 0
+    assert panel["support"]["undefined_metrics"] == {
+        "conditional_unit_entropy_order1_bits": "no_within_record_transitions"
+    }
+
+
+def test_learned_uncertainty_erases_spaces_but_not_record_boundaries() -> None:
+    records = tuple(replace(r, groups=((0,), (1,)), boundaries=("certain",)) for r in _records())
+    panel = measure_learned_uncertainty(records, merges=((0, 1),))
+    assert panel["support"]["learned_unit_count"] == 4
+    assert panel["support"]["transition_count"] == 0
+
+
+def test_learned_uncertainty_matches_independent_entropy_oracle() -> None:
+    from collections import Counter
+    from itertools import pairwise
+
+    from scipy.stats import entropy
+
+    rng = random.Random(212)
+    records = tuple(
+        replace(r, groups=(tuple(rng.randrange(3) for _ in range(200)),), boundaries=())
+        for r in _records()
+    )
+    panel = measure_learned_uncertainty(records, merges=())
+    counts = Counter(unit for r in records for unit in r.groups[0])
+    assert panel["metrics"]["unit_entropy_bits"] == pytest.approx(
+        entropy(list(counts.values()), base=2)
+    )
+    pairs = Counter(pair for r in records for pair in pairwise(r.groups[0]))
+    contexts = Counter()
+    for (left, _), count in pairs.items():
+        contexts[left] += count
+    expected = entropy(list(pairs.values()), base=2) - entropy(list(contexts.values()), base=2)
+    assert panel["metrics"]["conditional_unit_entropy_order1_bits"] == pytest.approx(expected)
+    renamed = tuple(replace(r, groups=(tuple(101 - x for x in r.groups[0]),)) for r in records)
+    assert measure_learned_uncertainty(renamed, merges=())["metrics"] == panel["metrics"]
+
+
+def test_empty_learned_uncertainty_has_explicit_missingness() -> None:
+    panel = measure_learned_uncertainty((), merges=())
+    assert len(panel["support"]["undefined_metrics"]) == 2
+    assert set(panel["metrics"].values()) == {0.0}
+
+
+def test_nested_learned_units_have_exact_conditional_uncertainty() -> None:
+    records = tuple(
+        replace(r, groups=((0, 1, 0, 1, 2, 0, 1, 0, 1, 3),), boundaries=()) for r in _records()
+    )
+    panel = measure_learned_uncertainty(records, merges=((0, 1), ((0, 1), (0, 1))))
+    assert panel["metrics"]["unit_entropy_bits"] == 1.5
+    assert panel["metrics"]["conditional_unit_entropy_order1_bits"] == pytest.approx(2 / 3)
+    assert panel["support"]["base_unit_count"] == 40
+    assert panel["support"]["learned_type_count"] == 3
+
+
+def test_learned_uncertainty_fair_binary_finite_sample_check() -> None:
+    rng = random.Random(817)
+    values = tuple(rng.randrange(2) for _ in range(8192))
+    large = tuple(replace(r, groups=(values,), boundaries=()) for r in _records()[:1])
+    small = tuple(replace(r, groups=(values[:64],)) for r in large)
+    first = measure_learned_uncertainty(small, merges=())["metrics"]
+    last = measure_learned_uncertainty(large, merges=())["metrics"]
+    for metric in last:
+        assert abs(last[metric] - 1) < 0.005
+        assert abs(last[metric] - 1) < abs(first[metric] - 1)
 
 
 def _records(offset: int = 0) -> tuple[MeasurementRecord, ...]:

@@ -61,7 +61,15 @@
               "merge_table_encoding": {"const": "nested-pair-json-v1"},
               "merge_table_sha256": {"$ref": "#/$defs/hash"},
               "trained_merge_count": {"type": "integer", "minimum": 0},
-              "heldout": {"$ref": "#/$defs/metrics"}
+              "heldout": {"$ref": "#/$defs/metrics"},
+              "uncertainty": {
+                "type": "object", "required": ["training", "heldout"],
+                "properties": {
+                  "training": {"$ref": "#/$defs/learned_uncertainty"},
+                  "heldout": {"$ref": "#/$defs/learned_uncertainty"}
+                },
+                "additionalProperties": false
+              }
             },
             "additionalProperties": false
           }
@@ -133,6 +141,38 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "learned_uncertainty": {
+      "type": "object",
+      "required": ["panel_id", "scope", "metric_order", "metric_rules", "metrics", "support"],
+      "properties": {
+        "panel_id": {"const": "learned-uncertainty-v1"},
+        "scope": {"const": "space_erased_record_reset"},
+        "metric_order": {"const": ["unit_entropy_bits", "conditional_unit_entropy_order1_bits"]},
+        "metric_rules": {"const": {"unit_entropy_bits": "two_sided", "conditional_unit_entropy_order1_bits": "two_sided"}},
+        "metrics": {
+          "type": "object", "required": ["unit_entropy_bits", "conditional_unit_entropy_order1_bits"],
+          "properties": {
+            "unit_entropy_bits": {"type": "number", "minimum": 0},
+            "conditional_unit_entropy_order1_bits": {"type": "number", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "support": {
+          "type": "object",
+          "required": ["record_count", "base_unit_count", "learned_unit_count", "learned_type_count", "transition_count", "undefined_metrics"],
+          "properties": {
+            "record_count": {"type": "integer", "minimum": 0},
+            "base_unit_count": {"type": "integer", "minimum": 0},
+            "learned_unit_count": {"type": "integer", "minimum": 0},
+            "learned_type_count": {"type": "integer", "minimum": 0},
+            "transition_count": {"type": "integer", "minimum": 0},
+            "undefined_metrics": {"type": "object", "additionalProperties": {"type": "string"}}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "metrics": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "number"}},
     "layout": {

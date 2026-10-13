@@ -1,13 +1,13 @@
 # Phase 4 acceptance audit
 
-Status: **open**, reviewed 2026-10-13. This checklist is software readiness for
+Status: **open**, reviewed 2026-10-14. This checklist is software readiness for
 the joint measurement battery, not a manuscript result or external calibration.
 The roadmap remains authoritative. Passing smoke tests alone does not complete
 this phase, and no checklist row grants target access.
 
 | Requirement | Implemented evidence | Remaining work |
 |---|---|---|
-| Conditional uncertainty at reversible scales | Native/STA1 order-0 and within-group order-1 entropy; exact and IID finite-size tests; seven view inverses | Learned-unit summaries currently measure width/count only. Add uncertainty at learned scales and freeze their scope. |
+| Conditional uncertainty at reversible scales | Native/STA1 order-0 and within-group order-1 entropy; learned-scale order-0/order-1 panels with frozen tables, record resets, exact/nested/oracle and IID finite-size checks; seven view inverses and saved-table replay | Broader learned-scale sample-size/sparsity and production-parameter recovery checks; learned-scale null calibration is not supplied. |
 | Learned-unit transfer | Training-only pair merges, held-out application, saved-table replay, exact expansion, rename and known-motif controls | Broader recovery controls with matched inventory and varied production parameters; freeze failure semantics. |
 | Vocabulary growth/tail/recurrence | Type/token ratio, singleton ratio, global recurrence and fixed record-prefix profiles | Freeze a growth endpoint and resolve recurrence reset scope; a type/token ratio is not a full growth model. |
 | Adjacency and separator effects | Within-record identity, true edge-unit MI, separator/identity MI; exact dependence and independence controls | Complete low-count and unbalanced-class sensitivity checks. |
@@ -53,8 +53,8 @@ These are diagnostic differences, not p-values or compatibility decisions.
 
 ## Next implementation order
 
-1. Finish the still-missing endpoints: learned-scale uncertainty and vocabulary
-   growth, with explicit recurrence/reset scope.
+1. Finish the still-missing vocabulary-growth endpoint, with explicit
+   recurrence/reset scope; extend learned-scale uncertainty recovery checks.
 2. Complete bias/sparsity and missingness checks for the whole assembled panel.
 3. Freeze joint exclusion rules and issue a reproducible acceptance report that
    names every satisfied and failed requirement.

@@ -123,8 +123,8 @@ def _entropy(values: Iterable[Any]) -> float:
     return -sum(count / total * math.log2(count / total) for count in counts.values())
 
 
-def _conditional_entropy(groups: Sequence[tuple[int, ...]]) -> float:
-    contexts: dict[int, Counter[int]] = defaultdict(Counter)
+def _conditional_entropy(groups: Sequence[Sequence[Any]]) -> float:
+    contexts: dict[Any, Counter[Any]] = defaultdict(Counter)
     total = 0
     for group in groups:
         for left, right in pairwise(group):
@@ -543,6 +543,10 @@ def measure_training_heldout(
             "merge_table": merges,
             "trained_merge_count": len(merges),
             "heldout": measure_learned_units(heldout_records, merges=merges),
+            "uncertainty": {
+                "training": measure_learned_uncertainty(training_records, merges=merges),
+                "heldout": measure_learned_uncertainty(heldout_records, merges=merges),
+            },
         }
     return {
         "battery_id": battery.battery_id,
@@ -552,6 +556,48 @@ def measure_training_heldout(
         "training_support": measurement_support(training_records, battery=battery),
         "heldout_support": measurement_support(heldout_records, battery=battery),
         "learned_units": learned,
+    }
+
+
+LEARNED_UNCERTAINTY_METRICS = (
+    "unit_entropy_bits",
+    "conditional_unit_entropy_order1_bits",
+)
+
+
+def measure_learned_uncertainty(
+    records: Sequence[MeasurementRecord], *, merges: Sequence[tuple[Unit, Unit]]
+) -> dict[str, Any]:
+    """Empirical uncertainty of frozen units; erase spaces, reset at each record.
+
+    Bits are per learned unit (or transition), not per base glyph. This is a
+    plug-in descriptive estimator, not held-out predictive cross-entropy.
+    """
+    sequences = apply_learned_units(records, merges=merges)
+    units = [unit for sequence in sequences for unit in sequence]
+    transitions = sum(max(0, len(sequence) - 1) for sequence in sequences)
+    undefined = {}
+    if not units:
+        undefined["unit_entropy_bits"] = "no_learned_units"
+    if not transitions:
+        undefined["conditional_unit_entropy_order1_bits"] = "no_within_record_transitions"
+    return {
+        "panel_id": "learned-uncertainty-v1",
+        "scope": "space_erased_record_reset",
+        "metric_order": list(LEARNED_UNCERTAINTY_METRICS),
+        "metric_rules": {name: "two_sided" for name in LEARNED_UNCERTAINTY_METRICS},
+        "metrics": {
+            "unit_entropy_bits": _entropy(units),
+            "conditional_unit_entropy_order1_bits": _conditional_entropy(sequences),
+        },
+        "support": {
+            "record_count": len(records),
+            "base_unit_count": sum(_unit_width(unit) for unit in units),
+            "learned_unit_count": len(units),
+            "learned_type_count": len(set(units)),
+            "transition_count": transitions,
+            "undefined_metrics": undefined,
+        },
     }
 
 

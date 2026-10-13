@@ -93,6 +93,18 @@ reset at each record. The original projections retain group/separator inverses.
 Earlier v2 development hashes used Python `repr`; the explicit encoding field
 distinguishes the saved-table contract introduced by ADR 0029.
 
+Each new saved-table entry also includes `learned-uncertainty-v1` training and
+held-out panels. Both apply the same training-fitted table. They report empirical
+unit entropy and transition-weighted order-1 conditional entropy in bits,
+erasing spaces and resetting transitions at each record. These are descriptive
+plug-in estimates, not training-model predictive cross-entropy. Bits are per
+learned unit/transition, not per base glyph; comparisons across merge scales
+must not treat them as a common entropy rate. Each panel records record, base
+unit, learned unit/type and transition counts, with explicit undefined reasons.
+No transitions means an undefined conditional estimate, not measured certainty.
+Historical records without these optional panels remain readable. The core
+metric vector is unchanged. See ADR 0033 for scope and acceptance checks.
+
 ## Nulls and finite samples
 
 The supplied structural nulls shuffle group order, shuffle units inside each
@@ -169,9 +181,9 @@ paragraph/session sensitivity across external controls, and the complete joint a
 report. Passing the current tests does not mark the phase complete.
 
 The [Phase 4 acceptance audit](PHASE4_ACCEPTANCE.md) lists implemented evidence,
-missing endpoints and remaining gates. In particular, learned-unit width/count
-diagnostics are not learned-scale uncertainty, and type/token ratio alone is
-not a vocabulary-growth endpoint. The audit prevents these gaps from being
+missing endpoints and remaining gates. Learned-scale uncertainty now accompanies
+width/count diagnostics, but type/token ratio alone is still not a
+vocabulary-growth endpoint. The audit prevents these gaps from being
 mistaken for completed roadmap requirements.
 
 ## Boundary

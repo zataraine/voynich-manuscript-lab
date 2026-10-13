@@ -14,6 +14,7 @@ from manuscript_lab.measurement_battery import (
     expand_learned_units,
     fit_learned_units,
     load_measurement_battery,
+    measure_learned_uncertainty,
     measure_learned_units,
     restore_learned_merge_table,
 )
@@ -108,6 +109,14 @@ def test_scoped_result_replays_byte_for_byte_through_json(spec) -> None:
 
         merges = restore_learned_merge_table(entry["merge_table"])
         assert measure_learned_units(records[4:], merges=merges) == entry["heldout"]
+        assert (
+            measure_learned_uncertainty(records[4:], merges=merges)
+            == entry["uncertainty"]["heldout"]
+        )
+        assert (
+            measure_learned_uncertainty(records[:4], merges=merges)
+            == entry["uncertainty"]["training"]
+        )
 
 
 def test_separator_and_ligature_views_have_declared_differences() -> None:
@@ -258,3 +267,28 @@ def test_optional_null_ensemble_serializes_and_rejects_corrupt_summaries() -> No
     )
     with pytest.raises(MeasurementError, match="summaries do not replay"):
         canonical_measurement_bytes(result)
+
+
+@pytest.mark.parametrize("failure", ["missing_metric", "nonfinite", "support", "scope"])
+def test_learned_uncertainty_serialization_rejects_corruption(failure) -> None:
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec)
+    panel = result["measurements"]["learned_units"]["16"]["uncertainty"]["heldout"]
+    if failure == "missing_metric":
+        del panel["metrics"]["unit_entropy_bits"]
+    elif failure == "nonfinite":
+        panel["metrics"]["unit_entropy_bits"] = float("nan")
+    elif failure == "scope":
+        panel["scope"] = "pooled"
+    else:
+        panel["support"]["learned_unit_count"] = 0
+    with pytest.raises(MeasurementError):
+        canonical_measurement_bytes(result)
+
+
+def test_historical_records_without_learned_uncertainty_remain_readable() -> None:
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec)
+    for entry in result["measurements"]["learned_units"].values():
+        del entry["uncertainty"]
+    assert canonical_measurement_bytes(result)
