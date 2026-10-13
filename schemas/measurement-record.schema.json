@@ -83,12 +83,35 @@
         "additionalProperties": false
       }
     },
-    "decision": {"const": "not_calibrated"}
+    "decision": {"const": "not_calibrated"},
+    "layout": {
+      "type": "object", "required": ["training", "heldout", "nulls"],
+      "properties": {
+        "training": {"$ref": "#/$defs/layout"},
+        "heldout": {"$ref": "#/$defs/layout"},
+        "nulls": {
+          "type": "object", "required": ["group_order_shuffle", "within_group_unit_shuffle", "iid_symbol_length_matched"],
+          "additionalProperties": {"$ref": "#/$defs/layout"}
+        }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": false,
   "$defs": {
     "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "metrics": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "number"}},
+    "layout": {
+      "type": "object", "required": ["panel_id", "metric_order", "metric_rules", "metrics", "support"],
+      "properties": {
+        "panel_id": {"const": "layout-measurements-v1"},
+        "metric_order": {"type": "array", "items": {"type": "string"}},
+        "metric_rules": {"type": "object", "additionalProperties": {"const": "two_sided"}},
+        "metrics": {"$ref": "#/$defs/metrics"},
+        "support": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
     "profile": {
       "type": "array", "minItems": 1,
       "items": {

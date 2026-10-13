@@ -121,8 +121,9 @@ first three infrastructure phases are now implemented:
 Phase 4's [joint measurement battery](docs/MEASUREMENT_BATTERY.md) is in progress:
 the v2 core, reversible-view adapter, length-matched nulls, support diagnostics,
 replayable control records, and synthetic estimator/view/scale checks are
-implemented, but its complete acceptance
-gate has not passed. Phases 5--6—the literature-anchored mechanism replications
+implemented. An explicit paragraph/session panel and page-reset compression
+diagnostic now accompany those records, but the complete acceptance gate has
+not passed. Phases 5--6—the literature-anchored mechanism replications
 and external validation barrier—remain to be implemented. Phase 7
 is the only new manuscript-facing run and remains prohibited until those gates
 pass. None of the three completed infrastructure phases is a new experimental

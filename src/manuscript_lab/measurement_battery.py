@@ -41,12 +41,31 @@ class MeasurementRecord:
     line_index: int
     groups: tuple[tuple[int, ...], ...]
     boundaries: tuple[str, ...]
+    paragraph_id: str | None = None
+    paragraph_line_index: int | None = None
+    session_id: str | None = None
+    session_index: int | None = None
 
     def __post_init__(self) -> None:
         if not self.groups or any(not group for group in self.groups):
             raise MeasurementError("measurement records require nonempty groups")
         if len(self.boundaries) != len(self.groups) - 1:
             raise MeasurementError("boundary count must equal group count minus one")
+        for name in ("paragraph", "session"):
+            identity = getattr(self, f"{name}_id")
+            index = getattr(
+                self, "paragraph_line_index" if name == "paragraph" else "session_index"
+            )
+            if (identity is None) != (index is None):
+                raise MeasurementError(f"{name} identity and index must be supplied together")
+            if identity is not None and (
+                not isinstance(identity, str)
+                or not identity
+                or not isinstance(index, int)
+                or isinstance(index, bool)
+                or index < 0
+            ):
+                raise MeasurementError(f"invalid {name} identity or index")
 
 
 @dataclass(frozen=True)
@@ -160,6 +179,25 @@ def _rank_correlation(values: Sequence[float], positions: Sequence[float]) -> fl
     right = rankdata(np.asarray(positions, dtype=float), method="average")
     result = float(np.corrcoef(left, right)[0, 1])
     return result if math.isfinite(result) else 0.0
+
+
+def measure_page_compression(
+    records: Sequence[MeasurementRecord], *, battery: MeasurementBattery, seed: int
+) -> float:
+    """Group-count-weighted shuffle gain with compression reset at each page."""
+    pages: dict[str, list[tuple[int, ...]]] = defaultdict(list)
+    for record in records:
+        pages[record.page].extend(record.groups)
+    total = sum(len(groups) for groups in pages.values())
+    return sum(
+        len(groups)
+        * _compression_gain(
+            groups,
+            seed=seed + index,
+            replicates=battery.config["compression_shuffle_replicates"],
+        )
+        for index, groups in enumerate(pages.values())
+    ) / max(1, total)
 
 
 def _js_divergence(left: Counter[int], right: Counter[int]) -> float:
@@ -292,6 +330,10 @@ def adapt_locus_projections(projections: Sequence[dict[str, Any]]) -> dict[str, 
                 line_index=min(source["line_numbers"]),
                 groups=tuple(groups),
                 boundaries=tuple(boundaries),
+                paragraph_id=source.get("paragraph_id"),
+                paragraph_line_index=source.get("paragraph_line_index"),
+                session_id=source.get("session_id"),
+                session_index=source.get("session_index"),
             )
         )
         provenance.append(

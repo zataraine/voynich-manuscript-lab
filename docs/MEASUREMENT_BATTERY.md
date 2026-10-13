@@ -40,6 +40,41 @@ record order. Their scope differs from within-record adjacency; the remaining
 Phase-4 review must evaluate page resets and layout sensitivity before freezing
 the final calibration bundle.
 
+The `layout-measurements-v1` extension now supplies a separate page-reset
+compression gain. It uses the same canonical group-equality encoding and zlib
+settings, resets compression/shuffling at each page, and weights gains by group
+count. A synthetic control where each page is constant but pages differ gives
+positive pooled gain and zero page-reset gain. Unique groups give zero gain;
+ordered repeated runs give positive gain at both tested lengths. These checks
+do not turn compression into a semantic or calibrated mechanism score.
+
+## Explicit paragraph and session annotations
+
+Numeric records accept optional paired `paragraph_id`/`paragraph_line_index`
+and `session_id`/`session_index` fields from projection source metadata. IDs are
+opaque; indices are nonnegative integers. Paragraph IDs are scoped by page, and
+each annotated record must have a unique relative line position in its paragraph.
+Callers must supply line-resolved records for this endpoint. Annotation versions
+and provenance belong in the source manifest. Missing annotations remain missing.
+
+`layout_measurements.measure_layout` computes mean group width per record, then
+correlates it with relative line position within each eligible paragraph (at
+least three positions and variable widths). It averages eligible paragraph
+correlations equally, avoiding pooling between-paragraph length offsets.
+
+Longitudinal endpoints aggregate units and group widths by explicit production
+session, order sessions by supplied index, and report mean adjacent-session JS
+drift and session-position/mean-width Spearman association. Session order is not
+inferred from page order, section labels or record ordering. Conflicting or
+aliased session indices are rejected. Callers must isolate contributors and
+documents and choose larger split groups when warranted.
+
+The extension reports its panel ID, four ordered two-sided criteria, annotation
+missingness, eligible/ineligible paragraphs, ordered sessions, and reasons for
+undefined zero placeholders. Its output accompanies training, held-out and
+each diagnostic null in serialized control records. V1 records without this
+optional extension remain readable; new builder outputs include it.
+
 Learned units use a deterministic pair-merge tokenizer. Its merge table is fit
 only on supplied training records, frozen, then applied to held-out records.
 Merge counts are fixed in the config. The units are compression devices, not
@@ -120,8 +155,8 @@ replay from acquired sources, null ensembles and calibration remain run-harness
 responsibilities.
 
 Phase 4 remains in progress. Remaining work includes broader view/scale recovery,
-paragraph and longitudinal interfaces, calibrated missingness handling, broader
-estimator-bias and compression controls, and the complete joint acceptance
+calibrated missingness handling, broader estimator-bias and compression controls,
+paragraph/session sensitivity across external controls, and the complete joint acceptance
 report. Passing the current tests does not mark the phase complete.
 
 ## Boundary

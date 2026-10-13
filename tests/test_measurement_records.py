@@ -221,3 +221,28 @@ def test_native_grapheme_and_codepoint_scales_preserve_the_same_surface() -> Non
         assert len(record.groups[0]) == width
         symbols = {item["id"]: item["surface"] for item in adapted["symbol_table"]}
         assert "".join(symbols[unit] for unit in record.groups[0]) == "a\u0301"
+
+
+def test_layout_annotations_reach_serialized_results() -> None:
+    spec = VIEWS[2]
+    projections = _projections(spec)
+    for index, projection in enumerate(projections):
+        projection["source"].update(
+            {
+                "paragraph_id": "explicit-paragraph",
+                "paragraph_line_index": 0,
+                "session_id": f"session-{index}",
+                "session_index": index,
+            }
+        )
+    result = _build(projections, spec)
+    assert result["layout"]["heldout"]["support"]["records_missing_session"] == 0
+    assert result["layout"]["heldout"]["support"]["ordered_session_ids"] == [
+        "session-4",
+        "session-5",
+        "session-6",
+        "session-7",
+    ]
+    assert canonical_measurement_bytes(
+        orjson.loads(canonical_measurement_bytes(result))
+    ) == canonical_measurement_bytes(result)

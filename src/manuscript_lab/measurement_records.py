@@ -11,6 +11,8 @@ from typing import Any
 import orjson
 from jsonschema import Draft202012Validator
 
+from manuscript_lab.layout_measurements import METRICS as LAYOUT_METRICS
+from manuscript_lab.layout_measurements import measure_layout
 from manuscript_lab.measurement_battery import (
     MeasurementBattery,
     MeasurementError,
@@ -60,6 +62,15 @@ def canonical_measurement_bytes(record: dict[str, Any]) -> bytes:
         table = restore_learned_merge_table(entry["merge_table"])
         if hashlib.sha256(orjson.dumps(table)).hexdigest() != entry["merge_table_sha256"]:
             raise MeasurementError("learned-unit table SHA-256 mismatch")
+    if "layout" in value:
+        panels = [value["layout"]["training"], value["layout"]["heldout"]]
+        panels.extend(value["layout"]["nulls"].values())
+        for panel in panels:
+            if set(panel["metrics"]) != set(LAYOUT_METRICS) or any(
+                not isinstance(number, (int, float)) or not math.isfinite(number)
+                for number in panel["metrics"].values()
+            ):
+                raise MeasurementError("layout vector is incomplete or non-finite")
     return encoded
 
 
@@ -144,6 +155,14 @@ def build_control_measurement_record(
                 "support": measurement_support(null_records[name], battery=battery),
             }
             for name in battery.config["null_families"]
+        },
+        "layout": {
+            "training": measure_layout(training, battery=battery, seed=seed),
+            "heldout": measure_layout(evaluation, battery=battery, seed=seed),
+            "nulls": {
+                name: measure_layout(null_records[name], battery=battery, seed=seed)
+                for name in battery.config["null_families"]
+            },
         },
         "decision": "not_calibrated",
     }
