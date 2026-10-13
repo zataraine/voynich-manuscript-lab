@@ -53,6 +53,13 @@ These are diagnostic differences, not p-values or compatibility decisions.
 
 ## Next implementation order
 
+The [joint synthetic stress suite](MEASUREMENT_STRESS.md) now exercises 54
+short/sparse/imbalanced/unequal-page cases, all four learned scales and three
+annotation masks, retaining raw records and undefinedness. Its 1,152 software
+checks pass, but 42 learned conditional panels and every masked paragraph panel
+are undefined in the documented fixtures. These outcomes motivate an explicit
+joint abstention policy; they are not a reliability or calibration pass.
+
 1. Extend learned-scale uncertainty and vocabulary-growth recovery checks
    across sample sizes, inventories and production parameters.
 2. Complete bias/sparsity, boundary-scope and missingness checks for the whole

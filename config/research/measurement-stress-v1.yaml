@@ -1,0 +1,8 @@
+suite_id: measurement-stress-v1
+target_access: forbidden
+numeric_absolute_tolerance: 1.0e-12
+record_counts: [4, 16, 64]
+seeds: [211, 223, 227]
+scenarios: [constant, unique, binary_iid, large_inventory_iid, imbalanced_iid, unequal_pages]
+groups_per_record: 8
+annotation_masks: [none, alternating, longest_lines]

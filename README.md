@@ -134,6 +134,9 @@ result.
 
 The [Phase 4 acceptance audit](docs/PHASE4_ACCEPTANCE.md) distinguishes verified
 software from still-missing endpoints and unresolved bias/missingness gates.
+The [joint synthetic stress suite](docs/MEASUREMENT_STRESS.md) exercises the
+assembled panels and records short-sample and missing-annotation limitations;
+passing its software checks does not complete calibration.
 
 ## Main capabilities
 
