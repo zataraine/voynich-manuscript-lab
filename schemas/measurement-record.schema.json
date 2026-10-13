@@ -84,6 +84,40 @@
       }
     },
     "decision": {"const": "not_calibrated"},
+    "null_ensemble": {
+      "type": "object",
+      "required": ["diagnostic_id", "battery_id", "battery_sha256", "base_seed", "replicate_seeds", "replicates", "metric_order", "observed", "observed_support", "families", "decision"],
+      "properties": {
+        "diagnostic_id": {"const": "null-ensemble-v1"},
+        "battery_id": {"const": "measurement-battery-v2"},
+        "battery_sha256": {"$ref": "#/$defs/hash"},
+        "base_seed": {"type": "integer"},
+        "replicate_seeds": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "integer"}},
+        "replicates": {"type": "integer", "minimum": 2},
+        "metric_order": {"type": "array", "items": {"type": "string"}},
+        "observed": {"$ref": "#/$defs/metrics"},
+        "observed_support": {"type": "object"},
+        "families": {
+          "type": "object", "required": ["group_order_shuffle", "within_group_unit_shuffle", "iid_symbol_length_matched"],
+          "additionalProperties": {
+            "type": "object", "additionalProperties": {
+              "type": "object",
+              "required": ["samples", "defined_replicates", "null_mean", "null_sample_sd", "observed_minus_null_mean"],
+              "properties": {
+                "samples": {"type": "array", "minItems": 2, "items": {"type": ["number", "null"]}},
+                "defined_replicates": {"type": "integer", "minimum": 0},
+                "null_mean": {"type": ["number", "null"]},
+                "null_sample_sd": {"type": ["number", "null"], "minimum": 0},
+                "observed_minus_null_mean": {"type": ["number", "null"]}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "decision": {"const": "not_calibrated"}
+      },
+      "additionalProperties": false
+    },
     "layout": {
       "type": "object", "required": ["training", "heldout", "nulls"],
       "properties": {

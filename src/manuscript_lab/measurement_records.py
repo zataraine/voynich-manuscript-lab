@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import statistics
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,7 @@ from manuscript_lab.measurement_battery import (
 )
 from manuscript_lab.provenance import repository_root
 from manuscript_lab.representation_views import ViewSpec, verify_projection
+from manuscript_lab.sampling_diagnostics import measure_null_ensemble
 
 SCHEMA_PATH = Path("schemas/measurement-record.schema.json")
 
@@ -71,6 +73,46 @@ def canonical_measurement_bytes(record: dict[str, Any]) -> bytes:
                 for number in panel["metrics"].values()
             ):
                 raise MeasurementError("layout vector is incomplete or non-finite")
+    if "null_ensemble" in value:
+        ensemble = value["null_ensemble"]
+        if (
+            ensemble["battery_id"] != value["battery_id"]
+            or ensemble["battery_sha256"] != value["battery_sha256"]
+            or ensemble["base_seed"] != value["seed"]
+            or ensemble["metric_order"] != metric_order
+            or ensemble["observed"] != measurements["heldout"]
+            or ensemble["observed_support"] != measurements["heldout_support"]
+            or len(ensemble["replicate_seeds"]) != ensemble["replicates"]
+            or set(ensemble["families"]) != set(value["nulls"])
+        ):
+            raise MeasurementError("null ensemble does not match result identity or dimensions")
+        for summaries in ensemble["families"].values():
+            if set(summaries) != set(metric_order):
+                raise MeasurementError("null ensemble metric coverage differs from result")
+            for name, summary in summaries.items():
+                samples = summary["samples"]
+                defined = [sample for sample in samples if sample is not None]
+                mean = statistics.mean(defined) if defined else None
+                sd = statistics.stdev(defined) if len(defined) > 1 else None
+                contrast = (
+                    ensemble["observed"][name] - mean
+                    if (
+                        mean is not None
+                        and name not in ensemble["observed_support"]["undefined_metrics"]
+                    )
+                    else None
+                )
+                if (
+                    len(samples) != ensemble["replicates"]
+                    or len(defined) != summary["defined_replicates"]
+                    or (mean, sd, contrast)
+                    != (
+                        summary["null_mean"],
+                        summary["null_sample_sd"],
+                        summary["observed_minus_null_mean"],
+                    )
+                ):
+                    raise MeasurementError("null ensemble summaries do not replay from samples")
     return encoded
 
 
@@ -83,6 +125,7 @@ def build_control_measurement_record(
     battery: MeasurementBattery,
     seed: int,
     provenance: dict[str, Any],
+    null_replicates: int | None = None,
 ) -> dict[str, Any]:
     """Bundle controls, splits, nulls and support; make no calibration decision.
 
@@ -166,5 +209,9 @@ def build_control_measurement_record(
         },
         "decision": "not_calibrated",
     }
+    if null_replicates is not None:
+        result["null_ensemble"] = measure_null_ensemble(
+            evaluation, battery=battery, seed=seed, replicates=null_replicates
+        )
     canonical_measurement_bytes(result)
     return result

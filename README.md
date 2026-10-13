@@ -129,6 +129,9 @@ is the only new manuscript-facing run and remains prohibited until those gates
 pass. None of the three completed infrastructure phases is a new experimental
 result.
 
+The [Phase 4 acceptance audit](docs/PHASE4_ACCEPTANCE.md) distinguishes verified
+software from still-missing endpoints and unresolved bias/missingness gates.
+
 ## Main capabilities
 
 - byte-exact source manifests and reversible numeric encodings;

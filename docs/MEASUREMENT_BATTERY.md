@@ -151,13 +151,28 @@ harness. The source-kind declaration restricts this development interface to
 synthetic/external controls but does not implement the future target barrier.
 Records contain one draw per diagnostic null, no p-values or compatibility
 thresholds, and the fixed decision `not_calibrated`. Immutable file creation,
-replay from acquired sources, null ensembles and calibration remain run-harness
+replay from acquired sources, ensemble budgets and calibration remain run-harness
 responsibilities.
+
+Callers can now opt into a repeated core-null diagnostic with `null_replicates=N`.
+The `null-ensemble-v1` record retains every replicate seed and raw metric sample,
+defined-replicate counts, means, sample SDs and unscaled observed-minus-null
+differences. Undefined draws remain `null`, and undefined observed quantities
+have no contrast. Serialization recomputes summaries and rejects inconsistent
+identity, dimensions or values. There is no variance division or significance
+label. The run harness still chooses and freezes its budget and calibration;
+the layout panel is not yet included in these ensembles.
 
 Phase 4 remains in progress. Remaining work includes broader view/scale recovery,
 calibrated missingness handling, broader estimator-bias and compression controls,
 paragraph/session sensitivity across external controls, and the complete joint acceptance
 report. Passing the current tests does not mark the phase complete.
+
+The [Phase 4 acceptance audit](PHASE4_ACCEPTANCE.md) lists implemented evidence,
+missing endpoints and remaining gates. In particular, learned-unit width/count
+diagnostics are not learned-scale uncertainty, and type/token ratio alone is
+not a vocabulary-growth endpoint. The audit prevents these gaps from being
+mistaken for completed roadmap requirements.
 
 ## Boundary
 

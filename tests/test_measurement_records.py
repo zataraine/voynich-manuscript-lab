@@ -246,3 +246,15 @@ def test_layout_annotations_reach_serialized_results() -> None:
     assert canonical_measurement_bytes(
         orjson.loads(canonical_measurement_bytes(result))
     ) == canonical_measurement_bytes(result)
+
+
+def test_optional_null_ensemble_serializes_and_rejects_corrupt_summaries() -> None:
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec, null_replicates=4)
+    encoded = canonical_measurement_bytes(result)
+    assert canonical_measurement_bytes(orjson.loads(encoded)) == encoded
+    result["null_ensemble"]["families"]["group_order_shuffle"]["unit_entropy_bits"]["null_mean"] = (
+        999
+    )
+    with pytest.raises(MeasurementError, match="summaries do not replay"):
+        canonical_measurement_bytes(result)
