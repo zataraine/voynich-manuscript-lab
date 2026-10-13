@@ -1,6 +1,7 @@
 # E-015: Known-process uncertainty calibration
 
-Status: preregistered design; no manuscript access. Phase 4 control-only
+Status: completed; [result](../reports/E-015-uncertainty-calibration.md).
+The design below was committed before execution; no manuscript access. Phase 4 control-only
 estimator development, not a payload classifier or Phase 5 mechanism replication.
 
 ## Scope correction

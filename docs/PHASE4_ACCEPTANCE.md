@@ -65,10 +65,13 @@ These are diagnostic differences, not p-values or compatibility decisions.
 
 ## Next implementation order
 
-[E-015](E015_UNCERTAINTY_CALIBRATION.md) prospectively calibrates a separate
+[E-015](../reports/E-015-uncertainty-calibration.md) passed all four construction
+and eight calibration gates for a prospectively declared, separate
 base-unit uncertainty scope on known binary processes, without optional
 production-session or paragraph metadata. The full-panel policy is unchanged;
 this is not a fallback after an evaluated full-panel failure or a Phase 4 pass.
+The tested-domain maximum mean-error bound was 0.006384 bits at 8,192 units;
+broader inventories, group lengths and learned-scale calibration remain open.
 
 The [joint synthetic stress suite](MEASUREMENT_STRESS.md) now exercises 54
 short/sparse/imbalanced/unequal-page cases, all four learned scales and three

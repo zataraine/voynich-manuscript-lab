@@ -100,12 +100,12 @@ The current state is recorded in four separate ledgers:
 - [`research/EXPERIMENT_INDEX.md`](research/EXPERIMENT_INDEX.md) — experiment status and outputs;
 - [`research/CLAIMS.md`](research/CLAIMS.md) — claims that survived review.
 
-Completed experiments run from E-001 through E-014. E-015 is a preregistered
+Completed experiments run from E-001 through E-015. E-015 is a completed
 [known-process uncertainty calibration](docs/E015_UNCERTAINTY_CALIBRATION.md),
 not a manuscript run. Historical protocols and
 reports retain their original prospective language, including statements about
 what was “next” at the time; the ledgers and the current-evidence section above
-give the present status. New research experiments are paused while the seven
+give the present status. New manuscript-facing experiments are paused while the seven
 interfaces in the
 [`control-expansion roadmap`](docs/CONTROL_EXPANSION_ROADMAP.md) are built. Its
 first three infrastructure phases are now implemented:
@@ -149,6 +149,9 @@ requirements. Its readiness mode continues to fail while those gaps remain.
 The full-panel availability policy is not a universal metadata requirement:
 E-015 prospectively uses a separate two-metric scope without production-session
 annotations. This is not an automatic fallback or permission to score the target.
+E-015 [passed its bounded binary-process calibration](reports/E-015-uncertainty-calibration.md):
+four construction and eight primary gates passed over 288 paired simulations.
+This verifies a tested estimator domain, not manuscript meaning or full readiness.
 
 ## Main capabilities
 
