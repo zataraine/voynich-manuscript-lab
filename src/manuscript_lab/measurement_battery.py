@@ -412,16 +412,61 @@ def _unit_width(unit: Unit) -> int:
     return 1 if isinstance(unit, int) else _unit_width(unit[0]) + _unit_width(unit[1])
 
 
+def apply_learned_units(
+    records: Sequence[MeasurementRecord], *, merges: Sequence[tuple[Unit, Unit]]
+) -> tuple[tuple[Unit, ...], ...]:
+    """Apply a frozen space-erased merge table, resetting at each source record."""
+    sequences: list[list[Unit]] = [
+        [symbol for group in record.groups for symbol in group] for record in records
+    ]
+    for pair in merges:
+        sequences = [_replace_pairs(sequence, pair) for sequence in sequences]
+    return tuple(tuple(sequence) for sequence in sequences)
+
+
+def expand_learned_units(sequences: Sequence[Sequence[Any]]) -> tuple[tuple[int, ...], ...]:
+    """Recover base numeric sequences from tuple trees or their JSON list form.
+
+    Group boundaries are stored in the original MeasurementRecords; learned
+    units encode the space-erased sequence and never reconstruct erased spaces.
+    """
+
+    def expand(unit: Any) -> tuple[int, ...]:
+        if isinstance(unit, int) and not isinstance(unit, bool) and unit >= 0:
+            return (unit,)
+        if isinstance(unit, (list, tuple)) and len(unit) == 2:
+            return expand(unit[0]) + expand(unit[1])
+        raise MeasurementError("invalid learned-unit tree")
+
+    return tuple(
+        tuple(symbol for unit in sequence for symbol in expand(unit)) for sequence in sequences
+    )
+
+
+def restore_learned_merge_table(table: Sequence[Any]) -> tuple[tuple[Unit, Unit], ...]:
+    """Restore a saved JSON pair tree table for application without refitting."""
+
+    def tree(unit: Any) -> Unit:
+        if isinstance(unit, int) and not isinstance(unit, bool) and unit >= 0:
+            return unit
+        if isinstance(unit, (list, tuple)) and len(unit) == 2:
+            return (tree(unit[0]), tree(unit[1]))
+        raise MeasurementError("invalid learned-unit tree")
+
+    restored = []
+    for pair in table:
+        if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+            raise MeasurementError("invalid learned-unit merge pair")
+        restored.append((tree(pair[0]), tree(pair[1])))
+    return tuple(restored)
+
+
 def measure_learned_units(
     heldout_records: Sequence[MeasurementRecord], *, merges: Sequence[tuple[Unit, Unit]]
 ) -> dict[str, float]:
     """Apply a frozen learned-unit table to held-out records without refitting."""
-    sequences: list[list[Unit]] = [
-        [symbol for group in record.groups for symbol in group] for record in heldout_records
-    ]
-    raw_count = sum(len(sequence) for sequence in sequences)
-    for pair in merges:
-        sequences = [_replace_pairs(sequence, pair) for sequence in sequences]
+    sequences = apply_learned_units(heldout_records, merges=merges)
+    raw_count = sum(len(group) for record in heldout_records for group in record.groups)
     units = [unit for sequence in sequences for unit in sequence]
     return {
         "unit_count_ratio": len(units) / max(1, raw_count),
@@ -451,7 +496,9 @@ def measure_training_heldout(
     for merge_count in battery.config["learned_unit_policy"]["merge_counts"]:
         merges = fit_learned_units(training_records, merge_count=merge_count)
         learned[str(merge_count)] = {
-            "merge_table_sha256": hashlib.sha256(repr(merges).encode()).hexdigest(),
+            "merge_table_sha256": hashlib.sha256(orjson.dumps(merges)).hexdigest(),
+            "merge_table_encoding": "nested-pair-json-v1",
+            "merge_table": merges,
             "trained_merge_count": len(merges),
             "heldout": measure_learned_units(heldout_records, merges=merges),
         }

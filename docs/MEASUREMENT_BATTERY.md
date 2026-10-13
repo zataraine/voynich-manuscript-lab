@@ -50,6 +50,14 @@ to any bijection of symbol IDs. The training/held-out interface rejects duplicat
 record IDs, overlapping IDs, and overlapping physical pages before fitting.
 Larger codicological/document grouping remains the caller's responsibility.
 
+Merge tables are now included alongside their SHA-256 hashes with encoding
+`nested-pair-json-v1`. `restore_learned_merge_table` restores JSON arrays to pair
+trees; `apply_learned_units` applies them without fitting, and
+`expand_learned_units` recovers the exact space-erased numeric sequence with a
+reset at each record. The original projections retain group/separator inverses.
+Earlier v2 development hashes used Python `repr`; the explicit encoding field
+distinguishes the saved-table contract introduced by ADR 0029.
+
 ## Nulls and finite samples
 
 The supplied structural nulls shuffle group order, shuffle units inside each
@@ -83,10 +91,38 @@ renaming, partition-label renaming, unequal-length null invariants, and split
 leakage rejection. These are software checks with known answers, not new
 manuscript findings or external mechanism calibration.
 
-Phase 4 remains in progress. Remaining work includes full view/scale recovery,
+All seven registered views and all four configured merge budgets also have
+synthetic raw-inverse, learned-unit expansion and JSON replay checks. A repeated
+motif compresses under a training-fitted table while an unseen symbol inventory
+does not. View checks assert expected differences rather than requiring numeric
+invariance when spaces, ligatures, alternatives or glyph scales actually change.
+
+## Serializable control record
+
+`measurement_records.build_control_measurement_record` accepts already supplied
+projections, one view specification, declared disjoint page assignments, the
+battery, seed, and provenance. It verifies projection replay and emits metrics,
+support, missing loci/pages, finite-size profiles and held-out structural nulls
+under `schemas/measurement-record.schema.json`. It retains full merge tables,
+symbol identities, projection hashes and a digest covering input order and
+physical metadata. `canonical_measurement_bytes` validates and serializes the
+result reproducibly; altered table hashes, incomplete vectors, non-finite
+values and inconsistent battery identity are rejected.
+
+The caller supplies source-manifest path/hash, code revision, working-tree hash,
+software-environment hash, device and output path. These are required metadata,
+not proof of source integrity: acquisition verification belongs to the run
+harness. The source-kind declaration restricts this development interface to
+synthetic/external controls but does not implement the future target barrier.
+Records contain one draw per diagnostic null, no p-values or compatibility
+thresholds, and the fixed decision `not_calibrated`. Immutable file creation,
+replay from acquired sources, null ensembles and calibration remain run-harness
+responsibilities.
+
+Phase 4 remains in progress. Remaining work includes broader view/scale recovery,
 paragraph and longitudinal interfaces, calibrated missingness handling, broader
-estimator-bias and compression controls, and the serialized joint result and
-acceptance report. Passing the current tests does not mark the phase complete.
+estimator-bias and compression controls, and the complete joint acceptance
+report. Passing the current tests does not mark the phase complete.
 
 ## Boundary
 
