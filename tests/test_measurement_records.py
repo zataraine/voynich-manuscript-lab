@@ -294,6 +294,7 @@ def test_historical_records_without_learned_uncertainty_remain_readable() -> Non
     result = _build(_projections(spec), spec)
     for entry in result["measurements"]["learned_units"].values():
         del entry["uncertainty"]
+    del result["availability"]  # Historical records predate the input-bound audit too.
     assert canonical_measurement_bytes(result)
 
 
@@ -325,4 +326,61 @@ def test_historical_records_without_growth_remain_readable():
     spec = VIEWS[2]
     result = _build(_projections(spec), spec)
     del result["vocabulary_growth"]
+    del result["availability"]
     assert canonical_measurement_bytes(result)
+
+
+def test_availability_is_replayable_and_cannot_authorize_joint_use():
+    from manuscript_lab.measurement_availability import require_available_measurements
+
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec)
+    assert result["availability"]["status"] == "abstain"
+    assert result["availability"]["joint_comparison_allowed"] is False
+    with pytest.raises(MeasurementError, match="requires abstention"):
+        require_available_measurements(result)
+    result["availability"]["reasons"] = []
+    with pytest.raises(MeasurementError, match="does not replay"):
+        canonical_measurement_bytes(result)
+
+
+def test_historical_record_without_audit_still_cannot_bypass_availability():
+    from manuscript_lab.measurement_availability import require_available_measurements
+
+    spec = VIEWS[2]
+    result = _build(_projections(spec), spec)
+    del result["availability"]
+    assert canonical_measurement_bytes(result)
+    with pytest.raises(MeasurementError, match="requires abstention"):
+        require_available_measurements(result)
+
+
+def test_fully_defined_canonical_control_passes_availability_not_calibration():
+    import random
+
+    from manuscript_lab.measurement_availability import require_available_measurements
+
+    rng = random.Random(203)
+    spec = VIEWS[2]
+    projections = []
+    for i in range(24):
+        surface = ".".join(
+            "".join(rng.choice(("A1", "B2")) for _ in range(4 + i % 3)) for _ in range(64)
+        )
+        item = project_surface(surface, spec, alphabet="STA1", witness_id="synthetic-control")
+        item["source"] = {
+            "record_id": f"r{i}",
+            "page": f"p{i // 3}",
+            "line_numbers": [i % 3],
+            "section": f"section-{i // 3 % 2}",
+            "paragraph_id": "explicit",
+            "paragraph_line_index": i % 3,
+            "session_id": f"session-{i % 3}",
+            "session_index": i % 3,
+        }
+        projections.append(item)
+    result = _build(projections, spec)
+    audit = require_available_measurements(result)
+    assert audit["status"] == "available_not_calibrated"
+    assert audit["joint_comparison_allowed"] is False
+    assert audit["target_access"] == "forbidden"

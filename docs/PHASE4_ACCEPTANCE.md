@@ -13,9 +13,9 @@ this phase, and no checklist row grants target access.
 | Adjacency and separator effects | Within-record identity, true edge-unit MI, separator/identity MI; exact dependence and independence controls | Complete low-count and unbalanced-class sensitivity checks. |
 | Line/paragraph effects | Line association and within-paragraph correlations; positive/negative, offsets and missingness controls | Complete sparse/missing annotation stress cases and ensure eligible support is sufficient for later calibration. |
 | Page/section/session drift | Ordered page/section JS and explicit-session endpoints; rename/order and stationary/changing controls | Quantify sample-size and unequal-group effects across registered scopes. Physical order remains distinct from chronological order. |
-| Compression/context | Pooled and page-reset gains, unique/run/concatenation controls, contextual-domain controls | Contextual MI can be positive solely because every group is unique. Freeze diagnostic handling for sparse/singleton-dominated inputs and broader length/context checks. |
+| Compression/context | Pooled/page-reset gains, unique/run/concatenation and contextual-domain controls; availability abstains on all-singleton observed contextual-reuse interpretations | Complete near-singleton/sparse sensitivity and broader length/context checks. The all-singleton guard is not a calibrated reliability cutoff. |
 | Finite samples and nulls | Fixed complete-record prefixes; repeated matched-length structural nulls; retained samples, definedness and unscaled contrasts | Null centering is not a universal bias correction. Complete length/sparsity checks for every endpoint, including the layout panel. |
-| Missingness | Explicit support, missing loci/pages/annotations, undefined numeric placeholders and null samples | Freeze joint exclusion/abstention policy without converting undefined measurements into measured zeros. |
+| Missingness | Explicit support, missing loci/pages/annotations, undefined placeholders/null samples; strict complete-panel availability policy with input-bound audits, validating refusal guard, historical-record and canonical positive/negative checks | Calibrate adequate support and any future partial-panel policy on external controls; complete deletion/missing-page recovery and missing-not-at-random sensitivity. Availability is not reliability. |
 | Reproducibility | Canonical control records, hashes, split identity, saved merges, null seeds and summary replay | Complete the consolidated executable acceptance report. Source acquisition verification and immutable run creation belong to the run harness. |
 
 ## Estimator cautions established by synthetic software checks
@@ -64,8 +64,14 @@ joint abstention policy; they are not a reliability or calibration pass.
    across sample sizes, inventories and production parameters.
 2. Complete bias/sparsity, boundary-scope and missingness checks for the whole
    assembled panel, including the optional extensions.
-3. Freeze joint exclusion rules and issue a reproducible acceptance report that
-   names every satisfied and failed requirement.
+3. Issue a reproducible consolidated acceptance report naming every satisfied
+   and failed requirement; externally calibrate adequate support before any
+   scientific comparison or alternative partial-panel policy.
+
+The [strict availability policy](MEASUREMENT_AVAILABILITY.md) now freezes the
+complete-panel abstention rules and is attached to new control records. It
+cannot grant scientific comparison or target access. The consolidated report,
+external calibration and broader recovery requirements remain open.
 
 Published mechanism replications can co-develop using these interfaces under
 the roadmap, but the final calibration bundle cannot silently substitute a

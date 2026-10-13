@@ -137,6 +137,10 @@ software from still-missing endpoints and unresolved bias/missingness gates.
 The [joint synthetic stress suite](docs/MEASUREMENT_STRESS.md) exercises the
 assembled panels and records short-sample and missing-annotation limitations;
 passing its software checks does not complete calibration.
+New control records also carry a strict
+[availability/abstention audit](docs/MEASUREMENT_AVAILABILITY.md): missing or
+undefined required measurements block joint use rather than becoming zeros or
+a selected partial panel. Available measurements are still not calibrated.
 
 ## Main capabilities
 

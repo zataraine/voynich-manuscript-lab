@@ -207,6 +207,12 @@ mistaken for completed roadmap requirements.
 
 ## Boundary
 
+New control records include an input-bound
+[availability/abstention audit](MEASUREMENT_AVAILABILITY.md). Its validating
+guard refuses incomplete or undefined joint panels, including historical records
+without required extensions. Availability does not establish reliability or
+calibration, and no outcome grants target access.
+
 The module has no manuscript loader and refuses to infer a direction, threshold,
 or compatibility decision. Phase 5 supplies mechanism controls; Phase 6 supplies
 external calibration and the sealed target barrier.

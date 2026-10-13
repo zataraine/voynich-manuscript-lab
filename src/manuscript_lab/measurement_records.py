@@ -14,6 +14,7 @@ from jsonschema import Draft202012Validator
 
 from manuscript_lab.layout_measurements import METRICS as LAYOUT_METRICS
 from manuscript_lab.layout_measurements import measure_layout
+from manuscript_lab.measurement_availability import assess_measurement_availability
 from manuscript_lab.measurement_battery import (
     MeasurementBattery,
     MeasurementError,
@@ -150,6 +151,8 @@ def canonical_measurement_bytes(record: dict[str, Any]) -> bytes:
                 != metrics["median_recurrence_distance"]
             ):
                 raise MeasurementError("vocabulary growth differs from core measurement scope")
+    if "availability" in value and value["availability"] != assess_measurement_availability(value):
+        raise MeasurementError("availability audit does not replay from measurement record")
     return encoded
 
 
@@ -258,5 +261,8 @@ def build_control_measurement_record(
         result["null_ensemble"] = measure_null_ensemble(
             evaluation, battery=battery, seed=seed, replicates=null_replicates
         )
+    result["availability"] = assess_measurement_availability(
+        orjson.loads(canonical_measurement_bytes(result))
+    )
     canonical_measurement_bytes(result)
     return result

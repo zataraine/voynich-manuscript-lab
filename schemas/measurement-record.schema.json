@@ -104,6 +104,24 @@
       },
       "additionalProperties": false
     },
+    "availability": {
+      "type": "object", "required": ["policy_id", "policy_sha256", "input_sha256", "status", "reasons", "joint_comparison_allowed", "target_access", "calibration_status"],
+      "properties": {
+        "policy_id": {"const": "measurement-availability-v1"},
+        "policy_sha256": {"$ref": "#/$defs/hash"},
+        "input_sha256": {"$ref": "#/$defs/hash"},
+        "status": {"enum": ["abstain", "available_not_calibrated"]},
+        "reasons": {"type": "array", "items": {
+          "type": "object", "required": ["scope", "code", "detail"],
+          "properties": {"scope": {"type": "string"}, "code": {"type": "string"}, "detail": {"type": "string"}},
+          "additionalProperties": false
+        }},
+        "joint_comparison_allowed": {"const": false},
+        "target_access": {"const": "forbidden"},
+        "calibration_status": {"const": "not_established_by_availability"}
+      },
+      "additionalProperties": false
+    },
     "decision": {"const": "not_calibrated"},
     "null_ensemble": {
       "type": "object",

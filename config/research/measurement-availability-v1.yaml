@@ -1,0 +1,10 @@
+policy_id: measurement-availability-v1
+target_access: forbidden
+partial_panel: forbidden
+missing_source_records: abstain
+missing_assigned_pages: abstain
+missing_required_annotations: abstain
+ineligible_declared_paragraphs: abstain
+undefined_required_metrics: abstain
+all_singleton_context: abstain
+scientific_calibration: required_separately
