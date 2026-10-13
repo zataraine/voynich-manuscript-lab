@@ -16,7 +16,7 @@ this phase, and no checklist row grants target access.
 | Compression/context | Pooled/page-reset gains, unique/run/concatenation and contextual-domain controls; availability abstains on all-singleton observed contextual-reuse interpretations | Complete near-singleton/sparse sensitivity and broader length/context checks. The all-singleton guard is not a calibrated reliability cutoff. |
 | Finite samples and nulls | Fixed complete-record prefixes; repeated matched-length structural nulls; retained samples, definedness and unscaled contrasts | Null centering is not a universal bias correction. Complete length/sparsity checks for every endpoint, including the layout panel. |
 | Missingness | Explicit support, missing loci/pages/annotations, undefined placeholders/null samples; strict complete-panel availability policy with input-bound audits, validating refusal guard, historical-record and canonical positive/negative checks | Calibrate adequate support and any future partial-panel policy on external controls; complete deletion/missing-page recovery and missing-not-at-random sensitivity. Availability is not reliability. |
-| Reproducibility | Canonical control records, hashes, split identity, saved merges, null seeds and summary replay | Complete the consolidated executable acceptance report. Source acquisition verification and immutable run creation belong to the run harness. |
+| Reproducibility | Canonical control records, hashes, split identity, saved merges/null seeds and replay; executable ten-area report with fresh JUnit evidence, logs and before/after provenance checks | Source acquisition verification and immutable research-run creation belong to the run harness. Software evidence subsets do not close broader scientific readiness gaps. |
 
 ## Estimator cautions established by synthetic software checks
 
@@ -36,6 +36,18 @@ this phase, and no checklist row grants target access.
   summaries.
 
 ## Repeatable software checks
+
+The [executable acceptance inventory](PHASE4_EXECUTABLE_REPORT.md) now assembles
+fresh test evidence and the reviewed remaining work for every requirement:
+
+```bash
+./scripts/run python -m manuscript_lab.phase4_acceptance \
+  --output artifacts/diagnostics/phase4-acceptance-NEW-ID
+```
+
+It reports verified software subsets separately from open readiness. Add
+`--require-ready` for exit 2 while Phase 4 remains open; passing tests do not
+enable target access.
 
 ```bash
 ./scripts/run pytest tests/test_measurement_battery.py \
@@ -64,14 +76,14 @@ joint abstention policy; they are not a reliability or calibration pass.
    across sample sizes, inventories and production parameters.
 2. Complete bias/sparsity, boundary-scope and missingness checks for the whole
    assembled panel, including the optional extensions.
-3. Issue a reproducible consolidated acceptance report naming every satisfied
-   and failed requirement; externally calibrate adequate support before any
-   scientific comparison or alternative partial-panel policy.
+3. Use the consolidated report to review progress and remaining requirements;
+   externally calibrate adequate support before any scientific comparison or
+   alternative partial-panel policy.
 
 The [strict availability policy](MEASUREMENT_AVAILABILITY.md) now freezes the
 complete-panel abstention rules and is attached to new control records. It
-cannot grant scientific comparison or target access. The consolidated report,
-external calibration and broader recovery requirements remain open.
+cannot grant scientific comparison or target access. The consolidated report
+is implemented; external calibration and broader recovery requirements remain open.
 
 Published mechanism replications can co-develop using these interfaces under
 the roadmap, but the final calibration bundle cannot silently substitute a

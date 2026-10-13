@@ -141,6 +141,9 @@ New control records also carry a strict
 [availability/abstention audit](docs/MEASUREMENT_AVAILABILITY.md): missing or
 undefined required measurements block joint use rather than becoming zeros or
 a selected partial panel. Available measurements are still not calibrated.
+The [executable readiness report](docs/PHASE4_EXECUTABLE_REPORT.md) consolidates
+fresh software evidence and reviewed remaining work across all ten Phase 4
+requirements. Its readiness mode continues to fail while those gaps remain.
 
 ## Main capabilities
 

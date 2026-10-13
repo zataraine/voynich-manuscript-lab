@@ -1,0 +1,58 @@
+report_id: phase4-acceptance-v1
+target_access: forbidden
+requirements:
+  - id: uncertainty
+    label: Conditional uncertainty at reversible scales
+    tests: [tests/test_measurement_battery.py, tests/test_measurement_records.py]
+    open_work:
+      - Broader learned-scale sample-size, sparsity and production-parameter recovery.
+      - Learned-scale null calibration is not established.
+  - id: learned_transfer
+    label: Learned-unit transfer
+    tests: [tests/test_measurement_battery.py, tests/test_measurement_records.py, tests/test_representation_views.py]
+    open_work:
+      - Broader matched-inventory recovery controls and frozen failure semantics.
+  - id: vocabulary
+    label: Vocabulary growth, tail and recurrence
+    tests: [tests/test_vocabulary_growth.py, tests/test_measurement_records.py]
+    open_work:
+      - Length, page-size, production-parameter and sparse-sample calibration.
+      - Repeated null ensembles do not include the growth extension.
+  - id: adjacency
+    label: Adjacency and separator effects
+    tests: [tests/test_measurement_battery.py]
+    open_work:
+      - Complete low-count and unbalanced-class sensitivity checks.
+  - id: layout
+    label: Line and paragraph effects
+    tests: [tests/test_layout_measurements.py, tests/test_measurement_stress.py]
+    open_work:
+      - Broader annotation sparsity and eligible-support recovery.
+  - id: drift
+    label: Page, section and session drift
+    tests: [tests/test_measurement_battery.py, tests/test_layout_measurements.py, tests/test_measurement_stress.py]
+    open_work:
+      - Quantify sample-size and unequal-group effects across registered scopes.
+  - id: compression
+    label: Compression and context
+    tests: [tests/test_measurement_battery.py, tests/test_layout_measurements.py, tests/test_sampling_diagnostics.py]
+    open_work:
+      - Near-singleton, sparse and broader length/context recovery.
+      - The all-singleton guard is not a calibrated reliability cutoff.
+  - id: finite_samples
+    label: Finite samples and nulls
+    tests: [tests/test_sampling_diagnostics.py, tests/test_measurement_stress.py]
+    open_work:
+      - Complete estimator sensitivity and repeated-null coverage across extensions.
+  - id: missingness
+    label: Missingness and abstention
+    tests: [tests/test_measurement_availability.py, tests/test_measurement_records.py, tests/test_layout_measurements.py]
+    open_work:
+      - Calibrate adequate support on external controls.
+      - Complete deletion, missing-page and selective-missingness sensitivity.
+  - id: reproducibility
+    label: Reproducibility
+    tests: [tests/test_measurement_records.py, tests/test_representation_views.py, tests/test_schemas.py]
+    open_work:
+      - Source acquisition integrity and immutable research-run harness remain separate.
+      - Completing this report does not satisfy the other readiness rows.
