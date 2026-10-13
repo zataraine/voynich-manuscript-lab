@@ -95,6 +95,12 @@ limited to the fused candidate set.
 
 ## Experiment supervision
 
+Optional external reference intake uses the bounded dethrottled MCP adapter in
+[`WEBENGINE.md`](WEBENGINE.md). Its controller selects approved retrieval calls
+and can send Qwen a retained packet plus snapshots of current project documents.
+This is not autonomous model browsing and does not change the pinned runtime
+or promote reference-review text to scientific evidence.
+
 Initialize and inspect the ledger:
 
 ```bash

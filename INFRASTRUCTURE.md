@@ -98,6 +98,11 @@ only when changing dependencies, review the diff, then run the full smoke test.
 
 ## Resource policy
 
+Optional dethrottled reference access uses the locked MCP Python SDK and a
+WSL user-service SSH tunnel to szbox's authentication-injecting loopback
+gateway. No MCP token is copied into this repository. Setup, limits and
+verification are documented in [`docs/WEBENGINE.md`](docs/WEBENGINE.md).
+
 - Default CPU worker ceiling: 12 threads, leaving four logical processors for
   Windows and the desktop application.
 - Default GPU memory fraction: 0.90. Plan for roughly 10 GiB usable model space

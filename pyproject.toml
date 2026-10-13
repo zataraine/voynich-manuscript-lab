@@ -58,6 +58,8 @@ dependencies = [
   "xxhash>=3.6,<4",
   "z3-solver>=5.1,<6",
   "pycipher",
+  "mcp>=1.26,<2",
+  "httpx>=0.28,<1",
 ]
 
 [project.scripts]

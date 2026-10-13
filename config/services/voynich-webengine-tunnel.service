@@ -1,0 +1,12 @@
+[Unit]
+Description=Voynich reference access to szbox dethrottled MCP
+After=network-online.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/ssh -NT -o BatchMode=yes -o StrictHostKeyChecking=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -L 127.0.0.1:18185:127.0.0.1:18185 nocturne-szbox
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

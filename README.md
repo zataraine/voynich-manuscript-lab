@@ -141,6 +141,8 @@ software from still-missing endpoints and unresolved bias/missingness gates.
   transposition, fractionation, and rotor control generators;
 - Pynini/OpenFST transducers, constraint solving, optimization, and seeded search;
 - CPU/CUDA inference, embeddings, reranking, and optional local-model review;
+- optional [bounded web-reference intake](docs/WEBENGINE.md) with retained
+  provenance and project-briefed local review (not autonomous browsing);
 - Snakemake orchestration and DuckDB experiment leases, heartbeats, and events.
 
 The cipher rules are in

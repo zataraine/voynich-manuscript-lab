@@ -1,0 +1,12 @@
+schema_version: "1.0"
+endpoint_id: szbox-dethrottled-via-ssh
+url: http://127.0.0.1:18185/mcp
+max_calls: 6
+job_timeout_seconds: 120
+call_timeout_seconds: 30
+max_response_bytes: 131072
+allowed_tools: [search, fetch, corpus_search, corpus_stats, ready, capabilities, status, stats]
+allowed_fetch_hosts: [aclanthology.org, arxiv.org, github.com, modelcontextprotocol.io, py.sdk.modelcontextprotocol.io]
+max_search_results: 5
+max_fetch_urls: 2
+max_fetch_chars: 6000
