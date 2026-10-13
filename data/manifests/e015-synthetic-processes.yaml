@@ -1,0 +1,11 @@
+source_id: e015-synthetic-processes-v1
+source_kind: synthetic
+generator_path: src/manuscript_lab/uncertainty_calibration.py
+generator_sha256: 6878e4237d6fa816e38bdf44088efeab989efb028bb60e4b1f2cad529c1063c5
+raw_acquisition: none
+definition: >-
+  Four pages per split; fixed-width numeric binary groups. Every group starts
+  with an independent fair bit and flips with probability p at each next position.
+  Groups reset. No manuscript, natural-language text, session or image input.
+regeneration: config parameters, per-case seed, generator hash and retained split input hashes
+rights: generated numeric research controls; no third-party corpus content

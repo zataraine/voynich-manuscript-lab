@@ -1,0 +1,10 @@
+profile_id: uncertainty-scope-v1
+metrics: [unit_entropy_bits, conditional_unit_entropy_order1_bits]
+unit_scale: supplied_reversible_base_units
+conditional_reset: each_observed_group
+required_metadata: [record_id, physical_page_id, reversible_grouping]
+not_required: [production_session, paragraph_annotation, section_annotation]
+undefined_metric: abstain
+partial_panel: forbidden
+target_access: forbidden_until_external_calibration
+full_battery_policy: unchanged

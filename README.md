@@ -100,7 +100,9 @@ The current state is recorded in four separate ledgers:
 - [`research/EXPERIMENT_INDEX.md`](research/EXPERIMENT_INDEX.md) — experiment status and outputs;
 - [`research/CLAIMS.md`](research/CLAIMS.md) — claims that survived review.
 
-The full sequence runs from E-001 through E-014. Historical protocols and
+Completed experiments run from E-001 through E-014. E-015 is a preregistered
+[known-process uncertainty calibration](docs/E015_UNCERTAINTY_CALIBRATION.md),
+not a manuscript run. Historical protocols and
 reports retain their original prospective language, including statements about
 what was “next” at the time; the ledgers and the current-evidence section above
 give the present status. New research experiments are paused while the seven
@@ -144,6 +146,9 @@ a selected partial panel. Available measurements are still not calibrated.
 The [executable readiness report](docs/PHASE4_EXECUTABLE_REPORT.md) consolidates
 fresh software evidence and reviewed remaining work across all ten Phase 4
 requirements. Its readiness mode continues to fail while those gaps remain.
+The full-panel availability policy is not a universal metadata requirement:
+E-015 prospectively uses a separate two-metric scope without production-session
+annotations. This is not an automatic fallback or permission to score the target.
 
 ## Main capabilities
 

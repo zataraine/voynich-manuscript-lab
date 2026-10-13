@@ -1,0 +1,29 @@
+schema_version: "1.0"
+experiment_id: E-015-uncertainty-calibration
+hypothesis_id: H-015
+source_manifest: data/manifests/e015-synthetic-processes.yaml
+transcription: none; synthetic numeric controls only
+scope: {folio_section: null, currier: null}
+normalization: {version: exact-binary-groups-v1}
+hypothesis_family: known-process-estimator-calibration
+parameters:
+  flip_probabilities: [0.5, 0.1, 0.01]
+  groups_per_record: [4, 16, 64]
+  group_width: 32
+  replicates: 32
+  maximum_mean_error_bits: 0.05
+  minimum_separation_bits: 0.2
+  family_alpha: 0.05
+seed: 20261014
+splits:
+  train: {grouping_key: page_id, assignment_path: deterministic-synthetic-training-pages}
+  heldout: {grouping_key: page_id, assignment_path: deterministic-synthetic-heldout-pages}
+null_model: {family: independent-fair-binary, parameters: {flip_probability: 0.5}}
+metrics: {primary: [unit_entropy_bits, conditional_unit_entropy_order1_bits]}
+effects: {mean_error_upper_bound_bits: 0.05, separation_lower_bound_bits: 0.2}
+artifacts: {root: artifacts/runs/E-015-uncertainty-calibration}
+notes: >-
+  Four pages per split; group starts fair and independent; transitions reset by group.
+  Evaluate largest length only for eight Bonferroni-allocated approximate t-interval gates.
+  Smaller lengths are diagnostics. No optional annotations, target access or payload inference.
+  Stop after 288 corpora; failures freeze this tested-domain result, not thresholds.
