@@ -1,0 +1,12 @@
+source_id: e016-synthetic-processes-v1
+source_kind: synthetic
+generator_path: src/manuscript_lab/multialphabet_calibration.py
+generator_sha256: 295e015c733f4752998511f8b904d71ba4f2917cd694bef01e7c73de186e09a0
+raw_acquisition: none
+definition: >-
+  Four pages per split; alphabets of 4, 16 or 32 numeric symbols. Groups start
+  uniform; within groups copy the preceding symbol with probability r,
+  otherwise redraw uniformly. Cycle fixed widths and clip the last group
+  to exact page budgets. No manuscript or external text input.
+regeneration: frozen config, per-case seed, generator hash and split input hashes
+rights: generated numeric research controls; no third-party corpus content

@@ -1,0 +1,31 @@
+schema_version: "1.0"
+experiment_id: E-016-multialphabet-calibration
+hypothesis_id: H-016
+source_manifest: data/manifests/e016-synthetic-processes.yaml
+transcription: none; synthetic numeric controls only
+scope: {folio_section: null, currier: null}
+normalization: {version: exact-uniform-stationary-groups-v1}
+hypothesis_family: known-process-multialphabet-estimator-calibration
+parameters:
+  alphabet_sizes: [4, 16, 32]
+  copy_probabilities: [0.0, 0.5, 0.9]
+  units_per_split: [512, 8192, 65536]
+  width_cycle: [1, 2, 4, 8, 16, 32]
+  replicates: 32
+  maximum_mean_error_bits: 0.05
+  minimum_separation_bits: 0.2
+  family_alpha: 0.05
+seed: 20261015
+splits:
+  train: {grouping_key: page_id, assignment_path: deterministic-synthetic-training-pages}
+  heldout: {grouping_key: page_id, assignment_path: deterministic-synthetic-heldout-pages}
+null_model: {family: uniform-independent, parameters: {copy_probability: 0.0}}
+metrics: {primary: [unit_entropy_bits, conditional_unit_entropy_order1_bits]}
+effects: {mean_error_upper_bound_bits: 0.05, separation_lower_bound_bits: 0.2}
+artifacts: {root: artifacts/runs/E-016-multialphabet-calibration}
+notes: >-
+  Four pages per split. Groups reset uniform; copy with r, otherwise redraw uniformly.
+  Width cycle is fixed independently of all observations; clip final group to exact page budget.
+  Evaluate 65,536 units for 24 Bonferroni-allocated approximate t-interval gates.
+  Shorter lengths are diagnostics, not alternate primary samples. Stop after 864 paired cases.
+  No corpus, manuscript, payload classification or learned segmentation is used.

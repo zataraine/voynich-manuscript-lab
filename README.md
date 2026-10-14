@@ -152,6 +152,8 @@ annotations. This is not an automatic fallback or permission to score the target
 E-015 [passed its bounded binary-process calibration](reports/E-015-uncertainty-calibration.md):
 four construction and eight primary gates passed over 288 paired simulations.
 This verifies a tested estimator domain, not manuscript meaning or full readiness.
+E-016 is [preregistered](docs/E016_MULTIALPHABET_CALIBRATION.md), not yet run:
+larger alphabets and unequal group widths, with shorter-sample bias retained.
 
 ## Main capabilities
 

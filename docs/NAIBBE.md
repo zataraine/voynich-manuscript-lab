@@ -84,3 +84,28 @@ be a separate implementation with parity tests against the pinned source. A
 successful imitation of selected statistics is evidence that those statistics
 do not rule out this cipher family; it is not evidence that the manuscript used
 Naibbe.
+
+## Encoder replication checkpoint (2026-10-14)
+
+The complete pinned `naibbe.py` was inspected again without executing it or
+opening the archive's manuscript comparison datasets. Its encoder loads
+`references/naibbe_tables.csv` through Pandas at import time. Defaults are
+RESPACING=17 (unigram probability 17/36), the 52-card deck, ambiguity rejection
+enabled, and 0.03 output-space deletion. The deck resets per encrypted line;
+global random state continues across lines, including output-space deletion.
+Rejected bigrams consume both cards and may trigger another shuffle. A wrapper
+or independent port must preserve these details.
+
+Normalization uses NFD, specific Latin replacements, alphabetic filtering,
+and W→UU, J→I, K→C. It is not a general Unicode-to-26-letter guarantee:
+unsupported surviving letters need explicit rejection before table lookup.
+The ambiguity retry loop has no upstream bound; a supervised wrapper needs a
+recorded external timeout rather than an undocumented algorithm change.
+
+The next mechanism step is fixed-seed parity between the pinned encoder and an
+independent implementation, with recorded table/input hashes and exact normalized
+plaintext truth. No encoder has yet been integrated or reproduced here. Existing
+experiments consumed archived ciphertext, not newly generated upstream outputs.
+The script supplies no seed for its example outputs, so newly seeded parity is
+not byte-for-byte reproduction of historical outputs. Published-metric replication
+and held-out mechanism validation remain later, distinct checks.
