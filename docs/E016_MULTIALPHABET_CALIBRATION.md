@@ -1,6 +1,7 @@
 # E-016: Larger alphabets and heterogeneous group boundaries
 
-Status: preregistered design; not yet executed.
+Status: completed; [result](../reports/E-016-multialphabet-calibration.md).
+The design below was committed before execution and retained without tuning.
 This extends E-015 within `uncertainty-scope-v1`; it does not replace the full
 panel, authorize manuscript access or complete Phase 4.
 

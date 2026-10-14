@@ -100,9 +100,9 @@ The current state is recorded in four separate ledgers:
 - [`research/EXPERIMENT_INDEX.md`](research/EXPERIMENT_INDEX.md) — experiment status and outputs;
 - [`research/CLAIMS.md`](research/CLAIMS.md) — claims that survived review.
 
-Completed experiments run from E-001 through E-015. E-015 is a completed
-[known-process uncertainty calibration](docs/E015_UNCERTAINTY_CALIBRATION.md),
-not a manuscript run. Historical protocols and
+Completed experiments run from E-001 through E-016. E-015 and E-016 are
+[known-process uncertainty calibrations](docs/E016_MULTIALPHABET_CALIBRATION.md),
+not manuscript runs. Historical protocols and
 reports retain their original prospective language, including statements about
 what was “next” at the time; the ledgers and the current-evidence section above
 give the present status. New manuscript-facing experiments are paused while the seven
@@ -152,8 +152,12 @@ annotations. This is not an automatic fallback or permission to score the target
 E-015 [passed its bounded binary-process calibration](reports/E-015-uncertainty-calibration.md):
 four construction and eight primary gates passed over 288 paired simulations.
 This verifies a tested estimator domain, not manuscript meaning or full readiness.
-E-016 is [preregistered](docs/E016_MULTIALPHABET_CALIBRATION.md), not yet run:
-larger alphabets and unequal group widths, with shorter-sample bias retained.
+E-016 [passed all 24 primary calibration gates](reports/E-016-multialphabet-calibration.md)
+for larger alphabets and unequal group widths at its frozen 65,536-unit length.
+Short samples showed substantial downward conditional-entropy bias (about
+1.52 bits in the worst 512-unit cell); page-level accuracy must not be assumed.
+The pinned [Naibbe encoder audit](docs/NAIBBE.md) identifies the next seeded
+mechanism-replication work; encoder parity has not yet been implemented.
 
 ## Main capabilities
 
